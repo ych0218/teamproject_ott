@@ -39,8 +39,50 @@ header {
 ul,
 li {
     list-style: none;
+}
+.header_list{
     margin-right: 20px;
+}
+footer{
+    width: 100%;
+    background-color: black;
+    height: 350px;
+    color: gray;
+    font-size: 12px;
+}
 
+.footer_hr{
+    width: 90%;
+    background-color: black;
+}
+.footer_top{
+    display: flex;
+}
+.footer_nav{
+    margin-right: 15px;
+    font-size: 16px;
+}
+.footer_nav:hover{
+    font-weight: bold;
+}
+.footer_middle{
+    display: flex;
+    flex-direction: column;
+}
+.footer_middle .list .footer_list::after{
+    content: " | ";
+}
+.fa-brands{
+    font-size: 20px;
+    margin-right: 20px;
+}
+.fa-brands:hover{
+    font-size: 24px;
+}
+.test{
+    width: 100%;
+    height: 2000px;
+    background-color: black;
 }
 a {
     text-decoration: none;

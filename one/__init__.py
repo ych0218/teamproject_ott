@@ -15,4 +15,10 @@ def create_app():
     migrate.init_app(app, db)
     from . import models
 
+    #블루프린트 목록 이쪽으로 등록해주세요
+    from .views import mypage_views
+    app.register_blueprint(mypage_views.bp)
+
+
+
     return app
