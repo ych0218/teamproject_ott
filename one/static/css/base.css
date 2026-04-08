@@ -3,14 +3,20 @@ header {
     height: 50px;
     position: sticky;
     top: 0;
+     background-color : black;
+     color:white;
 }
 .head_container{
      display: flex;
      width: 100%;
      height:100%;
-     background-color : black;
-     color:white;
      justify-content: space-between;
+    margin-left: 30px;
+}
+.body {
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
 }
 .header_left{
     height:100%;
@@ -49,7 +55,6 @@ footer{
     height: 350px;
     color: gray;
     font-size: 12px;
-    margin-left : 100px
 }
 
 .footer_hr{
@@ -58,6 +63,7 @@ footer{
 }
 .footer_top{
     display: flex;
+    margin-left: 100px;
 }
 .footer_nav{
     margin-right: 15px;
@@ -65,13 +71,18 @@ footer{
 }
 .footer_nav:hover{
     font-weight: bold;
+    cursor: pointer;
 }
 .footer_middle{
     display: flex;
     flex-direction: column;
+    margin-left: 100px;
 }
 .footer_middle .list .footer_list::after{
     content: " | ";
+}
+.footer_bottom{
+    margin-left: 100px;
 }
 .fa-brands{
     font-size: 20px;

@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{% block title %}Title{% endblock %}</title>
 
     <link rel="stylesheet" href="../static/css/base.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v7.0.0/css/all.css">
+    {% block styles %}{% endblock %}
 </head>
 
 <body>

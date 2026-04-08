@@ -1,0 +1,12 @@
+.container{
+    background-color: black;
+    padding-left: 50px;
+}
+h2{
+    color: white;
+    padding-left: 50px;
+}
+.term_ul{
+    display: flex;
+    flex-direction: row;
+}
