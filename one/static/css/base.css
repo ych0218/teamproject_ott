@@ -1,3 +1,16 @@
+*{
+    margin : 0;
+    padding : 0;
+    box-sizing: border-box;
+}
+
+ul, ol{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+
 header {
     width: 100%;
     height: 50px;
@@ -5,24 +18,20 @@ header {
     top: 0;
      background-color : black;
      color:white;
+     padding-top: 15px;
 }
-.head_container{
-     display: flex;
-     width: 100%;
-     height:100%;
-     justify-content: space-between;
-    margin-left: 30px;
-}
-.body {
+body {
     background-color: #000;
     color: #fff;
     font-family: Arial, sans-serif;
+    width:100%;
 }
 .header_left{
     height:100%;
     display: flex;
     flex-direction:row;
     align-items: center;
+    margin-left: 30px;
 }
 .logo img{
     height:45px;
@@ -47,7 +56,7 @@ li {
     list-style: none;
 }
 .header_list{
-    margin-right: 20px;
+    padding-right: 20px;
 }
 footer{
     width: 100%;
@@ -63,7 +72,6 @@ footer{
 }
 .footer_top{
     display: flex;
-    margin-left: 100px;
 }
 .footer_nav{
     margin-right: 15px;
@@ -76,13 +84,9 @@ footer{
 .footer_middle{
     display: flex;
     flex-direction: column;
-    margin-left: 100px;
 }
 .footer_middle .list .footer_list::after{
     content: " | ";
-}
-.footer_bottom{
-    margin-left: 100px;
 }
 .fa-brands{
     font-size: 20px;
@@ -99,4 +103,7 @@ footer{
 a {
     text-decoration: none;
     color: white;
+}
+.term_title_list{
+    border: noen;
 }

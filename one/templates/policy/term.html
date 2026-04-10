@@ -14,15 +14,13 @@
 
 {% block content %}
 <div class="container">
-    <h2>약관 및 정책</h2>
-    <ul class="term_ul">
-        <li class="term_title_list"><a href="/policy/terms">4FLEX 이용약관</a></li>
-        <li class="term_title_list"><a href="/policy/pay-terms">유료이용약관</a></li>
-        <li class="term_title_list"><a href="/policy/email">E-mail 무단수집거부</a></li>
-        <li class="term_title_list"><a href="/policy/legal">법적고지</a></li>
-        <li class="term_title_list"><a href="/policy/privacy">개인정보처리방침</a></li>
-        <li class="term_title_list"><a href="/policy/youth">청소년 보호정책</a></li>
-
-    </ul>
-</div>
+    <p>약관 및 정책</p>
+    <div class="list_container">
+        <button type="button" class="term_title_list" onclick="location.href='#'">4FLEX 이용약관</button>
+         <button type="button" class="term_title_list" onclick="location.href='./pay-term'">유료이용약관</button>
+         <button type="button" class="term_title_list" onclick="location.href='./email'">E-mail 무단수집거부</button>
+         <button type="button" class="term_title_list" onclick="location.href='./legal'">법적고지</button>
+         <button type="button" class="term_title_list" onclick="location.href='./privacy'">개인정보처리방침</button>
+         <button type="button" class="term_title_list" onclick="location.href='./youth'">청소년 보호정책</button>
+    </div>
 {% endblock %}

@@ -4,88 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Title{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="../static/css/base.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v7.0.0/css/all.css">
+     <link rel="stylesheet" href="../static/css/base.css">
     {% block styles %}{% endblock %}
 </head>
 
 <body>
     <header>
-    <div class="head_container">
-        <div class="header_left">
-            <a>
-                <div class="logo"><img src="../static/img/test_logo.png"></div>
-            </a>
-            <div>
+        <div class=" d-flex justify-content-between flex-row">
+            <div class="header_left">
+                <a>
+                    <div class="logo"><img src="../static/img/test_logo.png"></div>
+                </a>
+                <div>
+                    <ul class="d-flex flex-row mr-3">
+                        <li class="header_list"><a href="#">드라마</a></li>
+                        <li class="header_list"><a href="#">예능</a></li>
+                        <li class="header_list"><a href="#">영화</a></li>
+                        <li class="header_list"><a href="#">스릴러</a></li>
+                        <li class="header_list"><a href="#">애니</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="header_right">
+                <div id="search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search_box" class="search_box">
+                </div>
+                <div class="black">
+                    <a href="#">마이페이지</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    {% block content %}
+
+    {% endblock %}
+
+    <footer>
+        <div class="">
+            <div class="footer_top">
                 <ul class="list">
-                    <li class="header_list"><a href="#">드라마</a></li>
-                    <li class="header_list"><a href="#">예능</a></li>
-                    <li class="header_list"><a href="#">영화</a></li>
-                    <li class="header_list"><a href="#">스릴러</a></li>
-                    <li class="header_list"><a href="#">애니</a></li>
+                    <li class="footer_nav">고객센터</li>
+                    <li class="footer_nav">이용약관</li>
+                    <li class="footer_nav">개인정보처리방침</li>
+                    <li class="footer_nav">청소년보호정책</li>
+                    <li class="footer_nav">법적고지</li>
+                </ul>
+            </div>
+            <div class="footer_middle">
+                <ul class="list">
+                    <li class="footer_list">대표이사 : 최주희</li>
+                    <li class="footer_list">사업자등록번호 : 188-88-01893</li>
+                    <li>통신판매신고번호 : 2020-서울마포-3641호</li>
+                </ul>
+                <ul class="list">
+                    <li class="footer_list">사업장 : 서울특별시 마포구 상암산로 34, DMC디지털큐브 15층(상암동)</li>
+                    <li>호스팅사업자 : 아마존웹서비시즈코리아 유한책임회사</li>
+                </ul>
+                <ul class="list">
+                    <li class="footer_list">고객센터 (평일9시~18시/공휴일 휴무)</li>
+                    <li class="footer_list">1:1게시판 문의</li>
+                    <li class="footer_list">대표메일 : carrotkang@gmail.com</li>
+                    <li>유료 ARS : 1670-1525 (음성/메시지안내)</li>
+                </ul>
+                <ul class="list">
+                    <li class="footer_list">ENM 시청자 상담실 (편성 문의 및 시청자 의견) : 080-080-0780</li>
+                    <li>Mnet 고객센터(방송편성문의) : 1855-1631</li>
+                </ul>
+            </div>
+            <div class="footer_bottom">
+                <ul class="list">
+                    <li><i class="fa-brands fa-facebook-f"></i></li>
+                    <li><i class="fa-brands fa-instagram"></i></li>
+                    <li><i class="fa-brands fa-x-twitter"></i></li>
+                    <li><i class="fa-brands fa-youtube"></i></li>
                 </ul>
             </div>
         </div>
+    </footer>
 
-        <div class="header_right">
-            <div id="search">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="search_box" class="search_box">
-            </div>
-            <div>
-            <a href="#">마이페이지</a>
-            </div>
-        </div>
-
-    </div>
-</header>
-
-     {% block content %}
-
-     {% endblock %}
-
-<footer>
-    <div class="footer_top">
-        <ul class="list">
-            <li class="footer_nav">고객센터</li>
-            <li class="footer_nav">이용약관</li>
-            <li class="footer_nav">개인정보처리방침</li>
-            <li class="footer_nav">청소년보호정책</li>
-            <li class="footer_nav">법적고지</li>
-        </ul>
-    </div>
-    <div class="footer_middle">
-        <ul class="list">
-            <li class="footer_list">대표이사 : 최주희</li>
-            <li class="footer_list">사업자등록번호 : 188-88-01893</li>
-            <li>통신판매신고번호 : 2020-서울마포-3641호</li>
-        </ul>
-        <ul class="list">
-            <li class="footer_list">사업장 : 서울특별시 마포구 상암산로 34, DMC디지털큐브 15층(상암동)</li>
-            <li>호스팅사업자 : 아마존웹서비시즈코리아 유한책임회사</li>
-        </ul>
-        <ul class="list">
-            <li class="footer_list">고객센터 (평일9시~18시/공휴일 휴무)</li>
-            <li class="footer_list">1:1게시판 문의</li>
-            <li class="footer_list">대표메일 : carrotkang@gmail.com</li>
-            <li>유료 ARS : 1670-1525 (음성/메시지안내)</li>
-        </ul>
-        <ul class="list">
-            <li class="footer_list">ENM 시청자 상담실 (편성 문의 및 시청자 의견) : 080-080-0780</li>
-            <li>Mnet 고객센터(방송편성문의) : 1855-1631</li>
-        </ul>
-    </div>
-    <div class="footer_bottom">
-        <ul class="list">
-            <li><i class="fa-brands fa-facebook-f"></i></li>
-            <li><i class="fa-brands fa-instagram"></i></li>
-            <li><i class="fa-brands fa-x-twitter"></i></li>
-            <li><i class="fa-brands fa-youtube"></i></li>
-        </ul>
-    </div>
-</footer>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    {% block script %}
+    {% endblock %}
 </body>
+
 </html>
