@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+
+<div class="admin_wrap">
+
+    <!------------------------- 사이드바 --------------------------------->
+    <aside class="admin_sidebar">
+        <h2>관리자</h2>
+        <ul>
+            <li><a href="/admin/members">회원 관리</a></li>
+            <li><a href="/admin/contents">콘텐츠 관리</a></li>
+            <li><a href="/admin/inquiries">문의 관리</a></li>
+            <li><a href="/admin/reviews">리뷰 관리</a></li>
+        </ul>
+    </aside>
+
+    <!----------------------------- 메인 콘텐츠 -------------------------->
+    <main class="admin_content">
+        <h1>관리자 대시보드</h1>
+
+        <div class="admin_cards">
+
+            <div class="card">
+                <h3>회원 관리</h3>
+                <p>회원목록 확인 및 삭제</p>
+                <a href="/admin/members">바로가기</a>
+            </div>
+
+            <div class="card">
+                <h3>콘텐츠 관리</h3>
+                <p>영화 / 시리즈 등록, 수정, 삭제</p>
+                <a href="/admin/contents">바로가기</a>
+            </div>
+
+            <div class="card">
+                <h3>문의 관리</h3>
+                <p>고객문의 확인 및 답변</p>
+                <a href="/admin/inquiries">바로가기</a>
+            </div>
+
+            <div class="card">
+                <h3>리뷰 관리</h3>
+                <p>리뷰확인 및 삭제</p>
+                <a href="/admin/reviews">바로가기</a>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>

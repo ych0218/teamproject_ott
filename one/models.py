@@ -14,6 +14,7 @@ class users(db.Model):
     user_email = db.Column(db.String(100), unique=True, nullable=False)  # 이메일
     user_name = db.Column(db.String(50), nullable=False)  # 이름
     user_birth = db.Column(db.Date)  # 생년월일
+    user_phone = db.Column(db.String(20), unique=True, nullable=False)  # 고유값, 필수값 설정 핸드폰 번호
     user_gender = db.Column(db.String(10))  # 성별 (M/F 등)
 
     # --- 관계 설정 (Relationship) ---
@@ -71,6 +72,10 @@ class Video(db.Model):
     # lazy='dynamic' 데이터를 가져오기전 추가 조건을 걸 수 있는 쿼리형태로 넘어옴.(데이터가 많을 경우 최적화를 위해 사용)
     # True같은 경우 파이썬 리스트로 넘어옴.
     genres = db.relationship('Genre', secondary=video_genres, backref=db.backref('videos', lazy='dynamic'))
+
+    # --- 외래 키 (Foreign Key) ---
+    # 이 비디오를 등록한 관리자 ID
+    admin_unique_id = db.Column(db.BigInteger, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
     # 2. 1:N 관계 (시청 기록, 리뷰, 좋아요, 찜하기 등)
     watch_histories = db.relationship('WatchHistory', backref='video', lazy=True)
@@ -227,7 +232,7 @@ class WatchHistory(db.Model):
 
 
 # 결제 테이블
-class Payments(db.Model):
+class Payment(db.Model):
 
     payment_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
@@ -253,6 +258,35 @@ class Notice(db.Model):
 
     # 작성일
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    # --- 외래 키 (Foreign Key) ---
+    # 작성한 관리자의 ID를 참조합니다.
+    admin_unique_id = db.Column(db.BigInteger, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
     def __repr__(self):
         return f'<Notice {self.title}>'
+
+
+class Admin(db.Model):
+
+    # 프라이머리 키
+    admin_unique_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+
+    # 관리자 기본 정보
+    admin_id = db.Column(db.String(50), unique=True, nullable=False)  # 관리자 로그인 아이디
+    admin_password = db.Column(db.String(255), nullable=False)  # 암호화된 비밀번호
+    admin_name = db.Column(db.String(50), nullable=False)  # 관리자 이름
+    admin_role = db.Column(db.String(20), default='staff')  # 권한 레벨 (예: super, staff 등)
+
+    # --- 관계 설정 (Relationship) ---
+
+    # 관리자가 등록한 비디오들
+    videos = db.relationship('Video', backref='admin', lazy=True)
+
+    # 관리자가 작성한 공지사항
+    notices = db.relationship('Notice', backref='admin', lazy=True)
+
+    # 관리자가 작성한 1:1 문의 답변
+    support_answers = db.relationship('SupportAnswer', backref='admin', lazy=True)
+
+    def __repr__(self):
+        return f'<Admin {self.admin_id}>'
