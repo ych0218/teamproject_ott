@@ -6,10 +6,49 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="/one/static/css/main.css">
+    
+    
 </head>
 
 <body>
+<div id="wrap">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand text-white" href="{{ url_for('home.index')}}"><img class = "logo" src="{{ url_for('static', filename='img/test_logo.png') }}" alt=""></a>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">드라마</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">예능</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">영화</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">애니</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">몰?루</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="검색" aria-label="Search" />
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+</div>
     <section>
         <div class="head_slider">
             <div class="swiper mySwiper">
@@ -46,6 +85,7 @@
                 <div class="swiper-pagination"></div>
             </div>
         </div>
+        <br>
         <div class="box1">
             <div class="h3">
                 <h3>오늘의 넷플렉스 TOP 15</h3>
@@ -217,7 +257,7 @@
         <div class="box7">
             <div class="p_txt1"><p>공지</p></div>
             <div class="p_txt2"><p>광고형 스탠다드 연간 이용권 한정 판매 프로모션 안내(2026.2.9 ~ 2026.4.30)</p></div>
-            <div class="right"><img src="/one/static/img/main_img/right.png" alt="화살표"></div>
+            <div class="right"><img src="{{ url_for('static', filename='img/main_img/right.png') }}" alt="화살표"></div>
         </div>
         </a>
     </section>
@@ -225,7 +265,9 @@
     {% include 'footer.html'%}
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-    <script src="./js/swiper.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
     
     <script>
         var swiper = new Swiper(".mySwiper", {

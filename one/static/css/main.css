@@ -1,22 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
+html {
+    height: 100%; /* html 높이를 100%로 고정 */
+}
+
+#wrap {
+    width: 100%;
+    height: 50px;
+    position: sticky;
+    top: 0;
+    background-color : black;
+    color:white;
+    z-index: 999;
+}
+
 a {
     text-decoration: none;
 }
 
 body {
     background-color: black;
+    
 }
 
 section {
     width: 100%;
     height: 100%;
+    font-family: "Noto Sans", sans-serif;
 }
 
 h3 {
     color: #ffffff;
     font-size: 25px;
+    font-weight: 600;
 }
+
 
 .head_slider {
     width: 100%;
@@ -36,7 +54,7 @@ h3 {
 
 .swiper-slide:hover {
   /* 마우스 올리면 색상 반전 또는 명도 조절 */
-  filter: brightness(1.05); 
+  filter: brightness(1.05);
   transform: translateY(-5%) scale(1); /* 중앙 정렬 유지하며 살짝 커짐 */
 }
 
@@ -48,7 +66,7 @@ h3 {
 .swiper-button-next:hover,
 .swiper-button-prev:hover {
   /* 마우스 올리면 색상 반전 또는 명도 조절 */
-  filter: brightness(1.2); 
+  filter: brightness(1.2);
   transform: translateY(-50%) scale(1.1); /* 중앙 정렬 유지하며 살짝 커짐 */
 }
 
@@ -362,7 +380,6 @@ h3 {
     background-color: #191919;
     margin: 0 auto;
     display: flex;
-    flex-wrap: nowrap;
 }
 
 .box7 .p_txt1 {
@@ -371,11 +388,12 @@ h3 {
     display: grid;
     place-items: center;
     color: #737373;
+    margin-top: 10px;
 }
 
 .box7 .p_txt1 p {
-    font-size: 0.8vw; 
-    
+    font-size: 0.8vw;
+
 }
 
 .box7 .p_txt2 {
@@ -384,10 +402,11 @@ h3 {
     display: flex;
     align-items: center;
     color: #b3b3b3;
+    margin-top: 10px;
 }
 
 .box7 .p_txt2 p {
-    font-size: 0.8vw;  
+    font-size: 0.8vw;
 }
 
 .box7 .p_txt2 p:hover{
