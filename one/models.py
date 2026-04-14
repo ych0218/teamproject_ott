@@ -73,6 +73,10 @@ class Video(db.Model):
     # True같은 경우 파이썬 리스트로 넘어옴.
     genres = db.relationship('Genre', secondary=video_genres, backref=db.backref('videos', lazy='dynamic'))
 
+    # --- 외래 키 (Foreign Key) ---
+    # 이 비디오를 등록한 관리자 ID
+    admin_unique_id = db.Column(db.BigInteger, db.ForeignKey('admin.admin_unique_id'), nullable=False)
+
     # 2. 1:N 관계 (시청 기록, 리뷰, 좋아요, 찜하기 등)
     # cascade 설정 추가 (부모 삭제 시 자식 자동 삭제)
     watch_histories = db.relationship('WatchHistory', backref='video', lazy=True, cascade="all, delete-orphan")
@@ -273,6 +277,7 @@ class WatchHistory(db.Model):
 
 # 결제 테이블
 class Payment(db.Model):
+
     __tablename__ = 'payments'  # ERD 상의 이름과 일치
 
     # 프라이머리 키
@@ -308,10 +313,12 @@ class Notice(db.Model):
 
     # 작성일
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    # --- 외래 키 (Foreign Key) ---
+    # 작성한 관리자의 ID를 참조합니다.
+    admin_unique_id = db.Column(db.BigInteger, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
     def __repr__(self):
         return f'<Notice {self.title}>'
-
 
 class Admin(db.Model):
     __tablename__ = 'admin'

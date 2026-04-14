@@ -1,0 +1,48 @@
+@charset "utf-8";
+
+.login-box-layout {
+    background-color: #1e1e1e; /* 카드 배경 */
+    color: white;              /* 글자색 */
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+/* 전체 배경 및 텍스트 색상 */
+body {
+    background-color: #000000 !important;
+    color: #ffffff;
+}
+
+/* 입력창(아이디, 비밀번호) 포커스 효과 제거 및 디자인 유지 */
+.form-control:focus {
+    background-color: #2f2f2f !important;
+    box-shadow: none;
+    border-color: #444;
+    color: #fff;
+}
+
+.form-control::placeholder {
+    color: #aaa !important;
+}
+
+/* SNS 아이콘 호버 효과 (선택사항) */
+.sns-icon:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* 비밀번호 Show 버튼 스타일 (선택사항) */
+.password-show {
+    cursor: pointer;
+    font-size: 0.75rem;
+    user-select: none;
+}
+
+.text-center a {
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.text-center a:hover {
+    color: #0d6efd !important;
+    transform: scale(1.05);
+}

@@ -1,0 +1,22 @@
+.gender-btn {
+    background-color: #333b41;
+    color: #aaa;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gender-btn.active {
+    background-color: #0056ff !important;
+    color: #fff !important;
+}
+
+.gender-btn:hover {
+    background-color: #3f4950;
+    color: #ddd;
+}
+
+.gender-btn.active:hover {
+    background-color: #0056ff;
+    color: #fff;
+}

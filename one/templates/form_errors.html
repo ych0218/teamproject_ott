@@ -1,0 +1,13 @@
+<!-- 필드 오류 -->
+{% if form.errors %}
+<div class="alert alert-danger py-2" role="alert" style="font-size:0.85rem;">
+    입력값을 확인해주세요.
+</div>
+{% endif %}
+
+<!-- flash 오류 -->
+{% for message in get_flashed_messages() %}
+<div class="alert alert-danger py-2" role="alert" style="font-size:0.85rem;">
+    {{ message }}
+</div>
+{% endfor %}

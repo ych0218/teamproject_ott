@@ -26,6 +26,15 @@ body {
     color: red;
 }
 
+.admin_title {
+    color: red;
+    text-decoration: none;
+}
+
+.admin_title:hover {
+    color: red;
+}
+
 .admin_sidebar ul {
     list-style: none;
 }
@@ -86,4 +95,56 @@ body {
 
 .card a:hover {
     background-color: #ff4444;
+}
+
+.admin_sidebar ul li a.active {
+    color: red;
+}
+
+.admin_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    background-color: #1c1c1c;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.admin_table td {
+    border: 1px solid #333;
+    padding: 14px;
+    text-align: center;
+}
+
+.admin_table th {
+    border: 1px solid #333;
+    padding: 14px;
+    text-align: center;
+    background-color: #111;
+    color: #ff3b3b;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.admin_table td {
+    color: #eee;
+}
+
+.delete_btn {
+    padding: 8px 12px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.delete_btn:hover {
+    background-color: #ff5c5c;
+    transform: scale(1.05);   /* 🔥 살짝 커짐 */
+}
+
+.admin_table tbody tr:hover {
+    background-color: #2a2a2a;
+    transition: 0.2s;
 }
