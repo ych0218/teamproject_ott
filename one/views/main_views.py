@@ -11,5 +11,9 @@ def home():
     # 127.0.0.1:5000/home 접속 시에도 같은 페이지를 보여주고 싶을 경우
     return render_template('main/home.html')
 
+@bp.route('/main')
+def main():
+    return render_template('main/main.html')
+
 
 

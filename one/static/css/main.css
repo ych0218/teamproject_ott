@@ -4,14 +4,113 @@ html {
     height: 100%; /* html 높이를 100%로 고정 */
 }
 
+ul, ol{
+    list-style: none;
+}
+html {
+    height: 100%; /* html 높이를 100%로 고정 */
+}
+.navbar{
+    background-color: black;
+    color: white;
+}
+.nav-item{
+    color: white;
+}
+
 #wrap {
     width: 100%;
     height: 50px;
     position: sticky;
     top: 0;
-    background-color : black;
-    color:white;
+     background-color : black;
+     color:white;
+     padding-top: 15px;
     z-index: 999;
+}
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    width: 100%;
+    min-height: 100vh; /* height: 100% 대신 min-height: 100vh 추천 */
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+.header_left{
+    height:100%;
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    margin-left: 30px;
+}
+.logo{
+    height:45px;
+    margin-left: 30px;
+}
+.list-group-item{
+    background-color: #000;
+}
+.header_right{
+    display: flex;
+    flex-direction:row;
+    height: 100%;
+    margin-right: 30px;
+    align-items: center;
+}
+.list{
+    display:flex;
+    background-color: #000;
+}
+.search_box{
+    border-radius: 10px;
+    margin-right: 5px;
+}
+footer{
+    width: 95%;
+    background-color: black;
+    height: 350px;
+    color: gray;
+    font-size: 12px;
+    margin: 0 auto;
+}
+
+.footer_hr{
+    width: 90%;
+    background-color: black;
+}
+.footer_top{
+    display: flex;
+}
+.footer_nav{
+    margin-right: 15px;
+    font-size: 16px;
+}
+.footer_nav:hover{
+    font-weight: bold;
+    cursor: pointer;
+}
+.footer_middle{
+    display: flex;
+    flex-direction: column;
+}
+.footer_middle .list .footer_list::after{
+    content: " | ";
+}
+.fa-brands{
+    font-size: 20px;
+    margin-right: 20px;
+}
+.fa-brands:hover{
+    font-size: 24px;
+}
+a {
+    text-decoration: none;
+    color: gray;
+}
+.term_title_list{
+    border: none;
 }
 
 a {

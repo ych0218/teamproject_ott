@@ -1,6 +1,6 @@
 from flask import Blueprint, redirect, url_for, render_template, session
 
-from one.models import users
+from one.models import User
 
 bp = Blueprint('mypage', __name__, url_prefix='/mypage')
 
@@ -17,7 +17,7 @@ def mypage():
 
     # 3. DB에서 유저 정보를 조회합니다.
     # 작성하신 users 테이블의 프라이머리 키인 user_unique_id로 검색합니다.
-    user_data = users.query.get_or_404(user_unique_id)
+    user_data = User.query.get_or_404(user_unique_id)
 
     # 4. 조회된 유저 객체를 'user'라는 이름으로 HTML에 넘겨줍니다.
     return render_template('mypage/mypage_main.html',user=user_data)
