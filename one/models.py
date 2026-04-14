@@ -3,10 +3,10 @@ from datetime import datetime, timezone
 
 
 # https://blog.naver.com/red0808/223888577210
-class users(db.Model):
+class User (db.Model):
     __tablename__ = 'user'
     # 프라이머리 키
-    user_unique_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    user_unique_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     # 사용자 기본 정보
     user_id = db.Column(db.String(50), unique=True, nullable=False)  # 로그인 아이디
@@ -42,10 +42,8 @@ class users(db.Model):
 
     # 1. 연결 테이블 (M:N 관계의 징검다리)
     # 실제 클래스로 만들지 않고 db.Table을 사용하는 것이 조인(Join) 시 성능과 관리에 유리.
-
-
 video_genres = db.Table('video_genres',
-                        db.Column('video_unique_id', db.BigInteger, db.ForeignKey('video.video_unique_id'),
+                        db.Column('video_unique_id', db.Integer, db.ForeignKey('video.video_unique_id'),
                                   primary_key=True),
                         db.Column('genre_id', db.Integer, db.ForeignKey('genre.genre_id'), primary_key=True)
                         )
@@ -53,9 +51,9 @@ video_genres = db.Table('video_genres',
 
 class Video(db.Model):
     # 프라이머리 키
-    video_unique_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    video_unique_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    # 영상 상세 정보 (이미지의 컬럼 반영)
+    # 영상 상세 정보
     video_title = db.Column(db.String(200), nullable=False)  # 제목
     video_director = db.Column(db.String(100))  # 감독
     video_actor = db.Column(db.String(255))  # 출연진
@@ -65,6 +63,8 @@ class Video(db.Model):
     video_age_limit = db.Column(db.String(20))  # 시청 등급 (예: 15세, All)
     video_synopsis = db.Column(db.Text)  # 줄거리요약
 
+    # [추가] ERD에 정의된 관리자 외래키
+    admin_unique_id = db.Column(db.Integer, db.ForeignKey('admin.admin_unique_id'))
     # --- 관계 설정 (Relationship) ---
 
     # 1. 장르와 다대다(M:N) 연결
@@ -74,10 +74,11 @@ class Video(db.Model):
     genres = db.relationship('Genre', secondary=video_genres, backref=db.backref('videos', lazy='dynamic'))
 
     # 2. 1:N 관계 (시청 기록, 리뷰, 좋아요, 찜하기 등)
-    watch_histories = db.relationship('WatchHistory', backref='video', lazy=True)
-    reviews = db.relationship('Review', backref='video', lazy=True)
-    likes = db.relationship('VideoLike', backref='video', lazy=True)
-    wishlist = db.relationship('VideoWish', backref='video', lazy=True)
+    # cascade 설정 추가 (부모 삭제 시 자식 자동 삭제)
+    watch_histories = db.relationship('WatchHistory', backref='video', lazy=True, cascade="all, delete-orphan")
+    reviews = db.relationship('Review', backref='video', lazy=True, cascade="all, delete-orphan")
+    likes = db.relationship('VideoLike', backref='video', lazy=True, cascade="all, delete-orphan")
+    wishes = db.relationship('VideoWish', backref='video', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Video {self.video_title}>'
@@ -93,18 +94,19 @@ class Genre(db.Model):
 
 
 class VideoLike(db.Model):
+    __tablename__ = 'videos_like' # ERD에 표기된 이름으로 맞춤
 
     # 프라이머리 키
-    like_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    like_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    # 외래키 연결 (누가, 어떤 영상에)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
-    video_unique_id = db.Column(db.BigInteger, db.ForeignKey('video.video_unique_id'), nullable=False)
+    # 외래키 연결 (타입 일관성을 위해 Integer 권장)
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
+    video_unique_id = db.Column(db.Integer, db.ForeignKey('video.video_unique_id'), nullable=False)
 
-    # 생성일 (언제 눌렀는지)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # 생성일 (타임존을 포함한 현재 시간 설정)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
-    # 한 유저가 같은 영상에 좋아요를 중복으로 누르지 못하게 제약조건 추가
+    # 중복 좋아요 방지 제약조건
     __table_args__ = (
         db.UniqueConstraint('user_unique_id', 'video_unique_id', name='_user_video_like_uc'),
     )
@@ -115,16 +117,19 @@ class VideoLike(db.Model):
 
 # 2. 찜하기 테이블 (VideoWish)
 class VideoWish(db.Model):
+    __tablename__ = 'videos_wish'  # ERD 표기명과 일치
 
     # 프라이머리 키
-    wish_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    wish_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     # 외래키 연결 (누가, 어떤 영상에)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
-    video_unique_id = db.Column(db.BigInteger, db.ForeignKey('video.video_unique_id'), nullable=False)
+    # 외래키 연결 (User/Video의 타입과 맞춰 Integer 권장)
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
+    video_unique_id = db.Column(db.Integer, db.ForeignKey('video.video_unique_id'), nullable=False)
 
     # 생성일 (언제 찜했는지 - 마이페이지 정렬용)
-    created_at = db.Column(db.DateTime, nullable=False)
+    # 생성일 (nullable=False이므로 기본값을 넣어주는 것이 편리합니다)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     # 중복 찜하기 방지
     __table_args__ = (
@@ -136,13 +141,13 @@ class VideoWish(db.Model):
 
 
 class Review(db.Model):
-
+    __tablename__ = 'reviews'  # ERD 표기명과 일치
     # 프라이머리 키
-    review_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    review_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     # 외래키 연결 (누가, 어떤 영상에)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
-    video_unique_id = db.Column(db.BigInteger, db.ForeignKey('video.video_unique_id'), nullable=False)
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
+    video_unique_id = db.Column(db.Integer, db.ForeignKey('video.video_unique_id'), nullable=False)
 
     # 리뷰 내용 및 별점
     comment = db.Column(db.Text, nullable=False)  # 후기 내용
@@ -151,9 +156,11 @@ class Review(db.Model):
     # 부가 기능
     is_spoiler = db.Column(db.Boolean, default=False)  # 스포일러 여부
 
-    # 날짜 관리
-    create_at = db.Column(db.DateTime, default=datetime.utcnow)  # 작성일
-    update_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  # 수정일
+    # 날짜 관리 (timezone.utc 권장)
+    create_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # 작성일
+    update_at = db.Column(db.DateTime,
+                          default=lambda: datetime.now(timezone.utc),
+                          onupdate=lambda: datetime.now(timezone.utc))  # 수정일
 
     def __repr__(self):
         return f'<Review Video:{self.video_unique_id} Rating:{self.rating}>'
@@ -161,12 +168,14 @@ class Review(db.Model):
 
 # 1. 요금제 테이블 (plan 테이블)
 class Plan(db.Model):
+    __tablename__ = 'plan'
 
     plan_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     price = db.Column(db.Numeric(10, 2), nullable=False)  # 금액
-    plan_name = db.Column(db.String(50), nullable=False)  # 요금제 이름
+    plan_name = db.Column(db.String(50), nullable=False, unique=True)  # 요금제 이름, 중복x
 
     # 역참조 설정
+    # Subscription 모델에서 plan.plan_name 등으로 접근 가능하게 해줍니다.
     subscriptions = db.relationship('Subscription', backref='plan', lazy=True)
 
     def __repr__(self):
@@ -175,74 +184,119 @@ class Plan(db.Model):
 
 # 2. 구독 테이블 (subscription 테이블)
 class Subscription(db.Model):
+    __tablename__ = 'subscription'
 
-    subscription_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
+    # 프라이머리 키
+    subscription_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # 외래키 연결
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
     plan_id = db.Column(db.Integer, db.ForeignKey('plan.plan_id'), nullable=False)
 
     start_date = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))  # 시작일
     end_date = db.Column(db.DateTime, nullable=False)  # 종료일 (이미지 중복분 통합)
-    status = db.Column(db.String(20))  # 상태 (active 등)
 
-    def __repr__(self):
+    # 상태 관리 (예: active, expired, canceled, pending) 결제하면 바로 active가 되기에 default값 부여
+    status = db.Column(db.String(20), default='active')
+
+    # 관계 설정: 결제 내역 (1:N)
+    # 한 번의 구독(연장 포함)에 여러 결제 시도가 있을 수 있으므로 1:N으로 설정하는 경우가 많습니다.
+    payments = db.relationship('Payment', backref='subscription', lazy=True)
+
+# 배치 작업: 나중에 end_date가 현재 시간보다 과거인 데이터를 찾아 status를 'expired'로 바꾸는 간단한 스케줄러(예: Celery, Flask-APScheduler)를 연동하면 관리가 편해집니다.
+def __repr__(self):
         return f'<Subscription User:{self.user_unique_id} Plan:{self.plan_id}>'
 
 
 # 질문 테이블
 class Support(db.Model):
+    __tablename__ = 'support'
 
-    support_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
+    # 프라이머리 키
+    support_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    category = db.Column(db.String(50))  # 문의 유형
-    title = db.Column(db.String(255))  # 제목
-    content = db.Column(db.Text)  # 내용
-    status = db.Column(db.String(20))  # 상태 (접수, 완료 등)
+    # 외래키 연결
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
+
+    # 문의 내용
+    category = db.Column(db.String(50))  # 문의 유형 (결제문의, 영상오류 등)
+    title = db.Column(db.String(255), nullable=False)  # 제목
+    content = db.Column(db.Text, nullable=False)  # 내용
+
+    # 상태 관리 (접수, 처리중, 완료 등 / 영문 권장: pending, processing, completed)
+    status = db.Column(db.String(20), nullable=False, default='pending')
+
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     image_url = db.Column(db.String(500))  # 이미지 첨부 경로
 
     # 답변과의 관계 (1:N)
-    answers = db.relationship('SupportAnswer', backref='support', lazy=True)
+    answers = db.relationship('SupportAnswer', backref='support', lazy=True, cascade="all, delete-orphan")
 
 
 # 답변 테이블
 class SupportAnswer(db.Model):
+    __tablename__ = 'support_answer'
 
-    answer_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    support_id = db.Column(db.BigInteger, db.ForeignKey('support.support_id'), nullable=False)
+    # 프라이머리 키
+    answer_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    admin_id = db.Column(db.BigInteger)  # 관리자 식별 ID
+    # 외래키: 어떤 문의글에 대한 답변인가
+    support_id = db.Column(db.Integer, db.ForeignKey('support.support_id'), nullable=False)
+
+    # 외래키: 어떤 관리자가 답변을 작성했는가
+    admin_unique_id = db.Column(db.Integer, db.ForeignKey('admin.admin_unique_id'), nullable=False)
+
+
     content = db.Column(db.Text)  # 답변 내용
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 # 시청 기록 테이블 (이어보기용)
 class WatchHistory(db.Model):
+    __tablename__ = 'watch_history'
 
-    history_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
-    video_unique_id = db.Column(db.BigInteger, db.ForeignKey('video.video_unique_id'), nullable=False)
+    # 프라이머리 키
+    history_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
-    last_played_time = db.Column(db.Integer, default=0)  # 초 단위 지점
-    is_finished = db.Column(db.Boolean, default=False)  # 다 봤는지 여부
+    # 외래키 연결
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
+    video_unique_id = db.Column(db.Integer, db.ForeignKey('video.video_unique_id'), nullable=False)
 
+    # 시청 정보
+    last_played_time = db.Column(db.Integer, default=0)  # 초 단위 지점 (예: 120초 지점까지 봄)
+    is_finished = db.Column(db.Boolean, default=False)  # 다 봤는지 여부 (엔딩 크레딧 기준 등)
+
+    # [추가] 마지막 시청 시간 (최근 본 영상 목록 정렬용)
+    updated_at = db.Column(db.DateTime,
+                          default=lambda: datetime.now(timezone.utc),
+                          onupdate=lambda: datetime.now(timezone.utc))
 
 # 결제 테이블
-class Payments(db.Model):
-    
-    payment_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
-    user_unique_id = db.Column(db.BigInteger, db.ForeignKey('user.user_unique_id'), nullable=False)
-    subscription_id = db.Column(db.BigInteger, db.ForeignKey('subscription.subscription_id'), nullable=False)
+class Payment(db.Model):
+    __tablename__ = 'payments'  # ERD 상의 이름과 일치
 
+    # 프라이머리 키
+    payment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # 외래키 연결
+    user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
+    subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.subscription_id'), nullable=False)
+
+
+    # 결제 정보
     price = db.Column(db.Numeric(10, 2))  # 결제 금액
     status = db.Column(db.String(20))  # 결제 상태 (성공, 환불 등)
     paid_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class Notice(db.Model):
+    __tablename__ = 'notice'
 
     # 프라이머리 키
-    notice_id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    notice_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # [ERD 반영] 작성자 외래키: 어떤 관리자가 작성했는가
+    admin_unique_id = db.Column(db.Integer, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
     # 공지사항 내용
     title = db.Column(db.String(255), nullable=False)  # 제목
@@ -257,3 +311,34 @@ class Notice(db.Model):
 
     def __repr__(self):
         return f'<Notice {self.title}>'
+
+
+class Admin(db.Model):
+    __tablename__ = 'admin'
+
+    # 프라이머리 키
+    admin_unique_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # 관리자 로그인 정보
+    admin_id = db.Column(db.String(50), unique=True, nullable=False)  # 로그인 아이디
+    admin_password = db.Column(db.String(255), nullable=False)  # 암호화된 비밀번호
+    admin_name = db.Column(db.String(50), nullable=False)  # 관리자 이름
+
+    # 관리자 권한 (예: superadmin, editor, cs)
+    # 권한에 따라 메뉴 접근 제한을 두기 위해 추가하는 것이 좋습니다.
+    admin_role = db.Column(db.String(20), default='staff')
+
+    # --- 관계 설정 (Relationship) ---
+    # 관리자가 수행한 활동들을 추적하기 위한 역참조들입니다.
+
+    # 1. 관리자가 등록한 영상들
+    videos = db.relationship('Video', backref='admin', lazy=True)
+
+    # 2. 관리자가 작성한 공지사항들
+    notices = db.relationship('Notice', backref='admin', lazy=True)
+
+    # 3. 관리자가 작성한 고객지원 답변들
+    answers = db.relationship('SupportAnswer', backref='admin', lazy=True)
+
+    def __repr__(self):
+        return f'<Admin {self.admin_id} ({self.admin_name})>'
