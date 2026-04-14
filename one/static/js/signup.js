@@ -104,7 +104,24 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+
+
     password1.addEventListener("input", checkPasswordMatch);
     password2.addEventListener("input", checkPasswordMatch);
 
+});
+
+    // ===== 로그인 비밀번호 보기 =====
+    const pwInput = document.getElementById("login-password");
+    const toggleBtn = document.getElementById("togglePw");
+
+    toggleBtn.addEventListener("click", () => {
+    console.log("클릭됨"); // 확인용
+
+    if (pwInput.type === "password") {
+        pwInput.type = "text";
+    }
+    else {
+        pwInput.type = "password";
+    }
 });

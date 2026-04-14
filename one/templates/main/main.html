@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="../../static/css/main.css">
-    
-    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+
 </head>
 
 <body>
-<div id="wrap">
+    <div id="wrap">
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse"
@@ -22,7 +22,8 @@
                     aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand text-white" href="{{ url_for('home.index')}}"><img class = "logo" src="{{ url_for('static', filename='img/test_logo.png') }}" alt=""></a>
+                <a class="navbar-brand text-white" href="{{ url_for('home.index')}}"><img class="logo"
+                        src="{{ url_for('static', filename='img/test_logo.png') }}" alt=""></a>
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
@@ -48,12 +49,14 @@
                 </div>
             </div>
         </nav>
-</div>
+    </div>
     <section>
         <div class="head_slider">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide"><a href="#"><img src="./img/1769617250_1.webp" alt=""></a></div>
+                    <div class="swiper-slide"><a href="#"><img
+                                src="{{ url_for('static', filename='img/main_img/main_header.webp') }}" alt="박보검"></a>
+                    </div>
                     <div class="swiper-slide"><a href="#"></a></div>
                     <div class="swiper-slide"><a href="#"></a></div>
                     <div class="swiper-slide"><a href="#"></a></div>
@@ -69,7 +72,9 @@
         <div class="nav_slider">
             <div class="swiper mySwiper2">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide"><a href="#"><img src="./img/1774846748_1.gif" alt=""></a></div>
+                    <div class="swiper-slide"><a href="#"><img
+                                src="{{ url_for('static', filename='img/main_img/main_nav.gif') }}" alt="유미의세포들3"></a>
+                    </div>
                     <div class="swiper-slide"><a href="#"></a></div>
                     <div class="swiper-slide"><a href="#"></a></div>
                     <div class="swiper-slide"><a href="#"></a></div>
@@ -95,11 +100,12 @@
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <div class="rank_num">1</div>
-                            <a href="#"><img src="./img/P001783292.webp" alt=""></a>
+                            <a href="#"></a>
                         </div>
                         <div class="swiper-slide">
                             <div class="rank_num">15</div>
-                            <a href="#"><img src="./img/P001783292.webp" alt=""></a></div>
+                            <a href="#"></a>
+                        </div>
                         <div class="swiper-slide"><a href="#"></a></div>
                         <div class="swiper-slide"><a href="#"></a></div>
                         <div class="swiper-slide"><a href="#"></a></div>
@@ -254,94 +260,99 @@
         </div>
         <br>
         <a href="#">
-        <div class="box7">
-            <div class="p_txt1"><p>공지</p></div>
-            <div class="p_txt2"><p>광고형 스탠다드 연간 이용권 한정 판매 프로모션 안내(2026.2.9 ~ 2026.4.30)</p></div>
-            <div class="right"><img src="{{ url_for('static', filename='img/main_img/right.png') }}" alt="오른쪽화살표"></div>
-        </div>
+            <div class="box7">
+                <div class="p_txt1">
+                    <p>공지</p>
+                </div>
+                <div class="p_txt2">
+                    <p>광고형 스탠다드 연간 이용권 한정 판매 프로모션 안내(2026.2.9 ~ 2026.4.30)</p>
+                </div>
+                <div class="right"><img src="{{ url_for('static', filename='img/main_img/right.png') }}" alt="오른쪽화살표">
+                </div>
+            </div>
         </a>
     </section>
-
+    <br><br>
     {% include 'footer.html'%}
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    
+
     <script>
         var swiper = new Swiper(".mySwiper", {
-    slidesPerView: 'auto',
-    slidesOffsetAfter: 47,
-    slidesOffsetBefore: 47,
-    spaceBetween: 10,
-    clickable: true,
-    effect: 'coverflow',
-    coverflowEffect: {
-        rotate: 0,           // 옆으로 넘어갈 때 회전 각도 (0이면 평평함)
-        stretch: 0,         // 슬라이드 간의 간격 (값이 클수록 겹침)
-        depth: 0,          // 깊이감 (원근감)
-        modifier: 1,         // 효과 배수
-        slideShadows: false, // 그림자 끄기 (이미지에 그림자가 이미 있다면 false)
-    },
-    autoplay: {
-        delay: 3000,
-        disableOnInteraction: false,
-    },
-    pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-    },
-    navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-    },
+            slidesPerView: 'auto',
+            slidesOffsetAfter: 47,
+            slidesOffsetBefore: 47,
+            spaceBetween: 10,
+            clickable: true,
+            effect: 'coverflow',
+            coverflowEffect: {
+                rotate: 0,           // 옆으로 넘어갈 때 회전 각도 (0이면 평평함)
+                stretch: 0,         // 슬라이드 간의 간격 (값이 클수록 겹침)
+                depth: 0,          // 깊이감 (원근감)
+                modifier: 1,         // 효과 배수
+                slideShadows: false, // 그림자 끄기 (이미지에 그림자가 이미 있다면 false)
+            },
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
 
-});
+        });
 
-var swiper2 = new Swiper(".mySwiper2", {
-    navigation: {
-        nextEl: ".nav_slider .swiper-button-next",
-        prevEl: ".nav_slider .swiper-button-prev",
-    },
-    slidesPerView: 'auto',
-    freeMode: true,
-    slidesOffsetAfter: 47,
-    slidesOffsetBefore: 47,
-    spaceBetween: 10,
-});
+        var swiper2 = new Swiper(".mySwiper2", {
+            navigation: {
+                nextEl: ".nav_slider .swiper-button-next",
+                prevEl: ".nav_slider .swiper-button-prev",
+            },
+            slidesPerView: 'auto',
+            freeMode: true,
+            slidesOffsetAfter: 47,
+            slidesOffsetBefore: 47,
+            spaceBetween: 10,
+        });
 
-var swiper3 = new Swiper(".mySwiper3", {
-    navigation: {
-        nextEl: ".section_slider .swiper-button-next",
-        prevEl: ".section_slider .swiper-button-prev",
-    },
-    pagination: {
-        el: ".section_slider .swiper-pagination",
-        clickable: true,
-    },
-    slidesPerView: 'auto',
-    freeMode: true,
-    slidesOffsetAfter: 47,
-    slidesOffsetBefore: 47,
-    spaceBetween: 15,
-});
+        var swiper3 = new Swiper(".mySwiper3", {
+            navigation: {
+                nextEl: ".section_slider .swiper-button-next",
+                prevEl: ".section_slider .swiper-button-prev",
+            },
+            pagination: {
+                el: ".section_slider .swiper-pagination",
+                clickable: true,
+            },
+            slidesPerView: 'auto',
+            freeMode: true,
+            slidesOffsetAfter: 47,
+            slidesOffsetBefore: 47,
+            spaceBetween: 15,
+        });
 
-var swiper4 = new Swiper(".mySwiper4", {
-    navigation: {
-        nextEl: ".section_slider .swiper-button-next",
-        prevEl: ".section_slider .swiper-button-prev",
-    },
-    pagination: {
-        el: ".section_slider .swiper-pagination",
-        clickable: true,
-    },
-    slidesPerView: 'auto',
-    slidesPerGroup: 7,
-    slidesOffsetAfter: 47,
-    slidesOffsetBefore: 47,
-    spaceBetween: 10,
-});
+        var swiper4 = new Swiper(".mySwiper4", {
+            navigation: {
+                nextEl: ".section_slider .swiper-button-next",
+                prevEl: ".section_slider .swiper-button-prev",
+            },
+            pagination: {
+                el: ".section_slider .swiper-pagination",
+                clickable: true,
+            },
+            slidesPerView: 'auto',
+            slidesPerGroup: 7,
+            slidesOffsetAfter: 47,
+            slidesOffsetBefore: 47,
+            spaceBetween: 10,
+        });
     </script>
 </body>
 

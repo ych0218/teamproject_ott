@@ -14,7 +14,11 @@
     <!-- 헤더 -->
     <header class="header">
         <div class="logo py-2">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" style="max-height: 50px;">
+            <a href="{{ url_for('home.index') }}">
+                <img src="{{ url_for('static', filename='img/logo.png') }}"
+                     alt="logo"
+                     style="max-height: 50px;">
+            </a>
         </div>
     </header>
 
@@ -36,7 +40,7 @@
                 <div class="mb-2">
                     {{ form.name(class="form-control py-3 border-0",
                     placeholder="이름",
-                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.95rem;
+                    style="background-color: #3f474d !important; color: #fff !important; font-size: 0.95rem;
                     border-radius: 8px;") }}
                 </div>
 
@@ -44,7 +48,7 @@
                 <div class="mb-2">
                     {{ form.email(class="form-control py-3 border-0",
                     placeholder="이메일",
-                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.95rem;
+                    style="background-color: #3f474d !important; color: #fff !important; font-size: 0.95rem;
                     border-radius: 8px;") }}
                 </div>
 
@@ -52,7 +56,7 @@
                 <div class="mb-2 d-flex gap-2">
                     {{ form.phone(class="form-control py-3 border-0",
                     placeholder="휴대전화",
-                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.95rem;
+                    style="background-color: #3f474d !important; color: #fff !important; font-size: 0.95rem;
                     border-radius: 8px;") }}
 
                     <button type="button" class="btn btn-secondary"
@@ -63,19 +67,22 @@
 
                 <!-- 비밀번호 -->
                 <div class="mb-2">
-                    {{ form.password1(class="form-control py-3 border-0",
+                    {{ form.password1(
+                    id="password1",
+                    class="form-control py-3 border-0",
                     placeholder="비밀번호",
-                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.95rem;
-                    border-radius: 8px;") }}
+                    style="background-color: #3f474d !important; color: #fff !important;"
+                    ) }}
                 </div>
 
-                <!-- 비밀번호 확인 -->
                 <div class="mb-3">
-                    {{ form.password2(class="form-control py-3 border-0",
+                    {{ form.password2(
+                    id="password2",
+                    class="form-control py-3 border-0",
                     placeholder="비밀번호 확인",
-                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.95rem;
-                    border-radius: 8px;") }}
-                     <div id="password-match-msg" class="small mt-1"></div>
+                    style="background-color: #3f474d !important; color: #fff !important;"
+                    ) }}
+                    <div id="password-match-msg" class="small mt-1"></div>
                 </div>
 
                 <!-- 생년월일 -->
@@ -94,24 +101,18 @@
                 </div>
 
                 <!-- 성별 -->
-                <div class="mb-1 text-light" style="font-size: 0.85rem; ">성별</div>
+                <div class="mb-1 text-light" style="font-size: 0.85rem;">성별</div>
 
                 <div class="d-flex gap-2 mb-4">
+                    {% for subfield in form.gender %}
                     <label class="w-100">
-                        <input type="radio" name="gender" value="M" hidden>
+                        {{ subfield(style="display:none;") }}
                         <div class="gender-btn text-center py-3">
-                            남자
+                            {{ subfield.label.text }}
                         </div>
                     </label>
-
-                    <label class="w-100">
-                        <input type="radio" name="gender" value="F" hidden>
-                        <div class="gender-btn text-center py-3">
-                            여자
-                        </div>
-                    </label>
+                    {% endfor %}
                 </div>
-
                 <!-- 회원가입 버튼 -->
                 <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mb-3"
                         style="border-radius: 50px; background-color: #0056ff; border: none;">

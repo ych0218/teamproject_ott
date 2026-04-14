@@ -13,7 +13,11 @@
     <!-- 헤더 (로고) -->
     <header class="header">
         <div class="logo py-2">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" style="max-height: 50px;">
+            <a href="{{ url_for('home.index') }}">
+                <img src="{{ url_for('static', filename='img/logo.png') }}"
+                     alt="logo"
+                     style="max-height: 50px;">
+            </a>
         </div>
     </header>
 
@@ -34,20 +38,22 @@
                     {{ form.email(
                     class="form-control py-3 border-0",
                     placeholder="이메일",
-                    style="background-color: #e9ecef !important; color: #333 !important; font-size: 0.9rem;"
+                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.9rem;"
                     ) }}
                 </div>
 
                 <!-- 비밀번호 입력 -->
                 <div class="mb-3 position-relative">
                     {{ form.password(
+                    id="login-password",
                     class="form-control py-3 border-0",
                     placeholder="비밀번호",
-                    style="background-color: #e9ecef !important; color: #333 !important; font-size: 0.9rem;"
+                    style="background-color: #333b41 !important; color: #fff !important; font-size: 0.9rem;"
                     ) }}
                     <!-- 입력창이 밝아졌으므로 Show 버튼 색상도 어둡게 변경 -->
-                    <span class="position-absolute end-0 top-50 translate-middle-y me-3 text-dark"
-                          style="cursor: pointer; font-size: 0.75rem; font-weight: bold;">Show</span>
+                    <span id="togglePw"
+                          class="position-absolute end-0 top-50 translate-middle-y me-3"
+                          style="cursor: pointer; font-size: 0.75rem; font-weight: bold; color: #adb5bd;">Show</span>
                 </div>
 
                 <!-- 아이디 저장 & 자동 로그인 -->
@@ -69,9 +75,9 @@
 
             <!-- 하단 링크 -->
             <div class="text-center mb-3" style="font-size: 0.85rem;">
-                <a href="#" class="text-secondary text-decoration-none">아이디 찾기</a>
+                <a href="{{ url_for('auth.find_id') }}"" class="text-secondary text-decoration-none">아이디 찾기</a>
                 <span class="text-secondary mx-2">|</span>
-                <a href="#" class="text-secondary text-decoration-none">비밀번호 재설정</a>
+                <a href="{{ url_for('auth.reset_password') }}" class="text-secondary text-decoration-none">비밀번호 재설정</a>
                 <span class="text-secondary mx-2">|</span>
                 <a href="{{ url_for('auth.signup') }}" class="text-secondary text-decoration-none">회원가입</a>
             </div>
@@ -94,5 +100,7 @@
 </div>
 
 {% include 'footer.html' %}
+
+<script src="{{ url_for('static', filename='js/signup.js') }}"></script>
 </body>
 </html>

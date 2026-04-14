@@ -16,6 +16,7 @@ class User (db.Model):
     user_birth = db.Column(db.Date)  # 생년월일
     user_phone = db.Column(db.String(20), unique=True, nullable=False)  # 고유값, 필수값 설정 핸드폰 번호
     user_gender = db.Column(db.String(10))  # 성별 (M/F 등)
+    user_active = db.Column(db.Boolean, nullable=False,default=True)  # 활성화된 유저인지, 차단(블락된)유저인지 True는 로그인가능 False는 로그인 불가능
 
     # --- 관계 설정 (Relationship) ---
     # 다른 테이블에서 이 사용자를 참조할 때 편리하게 가져오기 위함입니다.
@@ -75,7 +76,7 @@ class Video(db.Model):
 
     # --- 외래 키 (Foreign Key) ---
     # 이 비디오를 등록한 관리자 ID
-    admin_unique_id = db.Column(db.BigInteger, db.ForeignKey('admin.admin_unique_id'), nullable=False)
+    admin_unique_id = db.Column(db.Integer, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
     # 2. 1:N 관계 (시청 기록, 리뷰, 좋아요, 찜하기 등)
     # cascade 설정 추가 (부모 삭제 시 자식 자동 삭제)
@@ -208,7 +209,7 @@ class Subscription(db.Model):
     payments = db.relationship('Payment', backref='subscription', lazy=True)
 
 # 배치 작업: 나중에 end_date가 현재 시간보다 과거인 데이터를 찾아 status를 'expired'로 바꾸는 간단한 스케줄러(예: Celery, Flask-APScheduler)를 연동하면 관리가 편해집니다.
-def __repr__(self):
+    def __repr__(self):
         return f'<Subscription User:{self.user_unique_id} Plan:{self.plan_id}>'
 
 
@@ -315,7 +316,7 @@ class Notice(db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     # --- 외래 키 (Foreign Key) ---
     # 작성한 관리자의 ID를 참조합니다.
-    admin_unique_id = db.Column(db.BigInteger, db.ForeignKey('admin.admin_unique_id'), nullable=False)
+    admin_unique_id = db.Column(db.Integer, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
     def __repr__(self):
         return f'<Notice {self.title}>'

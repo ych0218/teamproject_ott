@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sub.css') }}">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="wrap">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand text-white" href="{{ url_for('home.index')}}"><img class="logo"
+                        src="{{ url_for('static', filename='img/test_logo.png') }}" alt=""></a>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">드라마</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">예능</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">영화</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">애니</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">몰?루</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="검색" aria-label="Search" />
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <section>
+        <div class="col-8 vh-100 text-white">
+            <div class="header_box">
+                <div class="tv">
+
+                </div>
+                <div class="tv2">
+                    <div class="text_box">
+                        <div class="text_mini_box">
+                            <h2>제목-타이틀</h2>
+                            <div class="text_mini_box2">
+                                <p><img src="{{ url_for('static', filename='img/main_img/icon-star-full-v2.svg') }}"
+                                        alt="별">별점 • 장르 • 년도 • 방영시간</p>
+                                <div class="age_box">19+</div>
+                                <div class="display_box">HD</div>
+                            </div>
+                        </div>
+                        <div class="mini_box">
+                            <div class="button_box">
+                                <button><img
+                                        src="{{url_for('static', filename='img/main_img/icon-heart-outlined.svg')}}"
+                                        alt="찜"></button>&nbsp; &nbsp;
+                                <button><img src="{{url_for('static', filename='img/main_img/icon-share-v2.svg')}}"
+                                        alt="링크"></button>
+                            </div>
+                            <div class="button_box2"><button>재생하기</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info">
+                <div class="info_box">시놉시스</div>
+            </div>
+        </div>
+        <div class="col-4 p-3 mb-2 bg-success text-white">
+            <div class="tab">
+                <div class="tab-menu">
+                    <button class="tab-link active" onclick="openTab(event, 'tab1')">리뷰</button>
+                    <button class="tab-link" onclick="openTab(event, 'tab2')">비슷한 콘텐츠</button>
+                </div>
+
+                <div id="tab1" class="tab-content" style="display:block;">
+                    <h3>첫 번째 탭</h3>
+                    <p>여기는 첫 번째 메뉴의 내용이 들어갑니다.</p>
+                </div>
+
+                <div id="tab2" class="tab-content">
+                    <h3>두 번째 탭</h3>
+                    <p>두 번째 메뉴의 상세 설명입니다.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    </section>
+
+    <script>
+        function openTab(evt, tabName) {
+            // 1. 모든 tab-content 숨기기
+            var tabContent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+
+            // 2. 모든 tab-link에서 "active" 클래스 제거
+            var tabLinks = document.getElementsByClassName("tab-link");
+            for (var i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+
+            // 3. 현재 클릭한 탭 보이게 하고 active 클래스 추가
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+
+</html>

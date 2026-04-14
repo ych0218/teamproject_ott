@@ -18,7 +18,8 @@ def create_app():
 
     #블루프린트 목록 이쪽으로 등록해주세요
 
-    from .views import mypage_views,main_views,policy_views,auth_views, admin_views
+    from .views import mypage_views,main_views,policy_views,auth_views, admin_views,sub_views
+
 
 
     app.register_blueprint(mypage_views.bp)
@@ -26,6 +27,7 @@ def create_app():
     app.register_blueprint(policy_views.bp)
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(admin_views.bp)
+    app.register_blueprint(sub_views.bp)
 
     @app.route('/')
     def index():
