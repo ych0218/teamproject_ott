@@ -242,6 +242,77 @@ section {
     background-color: #3b4048;
 }
 
+#toast, #toast1 {
+    visibility: hidden;
+    width: 13%;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px;
+    position: fixed;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    /* 정확한 중앙 정렬 */
+    z-index: 1000;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+
+#toast img{
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+#toast1 img {
+    width: 24px;
+    margin: 0 5px 2px 0;
+}
+
+.wish-btn img { width: 24px; transition: transform 0.2s; }
+        .wish-btn:active img { transform: scale(0.8); }
+
+#toast.show, #toast1.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#toast1.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+
+
+@keyframes fadein {
+    from {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    to {
+        bottom: 30px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeout {
+    from {
+        bottom: 30px;
+        opacity: 1;
+    }
+
+    to {
+        bottom: 0;
+        opacity: 0;
+    }
+}
+
+
 .tv2 button:hover {
     transition: 0.3s;
     filter: brightness(0.8);
@@ -280,6 +351,10 @@ section {
     margin-top: 30px;
     margin-left: 33px;
 }
+
+.tab-content { display: none; }
+
+.tab-content.active { display: block ;}
 
 /* 마우스 올렸을 때와 활성화되었을 때 색상 */
 .tab-menu button:hover {
@@ -342,6 +417,8 @@ section {
     position: relative;
     width: 55%;
 }
+
+
 
 .tab-content .dropbtn {
     width: 100%;
@@ -411,3 +488,32 @@ section {
     display: block;
 }
 
+/* 리뷰 탭 */
+
+#tab2 .review1Container {
+    width: 100%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    background-color: yellowgreen;
+}
+
+.star {
+    display: inline-block;
+    width: 36px; height: 36px;
+    background-color: #555; /* 기본 회색 */
+    -webkit-mask-image: url('../img/main_img/icon-star-full.svg');
+    mask-image: url('../img/main_img/icon-star-full.svg');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+/* 꽉 찬 별 */
+.star.fill {
+    background-color: #dab600;
+}
+
+/* 0.5점 별 (왼쪽은 노란색, 오른쪽은 회색) */
+.star.half {
+    background: linear-gradient(90deg, #dab600 50%, #555 50%);
+}
