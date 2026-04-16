@@ -1,11 +1,13 @@
 from flask import Flask, redirect, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 import config
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager() # 추가됨: 이 줄이 있어야 빨간 줄이 사라집니다.
 
 def create_app():
     app=Flask(__name__)
@@ -15,6 +17,10 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     from . import models
+
+    # 3. LoginManager 연결
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'  # 로그인 안됐을 때 이동할 뷰 (선택 사항)
 
     #블루프린트 목록 이쪽으로 등록해주세요
 
@@ -28,6 +34,10 @@ def create_app():
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(admin_views.bp)
     app.register_blueprint(sub_views.bp)
+
+    # 필터 등록
+    from .filters import format_datetime
+    app.jinja_env.filters['datetime'] = format_datetime
 
     @app.route('/')
     def index():

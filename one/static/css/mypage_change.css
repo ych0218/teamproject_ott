@@ -1,0 +1,149 @@
+css
+/* [기존 마이페이지 기본 스타일 유지] */
+.mypage-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 1.5%;
+    box-sizing: border-box;
+}
+
+.top-action-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 40px; /* 폼과의 간격을 위해 조금 더 키움 */
+    width: 100%;
+}
+
+/* [기존 버튼 스타일] */
+.action-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-left: 8px;
+    background-color: #2a2a2a;
+    color: #efefef;
+    border-radius: 4px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+/* ★ 1. 회원정보 수정 버튼 변형 효과 (이미지 요청 사항) ★ */
+.action-btn.active {
+    background-color: #1a1a1a;
+    color: #ff153c !important; /* 티빙 레드 */
+    border: 1px solid #ff153c; /* 레드 테두리 */
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255, 21, 60, 0.3); /* 은은한 레드 광채 */
+}
+.action-btn.primary {
+    background-color: #ff153c; /* 티빙 레드 */
+    font-weight: bold;
+}
+
+
+/* [회원정보 수정 폼 전용 스타일] */
+.change-info-section {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 100px;
+}
+
+.change-card {
+    width: 100%;
+    max-width: 500px;
+    background-color: #1f1f1f; /* 프로필 카드와 동일한 색상 */
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.section-title {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.edit-form .input-group {
+    margin-bottom: 25px;
+}
+
+.edit-form label {
+    display: block;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.edit-form input {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #2a2a2a; /* 기존 버튼 배경색과 통일 */
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 15px;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.2s;
+}
+
+.edit-form input:focus {
+    border-color: #ff153c; /* 포커스 시 레드 라인 */
+}
+
+/* 읽기 전용 입력창 (이메일 등) */
+.readonly-input {
+    background-color: #1a1a1a !important;
+    color: #555 !important;
+    cursor: not-allowed;
+    border: 1px solid #222 !important;
+}
+
+.edit-form small {
+    display: block;
+    color: #666;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+/* 하단 버튼 영역 */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 40px;
+}
+
+.save-btn {
+    flex: 2;
+    background-color: #ff153c; /* 티빙 레드 */
+    color: #fff;
+    border: none;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #e61236;
+}
+
+.cancel-btn {
+    flex: 1;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 16px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.cancel-btn:hover {
+    background-color: #444;
+}

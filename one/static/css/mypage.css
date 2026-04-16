@@ -16,7 +16,7 @@
 .top-action-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 20px;
+    margin-bottom: 40px; /* 폼과의 간격을 위해 조금 더 키움 */
     width: 100%;
 }
 
@@ -30,6 +30,7 @@
     font-size: 13px;
     text-decoration: none;
     transition: 0.3s;
+    border: 1px solid transparent;
 }
 
 .action-btn.primary {

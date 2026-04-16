@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}Title{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v7.0.0/css/all.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
@@ -13,46 +13,64 @@
 </head>
 
 <body>
-    <div id="wrap">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse"
+<div id="wrap">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false"
                     aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <a class="navbar-brand text-white" href="{{ url_for('home.index')}}"><img class = "logo" src="{{ url_for('static', filename='img/test_logo.png') }}" alt=""></a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">드라마</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">예능</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">영화</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">애니</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="#">몰?루</a>
-                        </li>
-                    </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="검색" aria-label="Search" />
-                        <button class="btn btn-outline-secondary" type="submit">Search</button>
-                    </form>
-                    <a href="{{ url_for('mypage.mypage') }}" class="text-white my_page d-block mt-3 mt-lg-0 ms-lg-3">마이페이지</a>
-                </div>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand text-white" href="{{ url_for('home.index')}}"><img class="logo"
+                                                                                      src="{{ url_for('static', filename='img/test_logo.png') }}"
+                                                                                      alt=""></a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">드라마</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">예능</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">영화</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">애니</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">몰?루</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <div class="input-group search-box">
+                        <input class="form-control search-input" type="search" placeholder="검색" aria-label="Search">
+                        <button class="btn search-btn" type="submit">Search</button>
+                    </div>
+                </form>
+                <a href="{{ url_for('mypage.mypage') }}"
+                   class="action-btn">
+                    <span>마이페이지<span>
+                </a>
+                {% if session.get('user') %}
+                <a href="{{ url_for('auth.logout') }}"
+                   class="action-btn primary ms-3 mt-3 mt-lg-0">
+                   <span>로그아웃<span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                   class="btn btn-danger ms-3 mt-3 mt-lg-0">
+                    <span>로그인<span>
+                </a>
+                {% endif %}
             </div>
-        </nav>
+        </div>
+    </nav>
 
-        {% block content %}
+    </div>
+    {% block content %}
 
         {% endblock %}
-    </div>
     <footer>
         <div class="container-fluid">
             <div class="container-fluid footer_top">
@@ -94,13 +112,43 @@
                 </ul>
             </div>
         </div>
-    </footer>
+        <div class="container-fluid footer_middle">
+            <ul class="list">
+                <li class="footer_list">대표이사 : 최주희</li>
+                <li class="footer_list">사업자등록번호 : 188-88-01893</li>
+                <li>통신판매신고번호 : 2020-서울마포-3641호</li>
+            </ul>
+            <ul class="list">
+                <li class="footer_list">사업장 : 서울특별시 마포구 상암산로 34, DMC디지털큐브 15층(상암동)</li>
+                <li>호스팅사업자 : 아마존웹서비시즈코리아 유한책임회사</li>
+            </ul>
+            <ul class="list">
+                <li class="footer_list">고객센터 (평일9시~18시/공휴일 휴무)</li>
+                <li class="footer_list">1:1게시판 문의</li>
+                <li class="footer_list">대표메일 : carrotkang@gmail.com</li>
+                <li>유료 ARS : 1670-1525 (음성/메시지안내)</li>
+            </ul>
+            <ul class="list">
+                <li class="footer_list">ENM 시청자 상담실 (편성 문의 및 시청자 의견) : 080-080-0780</li>
+                <li>Mnet 고객센터(방송편성문의) : 1855-1631</li>
+            </ul>
+        </div>
+        <div class="container-fluid footer_bottom">
+            <ul class="list">
+                <li><i class="fa-brands fa-facebook-f"></i></li>
+                <li><i class="fa-brands fa-instagram"></i></li>
+                <li><i class="fa-brands fa-x-twitter"></i></li>
+                <li><i class="fa-brands fa-youtube"></i></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    {% block script %}
-    {% endblock %}
+{% block script %}
+{% endblock %}
 </body>
 
 </html>

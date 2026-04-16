@@ -25,15 +25,21 @@
     <main class="admin_content">
         <h1>회원 관리</h1>
 
+        <form method="get" action="{{ url_for('admin.member_list') }}" class="search_form">
+            <input type="text" name="keyword" value="{{ keyword }}" placeholder="이름, 이메일, 전화번호 검색">
+            <button type="submit" class="search_btn">검색</button>
+            <a href="{{ url_for('admin.member_list') }}" class="reset_btn">전체보기</a>
+        </form>
+
         <table class="admin_table">
             <thead>
             <tr>
                 <th>번호</th>
-                <th>아이디</th>
                 <th>이름</th>
                 <th>이메일</th>
                 <th>전화번호</th>
                 <th>성별</th>
+                <th>로그인방식</th>
                 <th>상태</th>
                 <th>상태변경</th>
             </tr>
@@ -42,11 +48,19 @@
             {% for member in member_list %}
             <tr>
                 <td>{{ member.user_unique_id }}</td>
-                <td>{{ member.user_id }}</td>
-                <td>{{ member.user_name }}</td>
-                <td>{{ member.user_email }}</td>
-                <td>{{ member.user_phone }}</td>
-                <td>{{ member.user_gender }}</td>
+                <td>{{ member.user_name or '-' }}</td>
+                <td>{{ member.user_email or '-' }}</td>
+                <td>{{ member.user_phone or '-' }}</td>
+                <td>{{ member.user_gender or '-' }}</td>
+                <td>
+                    {% if member.signup_method == 'email' %}
+                    이메일
+                    {% elif member.signup_method == 'kakao' %}
+                    카카오
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
                 <td>
                     {% if member.user_active %}
                     <span class="status_active">활성</span>
@@ -55,7 +69,8 @@
                     {% endif %}
                 </td>
                 <td>
-                    <form action="{{ url_for('admin.member_toggle', user_id=member.user_unique_id) }}" method="post"
+                    <form action="{{ url_for('admin.member_toggle', user_id=member.user_unique_id) }}"
+                          method="post"
                           onsubmit="return confirm('상태를 변경하시겠습니까?');">
                         {% if member.user_active %}
                         <button type="submit" class="btn delete_btn">비활성화</button>
@@ -83,11 +98,11 @@
         if (urlParams.get("changed") === "1") {
             alert("상태가 변경되었습니다.");
 
-            // ?changed=1 제거
             const cleanUrl = window.location.origin + window.location.pathname;
             window.history.replaceState({}, document.title, cleanUrl);
         }
     });
 </script>
+
 </body>
 </html>

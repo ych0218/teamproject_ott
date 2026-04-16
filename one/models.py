@@ -1,6 +1,6 @@
 from one import db
 from datetime import datetime, timezone
-
+from . import login_manager
 
 # https://blog.naver.com/red0808/223888577210
 class User (db.Model):
@@ -24,6 +24,8 @@ class User (db.Model):
     # [추가] 2. 카카오 연동 여부를 확인하는 고유 식별자
     # 이 값이 NULL이면 연동 안됨, 값이 있으면 연동됨!
     kakao_id = db.Column(db.String(100), unique=True, nullable=True)
+    # [추가] 3. 네이버 연동
+    naver_id = db.Column(db.String(100), unique=True, nullable=True)
     user_active = db.Column(db.Boolean, nullable=False,default=True)  # 활성화된 유저인지, 차단(블락된)유저인지 True는 로그인가능 False는 로그인 불가능
 
     # --- 관계 설정 (Relationship) ---
@@ -333,3 +335,7 @@ class Admin(db.Model):
 
     def __repr__(self):
         return f'<Admin {self.admin_id} ({self.admin_name})>'
+
+@login_manager.user_loader
+def load_user(user_unique_id ):
+    return User.query.get(int(user_unique_id ))
