@@ -111,3 +111,60 @@ a {
 .my_page:hover{
 font-size:20px
 }
+
+.action-btn {
+    height: 38px;
+    line-height: 22px; /* 텍스트 가운데 정렬 */
+}
+
+
+.action-btn span {
+    display: inline-block;
+    transition: transform 0.1s ease;
+}
+
+.action-btn:hover span {
+    transform: scale(1.03);
+}
+
+.search-input,
+.search-btn {
+    height: 38px;
+}
+
+.search-box {
+    max-width: 320px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #ff4d4f;
+    background-color: #000;
+}
+
+.search-input {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+}
+
+.search-input::placeholder {
+    color: #aaa;
+}
+
+.search-input:focus {
+    background-color: #333;
+    box-shadow: none;
+    color: white;
+}
+
+.search-btn {
+    background-color: transparent;
+    border: none;
+    color: #ff4d4f;                  /* 빨간 글씨 */
+    padding: 0 16px;
+}
+
+.search-btn:hover {
+    background-color: #ff4d4f;       /* hover 시 채워짐 */
+    color: white;
+}

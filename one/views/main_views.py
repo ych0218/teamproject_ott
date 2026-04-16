@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template, url_for
 
 bp=Blueprint('home',__name__,url_prefix='/')
+
 @bp.route('/')
 def index():
     # 127.0.0.1:5000/ 접속 시 바로 templates/main/home.html을 보여줍니다.

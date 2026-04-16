@@ -16,6 +16,7 @@ NAVER_REDIRECT_URI = "http://127.0.0.1:5000/auth/naver/callback"
 KAKAO_CLIENT_ID = "84dc069e3a8f7c1f8b250fd44aee633b"
 REDIRECT_URI = "http://127.0.0.1:5000/auth/kakao/callback"
 
+
 @bp.route('/auth/naver/login')
 def naver_login():
     state = "1234"  # 일단 고정값 OK
@@ -28,6 +29,7 @@ def naver_login():
     })
 
     return redirect(url)
+
 
 @bp.route('/auth/naver/callback')
 def naver_callback():
@@ -75,10 +77,6 @@ def naver_callback():
     return redirect(url_for('home.home'))
 
 
-
-
-
-
 @bp.route('/auth/kakao/login')
 def kakao_login():
     url = f"https://kauth.kakao.com/oauth/authorize?client_id={KAKAO_CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=account_email"
@@ -100,7 +98,7 @@ def kakao_callback():
     token_res = requests.post(token_url, data=data)
     token_json = token_res.json()
 
-    print("토큰 응답:", token_json)  # 🔥 추가
+    print("토큰 응답:", token_json)
 
     access_token = token_json.get("access_token")
 
@@ -113,9 +111,8 @@ def kakao_callback():
     user_res = requests.get(user_url, headers=headers)
 
     user_json = user_res.json()
-    print(user_json)  # 🔥 이거 추가
+    print(user_json)
 
-    # 👇 여기 추가
     email = user_json.get("kakao_account", {}).get("email")
 
     if not email:
@@ -131,7 +128,7 @@ def kakao_callback():
         user = User(
             user_email=email,
             user_password="",
-            user_name=email  # ⭐ 반드시 있어야 함
+            user_name=email
         )
         db.session.add(user)
         db.session.commit()
@@ -161,32 +158,23 @@ def signup():
 
     if form.validate_on_submit():
         try:
-            # 데이터 가져오기
-            email = form.email.data
-            password = form.password1.data
-            name = form.name.data
-            phone = form.phone.data
-            gender = form.gender.data
-
-            year = form.birth_year.data
-            month = form.birth_month.data
-            day = form.birth_day.data
-
             # 생년월일 생성
-            birth = None
-            if year and month and day:
-                birth = datetime(int(year), int(month), int(day))
+            birth = datetime(
+                int(form.birth_year.data),
+                int(form.birth_month.data),
+                int(form.birth_day.data)
+            )
 
             # 비밀번호 암호화
-            hashed_pw = generate_password_hash(password)
+            hashed_pw = generate_password_hash(form.password1.data)
 
             # 유저 생성
             user = User(
+                user_email=form.email.data,
                 user_password=hashed_pw,
-                user_email=email,
-                user_name=name,
-                user_phone=phone,
-                user_gender=gender,
+                user_name=form.name.data,
+                user_phone=form.phone.data,
+                user_gender=form.gender.data,
                 user_birth=birth
             )
 
@@ -200,8 +188,9 @@ def signup():
         except Exception as e:
             db.session.rollback()
             print(e)
-            flash("회원가입 실패")
+            flash("서버 오류가 발생했습니다.")
 
+        # try 밖에 있어야 함
     return render_template('auth/signup.html', form=form)
 
 
@@ -223,12 +212,11 @@ def login():
 
             session['user'] = user.user_unique_id
             flash("로그인 성공!")
-            return redirect(url_for('home.index'))
+            return redirect(url_for('home.main'))
         else:
             flash("이메일 또는 비밀번호가 틀렸습니다.")
 
     return render_template('auth/login.html', form=form)
-
 
 
 @bp.route('/logout')
@@ -242,7 +230,8 @@ def logout():
         )
 
     session.clear()
-    return redirect(url_for('auth.login'))
+    flash("로그아웃 되었습니다.")
+    return redirect(url_for('home.index'))
 
 
 @bp.route('/adult-check', methods=['GET', 'POST'])
@@ -282,6 +271,7 @@ def adult_required(f):
 def adult_page():
     return render_template('adult_page.html')
 
+
 @bp.route('/find-id', methods=['GET', 'POST'])
 def find_id():
     form = FindIdForm()
@@ -298,6 +288,7 @@ def find_id():
             flash("일치하는 계정이 없습니다.")
 
     return render_template('auth/find_id.html', form=form)
+
 
 @bp.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():
