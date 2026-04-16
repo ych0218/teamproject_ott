@@ -25,32 +25,61 @@
     <main class="admin_content">
         <h1>콘텐츠 관리</h1>
 
+        <div class="content_top_bar">
+            <form method="get" action="{{ url_for('admin.content_list') }}" class="content_search_form">
+                <input type="text"
+                       name="keyword"
+                       placeholder="제목, 감독, 출연진 검색"
+                       value="{{ keyword or '' }}">
+
+                <button type="submit" class="content_search_btn">검색</button>
+
+                <a href="{{ url_for('admin.content_list') }}" class="reset_btn">전체보기</a>
+            </form>
+
+            <a href="{{ url_for('admin.content_create') }}" class="content_add_btn">
+                콘텐츠 등록
+            </a>
+        </div>
+
         <table class="admin_table">
             <thead>
-                <tr>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>감독</th>
-                    <th>출연진</th>
-                    <th>등급</th>
-                    <th>등록일</th>
-                </tr>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>감독</th>
+                <th>출연진</th>
+                <th>등급</th>
+                <th>등록일</th>
+                <th>관리</th>
+            </tr>
             </thead>
             <tbody>
-                {% for content in content_list %}
-                <tr>
-                    <td>{{ content.video_unique_id }}</td>
-                    <td>{{ content.video_title }}</td>
-                    <td>{{ content.video_director }}</td>
-                    <td>{{ content.video_actor }}</td>
-                    <td>{{ content.video_age_limit }}</td>
-                    <td>{{ content.video_date }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="6">등록된 콘텐츠가 없습니다.</td>
-                </tr>
-                {% endfor %}
+            {% for content in content_list %}
+            <tr>
+                <td>{{ content.video_unique_id }}</td>
+                <td>{{ content.video_title }}</td>
+                <td>{{ content.video_director }}</td>
+                <td>{{ content.video_actor }}</td>
+                <td>{{ content.video_age_limit }}</td>
+                <td>{{ content.video_date if content.video_date else '-' }}</td>
+                <td>
+                    <a href="{{ url_for('admin.content_edit', video_id=content.video_unique_id) }}"
+                       class="content_action_btn content_edit_btn">수정</a>
+
+                    <form action="{{ url_for('admin.content_delete', video_id=content.video_unique_id) }}"
+                          method="post"
+                          class="content_delete_form"
+                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                        <button type="submit" class="content_action_btn content_delete_btn">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">등록된 콘텐츠가 없습니다.</td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
     </main>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if mode == 'create' %}콘텐츠 등록{% else %}콘텐츠 수정{% endif %}
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+
+<div class="admin_wrap">
+
+    <aside class="admin_sidebar">
+        <h2>
+            <a href="{{ url_for('admin.admin_main') }}" class="admin_title">관리자</a>
+        </h2>
+        <ul>
+            <li><a href="{{ url_for('admin.member_list') }}">회원 관리</a></li>
+            <li><a href="{{ url_for('admin.content_list') }}" class="active">콘텐츠 관리</a></li>
+            <li><a href="{{ url_for('admin.inquiry_list') }}">문의 관리</a></li>
+            <li><a href="{{ url_for('admin.review_list') }}">리뷰 관리</a></li>
+        </ul>
+    </aside>
+
+    <main class="admin_content">
+        <h1>
+            {% if mode == 'create' %}콘텐츠 등록{% else %}콘텐츠 수정{% endif %}
+        </h1>
+
+        <form method="post" class="content_form">
+
+            <div class="content_form_group">
+                <label for="video_title">제목</label>
+                <input type="text" id="video_title" name="video_title"
+                       value="{{ content.video_title if content else '' }}" required>
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_director">감독</label>
+                <input type="text" id="video_director" name="video_director"
+                       value="{{ content.video_director if content else '' }}">
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_actor">출연진</label>
+                <input type="text" id="video_actor" name="video_actor"
+                       value="{{ content.video_actor if content else '' }}">
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_age_limit">등급</label>
+                <input type="text" id="video_age_limit" name="video_age_limit"
+                       value="{{ content.video_age_limit if content else '' }}"
+                       placeholder="예: 전체관람가 / 12세 / 15세 / 19세">
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_date">등록일</label>
+                <input type="date" id="video_date" name="video_date"
+                       value="{{ content.video_date.strftime('%Y-%m-%d') if content and content.video_date else '' }}">
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_url">영상 URL</label>
+                <input type="text" id="video_url" name="video_url"
+                       value="{{ content.video_url if content else '' }}" required>
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_thumbnail">썸네일 URL</label>
+                <input type="text" id="video_thumbnail" name="video_thumbnail"
+                       value="{{ content.video_thumbnail if content else '' }}" required>
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_synopsis">줄거리</label>
+                <textarea id="video_synopsis" name="video_synopsis" rows="5">{{ content.video_synopsis if content else '' }}</textarea>
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_genres">장르</label>
+                <input type="text" id="video_genres" name="video_genres"
+                       value="{{ content.video_genres if content else '' }}"
+                       placeholder="예: 액션, 스릴러">
+            </div>
+
+            <div class="content_form_group">
+                <label for="video_is_movie">유형</label>
+                <select id="video_is_movie" name="video_is_movie">
+                    <option value="True" {% if not content or content.video_is_movie %}selected{% endif %}>영화</option>
+                    <option value="False" {% if content and not content.video_is_movie %}selected{% endif %}>시리즈
+                    </option>
+                </select>
+            </div>
+
+            <div class="content_form_actions">
+                <button type="submit" class="content_save_btn">
+                    {% if mode == 'create' %}등록{% else %}수정{% endif %}
+                </button>
+                <a href="{{ url_for('admin.content_list') }}" class="content_cancel_btn">취소</a>
+            </div>
+
+        </form>
+    </main>
+
+</div>
+
+</body>
+</html>

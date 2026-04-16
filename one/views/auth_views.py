@@ -16,9 +16,10 @@ NAVER_REDIRECT_URI = "http://127.0.0.1:5000/auth/naver/callback"
 KAKAO_CLIENT_ID = "84dc069e3a8f7c1f8b250fd44aee633b"
 REDIRECT_URI = "http://127.0.0.1:5000/auth/kakao/callback"
 
+
 @bp.route('/auth/naver/login')
 def naver_login():
-    state = "1234"  # 일단 고정값 OK
+    state = "1234"
 
     url = "https://nid.naver.com/oauth2.0/authorize?" + urllib.parse.urlencode({
         "response_type": "code",
@@ -29,12 +30,12 @@ def naver_login():
 
     return redirect(url)
 
+
 @bp.route('/auth/naver/callback')
 def naver_callback():
     code = request.args.get('code')
     state = request.args.get('state')
 
-    # 토큰 요청
     token_res = requests.get("https://nid.naver.com/oauth2.0/token", params={
         "grant_type": "authorization_code",
         "client_id": NAVER_CLIENT_ID,
@@ -45,7 +46,6 @@ def naver_callback():
 
     access_token = token_res.json().get("access_token")
 
-    # 사용자 정보 요청
     user_res = requests.get(
         "https://openapi.naver.com/v1/nid/me",
         headers={"Authorization": f"Bearer {access_token}"}
@@ -54,7 +54,9 @@ def naver_callback():
     user_json = user_res.json()
     print("네이버 유저:", user_json)
 
-    email = user_json.get("response", {}).get("email")
+    response = user_json.get("response", {})
+    email = response.get("email")
+    naver_id = response.get("id")
 
     if not email:
         return "이메일 못 받아옴"
@@ -65,18 +67,17 @@ def naver_callback():
         user = User(
             user_email=email,
             user_password="",
-            user_name=email
+            user_name=email,
+            signup_method='naver'
         )
         db.session.add(user)
-        db.session.commit()
+    else:
+        user.signup_method = 'naver'
+
+    db.session.commit()
 
     session['user'] = user.user_unique_id
-
     return redirect(url_for('home.home'))
-
-
-
-
 
 
 @bp.route('/auth/kakao/login')
@@ -89,7 +90,6 @@ def kakao_login():
 def kakao_callback():
     code = request.args.get('code')
 
-    # 토큰 요청
     token_url = "https://kauth.kakao.com/oauth/token"
     data = {
         "grant_type": "authorization_code",
@@ -100,23 +100,22 @@ def kakao_callback():
     token_res = requests.post(token_url, data=data)
     token_json = token_res.json()
 
-    print("토큰 응답:", token_json)  # 🔥 추가
+    print("토큰 응답:", token_json)
 
     access_token = token_json.get("access_token")
 
     if not access_token:
         return "토큰 못 받아옴"
 
-    # 사용자 정보 요청
     user_url = "https://kapi.kakao.com/v2/user/me"
     headers = {"Authorization": f"Bearer {access_token}"}
     user_res = requests.get(user_url, headers=headers)
 
     user_json = user_res.json()
-    print(user_json)  # 🔥 이거 추가
+    print(user_json)
 
-    # 👇 여기 추가
     email = user_json.get("kakao_account", {}).get("email")
+    kakao_id = str(user_json.get("id"))
 
     if not email:
         print("❌ 이메일 못 받아옴")
@@ -124,23 +123,29 @@ def kakao_callback():
 
     print("카카오 이메일:", email)
 
-    # 기존 로직
     user = User.query.filter_by(user_email=email).first()
 
     if not user:
         user = User(
             user_email=email,
             user_password="",
-            user_name=email  # ⭐ 반드시 있어야 함
+            user_name=email,
+            signup_method='kakao',
+            kakao_id=kakao_id
         )
         db.session.add(user)
-        db.session.commit()
+    else:
+        user.signup_method = 'kakao'
+        user.kakao_id = kakao_id
+
+    db.session.commit()
 
     if not user.user_active:
         flash("이 계정은 이용이 제한되었습니다.")
         return redirect(url_for('auth.login'))
 
     session['user'] = user.user_unique_id
+    session['kakao_token'] = access_token
 
     return redirect(url_for('home.index'))
 
@@ -161,7 +166,6 @@ def signup():
 
     if form.validate_on_submit():
         try:
-            # 데이터 가져오기
             email = form.email.data
             password = form.password1.data
             name = form.name.data
@@ -172,25 +176,22 @@ def signup():
             month = form.birth_month.data
             day = form.birth_day.data
 
-            # 생년월일 생성
             birth = None
             if year and month and day:
                 birth = datetime(int(year), int(month), int(day))
 
-            # 비밀번호 암호화
             hashed_pw = generate_password_hash(password)
 
-            # 유저 생성
             user = User(
                 user_password=hashed_pw,
                 user_email=email,
                 user_name=name,
                 user_phone=phone,
                 user_gender=gender,
-                user_birth=birth
+                user_birth=birth,
+                signup_method='email'
             )
 
-            # DB 저장
             db.session.add(user)
             db.session.commit()
 
@@ -230,7 +231,6 @@ def login():
     return render_template('auth/login.html', form=form)
 
 
-
 @bp.route('/logout')
 def logout():
     access_token = session.get('kakao_token')
@@ -260,7 +260,7 @@ def adult_check():
 
             if age >= 19:
                 session['is_adult'] = True
-                return redirect(url_for('main.index'))  # 원하는 페이지
+                return redirect(url_for('main.index'))
             else:
                 flash('성인만 이용 가능합니다.')
 
@@ -282,6 +282,7 @@ def adult_required(f):
 def adult_page():
     return render_template('adult_page.html')
 
+
 @bp.route('/find-id', methods=['GET', 'POST'])
 def find_id():
     form = FindIdForm()
@@ -298,6 +299,7 @@ def find_id():
             flash("일치하는 계정이 없습니다.")
 
     return render_template('auth/find_id.html', form=form)
+
 
 @bp.route('/reset-password', methods=['GET', 'POST'])
 def reset_password():

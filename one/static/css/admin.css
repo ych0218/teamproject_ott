@@ -160,7 +160,8 @@ body {
 
 /* 비활성화 버튼 */
 .delete_btn {
-    background-color: #ff3b3b;
+    background-color: red;
+    font-weight: bold;
 }
 
 .delete_btn:hover {
@@ -176,4 +177,233 @@ body {
 .restore_btn:hover {
     background-color: #66bb6a;
     transform: scale(1.05);
+}
+
+/* 검색창 */
+.search_form {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.search_form input {
+    width: 320px;
+    padding: 10px 14px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #222;
+    color: white;
+    outline: none;
+}
+
+.search_form input::placeholder {
+    color: #aaa;
+}
+
+.search_btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.search_btn:hover {
+    background-color: #ff4444;
+}
+
+.reset_btn {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.reset_btn:hover {
+    background-color: #444;
+}
+
+/* ================= 콘텐츠 관리 전용 추가 ================= */
+
+.content_top_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.content_search_form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.content_search_form input {
+    width: 320px;
+    padding: 12px 14px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #222;
+    color: white;
+    outline: none;
+}
+
+.content_search_form input::placeholder {
+    color: #aaa;
+}
+
+.content_search_btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.content_search_btn:hover {
+    background-color: #ff4444;
+}
+
+.content_add_btn {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.content_add_btn:hover {
+    background-color: #ff4444;
+}
+
+.content_action_btn {
+    display: inline-block;
+    width: 58px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    vertical-align: middle;
+    padding: 0;
+}
+
+.content_edit_btn {
+    background-color: #444;
+    font-weight: bold;
+}
+
+.content_edit_btn:hover {
+    background-color: #555;
+}
+
+.content_delete_btn {
+    background-color: red;
+    font-weight: bold;
+}
+
+.content_delete_btn:hover {
+    background-color: #ff5c5c;
+}
+
+.content_delete_form {
+    display: inline-block;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.content_form {
+    max-width: 700px;
+    margin-top: 20px;
+    background-color: #1c1c1c;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.content_form_group {
+    margin-bottom: 15px;
+}
+
+.content_form_group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.content_form_group input,
+.content_form_group textarea,
+.content_form_group select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #222;
+    color: white;
+    outline: none;
+}
+
+.content_form_group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.content_form_actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.content_save_btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.content_save_btn:hover {
+    background-color: #ff4444;
+}
+
+.content_cancel_btn {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.content_cancel_btn:hover {
+    background-color: #444;
+}
+
+/* date 아이콘 색상 변경 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
 }
