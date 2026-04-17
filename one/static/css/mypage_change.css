@@ -147,3 +147,18 @@ css
 .cancel-btn:hover {
     background-color: #444;
 }
+
+.save-btn:disabled {
+    background-color: #555 !important; /* 회색으로 변경 */
+    cursor: not-allowed;               /* 마우스 커서 금지 모양 */
+    opacity: 0.6;                      /* 살짝 투명하게 */
+}
+
+.custom-date-input {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 6px;
+    color-scheme: dark; /* 브라우저 기본 달력 팝업을 다크모드로 변경 */
+}

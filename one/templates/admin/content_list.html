@@ -26,15 +26,32 @@
         <h1>콘텐츠 관리</h1>
 
         <div class="content_top_bar">
-            <form method="get" action="{{ url_for('admin.content_list') }}" class="content_search_form">
+            <form method="get" action="{{ url_for('admin.content_list') }}" class="search_form">
+
+                <select name="search_type">
+                    <option value="all" {% if search_type==
+                    'all' %}selected{% endif %}>전체</option>
+                    <option value="video_unique_id" {% if search_type==
+                    'video_unique_id' %}selected{% endif %}>번호</option>
+                    <option value="video_title" {% if search_type==
+                    'video_title' %}selected{% endif %}>제목</option>
+                    <option value="video_director" {% if search_type==
+                    'video_director' %}selected{% endif %}>감독</option>
+                    <option value="video_actor" {% if search_type==
+                    'video_actor' %}selected{% endif %}>출연진</option>
+                    <option value="video_age_limit" {% if search_type==
+                    'video_age_limit' %}selected{% endif %}>등급</option>
+                </select>
+
                 <input type="text"
                        name="keyword"
-                       placeholder="제목, 감독, 출연진 검색"
-                       value="{{ keyword or '' }}">
+                       value="{{ keyword }}"
+                       placeholder="검색어 입력">
 
-                <button type="submit" class="content_search_btn">검색</button>
+                <button type="submit" class="search_btn">검색</button>
 
                 <a href="{{ url_for('admin.content_list') }}" class="reset_btn">전체보기</a>
+
             </form>
 
             <a href="{{ url_for('admin.content_create') }}" class="content_add_btn">

@@ -1,0 +1,118 @@
+.detail_support_wrapper {
+    width: 100%;
+    max-width: 1400px; /* 헤더/푸터 가이드라인에 맞춰 확장 */
+    margin: 0 auto;
+    padding: 60px 2%; /* 좌우 여백 살짝 부여 */
+    box-sizing: border-box;
+}
+
+/* 상세 카드 박스: 넓게 확장 */
+.detail_support_card {
+    width: 100%;
+    background-color: #1f1f1f;
+    padding: 50px 60px; /* 내부 여백을 더 넓게 설정 */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+}
+
+/* 헤더 영역 */
+.detail_support_header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 30px;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.detail_support_category {
+    color: #ff153c;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.detail_support_title {
+    font-size: 36px; /* 넓어진 만큼 제목 크기도 키움 */
+    color: #fff;
+    margin: 10px 0;
+    font-weight: 700;
+}
+
+.detail_support_date {
+    color: #666;
+    font-size: 14px;
+    text-align: right;
+    margin-top: 10px;
+}
+
+/* 본문 내용: 가로 폭에 맞춰 가독성 확보 */
+.detail_support_body {
+    color: #ccc;
+    font-size: 17px;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    min-height: 300px;
+    padding: 10px 0;
+}
+
+/* 첨부 이미지: 너무 커지지 않게 제한하며 중앙 정렬 */
+.detail_support_img_box {
+    margin-top: 40px;
+    text-align: left; /* 텍스트와 흐름 일치 */
+}
+
+.detail_support_img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+/* 답변 영역: 넓은 폭에 맞춰 강조 */
+.detail_support_answer_section {
+    margin-top: 60px;
+    padding: 40px;
+    background-color: #161616;
+    border-radius: 8px;
+    border-left: 6px solid #ff153c;
+}
+
+.detail_support_answer_label {
+    font-size: 18px;
+    color: #ff153c;
+    font-weight: bold;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.detail_support_empty_msg {
+    text-align: center;
+    color: #555;
+    padding: 40px;
+    border-top: 1px solid #333;
+    margin-top: 60px;
+    font-size: 16px;
+}
+
+/* 하단 버튼 */
+.detail_support_actions {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.detail_support_back_btn {
+    display: inline-block;
+    padding: 15px 60px;
+    background-color: #2a2a2a;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.detail_support_back_btn:hover {
+    background-color: #3a3a3a;
+    transform: translateY(-2px);
+}

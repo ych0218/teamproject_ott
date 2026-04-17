@@ -1,0 +1,118 @@
+.support-write-page {
+    width: 100%;
+    display: block;
+    padding: 60px 0;
+    box-sizing: border-box;
+}
+
+/* 중앙 정렬 컨테이너: 헤더/푸터와 너비 일치 (최대 1400px) */
+.support-center-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2%;
+    box-sizing: border-box;
+}
+
+/* 문의하기 카드: 너비 확장 */
+.support-card {
+    width: 100%;
+    /* max-width를 제거하거나 넓게 설정하여 부모(1400px)를 따라가게 함 */
+    background-color: #1f1f1f;
+    padding: 50px 60px; /* 내부 여백을 넓게 주어 가독성 확보 */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+}
+
+.support-title {
+    font-size: 32px; /* 넓어진 만큼 제목 크기도 키움 */
+    color: #fff;
+    margin-bottom: 40px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 입력 그룹 */
+.support-form-group {
+    margin-bottom: 30px;
+}
+
+.support-form-group label {
+    display: block;
+    color: #aaa;
+    font-size: 15px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+/* 입력창 스타일: 넓은 화면에서도 어색하지 않게 높이와 여백 조정 */
+.support-input,
+.support-select,
+.support-textarea {
+    width: 100% !important;
+    background-color: #2a2a2a !important;
+    border: 1px solid #333 !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    padding: 15px 20px !important;
+    font-size: 16px !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    transition: border-color 0.3s;
+}
+
+.support-input:focus,
+.support-select:focus,
+.support-textarea:focus {
+    border-color: #ff153c !important;
+}
+
+/* 텍스트 영역 높이 확장 */
+.support-textarea {
+    height: 350px !important; /* 본문 입력창을 더 크게 */
+    resize: vertical; /* 사용자가 조절 가능하도록 설정 */
+}
+
+/* 하단 버튼 영역 */
+.support-btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 50px;
+    justify-content: center; /* 버튼을 중앙으로 */
+}
+
+.support-submit-btn {
+    width: 250px; /* 버튼이 너무 길어지지 않게 고정폭 부여 */
+    background-color: #ff153c;
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.support-submit-btn:hover {
+    background-color: #e04344;
+}
+
+.support-cancel-btn {
+    width: 150px;
+    background-color: #444;
+    color: #fff;
+    text-align: center;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 17px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.support-cancel-btn:hover {
+    background-color: #555;
+}

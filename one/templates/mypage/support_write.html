@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}1:1 문의하기{% endblock %}
+{% block styles %}
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/support_write.css') }}">
+{% endblock %}
+{% block content %}
+<div class="support-write-page">
+    <div class="support-center-container">
+        <div class="support-card">
+            <h2 class="support-title">1:1 문의하기</h2>
+{#enctype 이거 없음 image안보냄#}
+           <form method="POST" action="{{ url_for('mypage.support_write') }}" enctype="multipart/form-data">
+                <div class="support-form-group">
+                    <label>문의 유형</label>
+                    <select name="category" class="support-select">
+                        <option value="이용권/결제">이용권/결제</option>
+                        <option value="재생오류">재생오류</option>
+                        <option value="계정/인증">계정/인증</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+
+                <div class="support-form-group">
+                    <label>제목</label>
+                    <input type="text" name="title" class="support-input" placeholder="제목을 입력하세요" required>
+                </div>
+
+                <div class="support-form-group">
+                    <label>문의 내용</label>
+                    <textarea name="content" class="support-textarea" rows="8" placeholder="상세 내용을 입력하세요" required></textarea>
+                </div>
+
+
+                <div class="support-form-group">
+                    <label>이미지 첨부 (선택)</label>
+                    <input type="file" name="support_img" class="support-input" accept="image/*">
+                </div>
+
+                <div class="support-btn-group">
+                    <button type="submit" class="support-submit-btn">등록하기</button>
+                    <a href="{{ url_for('mypage.mypage') }}" class="support-cancel-btn">취소</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    {% if success %}
+        alert("문의가 성공적으로 접수되었습니다.");
+        window.location.href = "{{ url_for('mypage.mypage') }}";
+    {% endif %}
+</script>
+{% endblock %}

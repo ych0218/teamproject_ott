@@ -13,9 +13,9 @@
 <div class="mypage-wrapper">
     <div class="top-action-wrapper">
         <div class="right-actions">
-            <a href="{{ url_for('mypage.change_info') }}" class="action-btn"><span>회원정보 수정<span></a>
-            <a href="{{ url_for('mypage.support') }}" class="action-btn"><span>고객센터<span></a>
-            <a href="{{ url_for('mypage.subscription') }}" class="action-btn primary"><span>이용권 구매<span></a>
+            <a href="{{ url_for('mypage.change_info') }}" class="actionbtn"><span>회원정보 수정</span></a>
+            <a href="{{ url_for('mypage.support_write') }}" class="actionbtn"><span>문의하기</span></a>
+            <a href="{{ url_for('mypage.subscription') }}" class="actionbtn primary"><span>이용권 구매</span></a>
         </div>
     </div>
 
@@ -134,21 +134,26 @@
     </section>
 
     <section id="support" class="tab-section">
-        <div class="support-list">
-            {% for support in user.supports | sort(attribute='created_at', reverse=True) %}
-            <div class="support-item">
-                <div class="support-info">
-                    <span class="support-status {{ support.status }}">{{ '답변완료' if support.status == 'completed' else '검토중' }}</span>
-                    <span class="support-cat">[{{ support.category }}]</span>
-                    <span class="support-date">{{ support.created_at.strftime('%Y.%m.%d') }}</span>
-                </div>
-                <h4 class="support-title">{{ support.title }}</h4>
+    <div class="support-list">
+        {% for support in user.supports | sort(attribute='created_at', reverse=True) %}
+        <!-- [수정] 클릭 이벤트 및 마우스 커서 스타일 추가 -->
+        <div class="support-item"
+             onclick="location.href='{{ url_for('mypage.support_detail', support_id=support.support_id) }}'"
+             style="cursor: pointer;">
+            <div class="support-info">
+                <span class="support-status {{ support.status }}">
+                    {{ '답변완료' if support.status == 'completed' else '검토중' }}
+                </span>
+                <span class="support-cat">[{{ support.category }}]</span>
+                <span class="support-date">{{ support.created_at.strftime('%Y.%m.%d') }}</span>
             </div>
-            {% else %}
-            <div class="empty-msg">문의 내역이 없습니다.</div>
-            {% endfor %}
+            <h4 class="support-title">{{ support.title }}</h4>
         </div>
-    </section>
+        {% else %}
+        <div class="empty-msg">문의 내역이 없습니다.</div>
+        {% endfor %}
+    </div>
+</section>
 </div>
 </div>
 {% endblock %}

@@ -16,23 +16,75 @@ def admin_main():
 @bp.route('/members')
 def member_list():
     keyword = request.args.get('keyword', '').strip()
+    search_type = request.args.get('search_type', 'all').strip()
 
     query = User.query
 
     if keyword:
-        query = query.filter(
-            or_(
-                User.user_name.contains(keyword),
-                User.user_email.contains(keyword),
-                User.user_phone.contains(keyword)
+        keyword_lower = keyword.lower()
+
+        if search_type == 'user_unique_id':
+            if keyword.isdigit():
+                query = query.filter(User.user_unique_id == int(keyword))
+            else:
+                query = query.filter(User.user_unique_id == -1)
+
+        elif search_type == 'user_name':
+            query = query.filter(User.user_name.contains(keyword))
+
+        elif search_type == 'user_email':
+            query = query.filter(User.user_email.contains(keyword))
+
+        elif search_type == 'user_phone':
+            query = query.filter(User.user_phone.contains(keyword))
+
+        elif search_type == 'user_gender':
+            # 필요하면 한글도 같이 처리 가능
+            if keyword in ['남', '남자', 'M', 'm']:
+                query = query.filter(User.user_gender.in_(['M', 'm', '남', '남자']))
+            elif keyword in ['여', '여자', 'F', 'f']:
+                query = query.filter(User.user_gender.in_(['F', 'f', '여', '여자']))
+            else:
+                query = query.filter(User.user_gender.contains(keyword))
+
+        elif search_type == 'signup_method':
+            # 화면 한글 ↔ DB 영문값 매핑
+            if keyword in ['이메일', 'email']:
+                query = query.filter(User.signup_method == 'email')
+            elif keyword in ['카카오', 'kakao']:
+                query = query.filter(User.signup_method == 'kakao')
+            elif keyword in ['네이버', 'naver']:
+                query = query.filter(User.signup_method == 'naver')
+            else:
+                query = query.filter(User.user_unique_id == -1)
+
+        elif search_type == 'user_active':
+            # 화면 한글 ↔ Boolean 매핑
+            if keyword in ['활성', 'active', '1', 'true', 'True']:
+                query = query.filter(User.user_active == True)
+            elif keyword in ['비활성', 'inactive', '0', 'false', 'False']:
+                query = query.filter(User.user_active == False)
+            else:
+                query = query.filter(User.user_unique_id == -1)
+
+        else:
+            query = query.filter(
+                or_(
+                    User.user_name.contains(keyword),
+                    User.user_email.contains(keyword),
+                    User.user_phone.contains(keyword),
+                    User.user_gender.contains(keyword),
+                    User.signup_method.contains(keyword)
+                )
             )
-        )
 
     member_list = query.order_by(User.user_unique_id.desc()).all()
+
     return render_template(
         'admin/member_list.html',
         member_list=member_list,
-        keyword=keyword
+        keyword=keyword,
+        search_type=search_type
     )
 
 
@@ -49,24 +101,49 @@ def member_toggle(user_id):
 @bp.route('/contents')
 def content_list():
     keyword = request.args.get('keyword', '').strip()
+    search_type = request.args.get('search_type', 'all').strip()
 
     query = Video.query
 
     if keyword:
-        query = query.filter(
-            or_(
-                Video.video_title.contains(keyword),
-                Video.video_director.contains(keyword),
-                Video.video_actor.contains(keyword)
+        if search_type == 'video_unique_id':
+            if keyword.isdigit():
+                query = query.filter(Video.video_unique_id == int(keyword))
+            else:
+                query = query.filter(Video.video_unique_id == -1)
+
+        elif search_type == 'video_title':
+            query = query.filter(Video.video_title.contains(keyword))
+
+        elif search_type == 'video_director':
+            query = query.filter(Video.video_director.contains(keyword))
+
+        elif search_type == 'video_actor':
+            query = query.filter(Video.video_actor.contains(keyword))
+
+        elif search_type == 'video_age_limit':
+            query = query.filter(Video.video_age_limit.contains(keyword))
+
+        elif search_type == 'video_date':
+            query = query.filter(Video.video_date.contains(keyword))
+
+        else:  # 전체 검색
+            query = query.filter(
+                or_(
+                    Video.video_title.contains(keyword),
+                    Video.video_director.contains(keyword),
+                    Video.video_actor.contains(keyword),
+                    Video.video_age_limit.contains(keyword)
+                )
             )
-        )
 
     content_list = query.order_by(Video.video_unique_id.desc()).all()
 
     return render_template(
         'admin/content_list.html',
         content_list=content_list,
-        keyword=keyword
+        keyword=keyword,
+        search_type=search_type
     )
 
 

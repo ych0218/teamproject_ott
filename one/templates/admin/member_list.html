@@ -26,7 +26,26 @@
         <h1>회원 관리</h1>
 
         <form method="get" action="{{ url_for('admin.member_list') }}" class="search_form">
-            <input type="text" name="keyword" value="{{ keyword }}" placeholder="이름, 이메일, 전화번호 검색">
+            <select name="search_type">
+                <option value="all" {% if search_type==
+                'all' %}selected{% endif %}>전체</option>
+                <option value="user_unique_id" {% if search_type==
+                'user_unique_id' %}selected{% endif %}>번호</option>
+                <option value="user_name" {% if search_type==
+                'user_name' %}selected{% endif %}>이름</option>
+                <option value="user_email" {% if search_type==
+                'user_email' %}selected{% endif %}>이메일</option>
+                <option value="user_phone" {% if search_type==
+                'user_phone' %}selected{% endif %}>전화번호</option>
+                <option value="user_gender" {% if search_type==
+                'user_gender' %}selected{% endif %}>성별</option>
+                <option value="signup_method" {% if search_type==
+                'signup_method' %}selected{% endif %}>로그인방식</option>
+                <option value="user_active" {% if search_type==
+                'user_active' %}selected{% endif %}>상태</option>
+            </select>
+
+            <input type="text" name="keyword" value="{{ keyword }}" placeholder="검색어 입력">
             <button type="submit" class="search_btn">검색</button>
             <a href="{{ url_for('admin.member_list') }}" class="reset_btn">전체보기</a>
         </form>

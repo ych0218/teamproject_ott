@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}문의 내역 상세{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mypage.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/support_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="detail_support_wrapper">
+    <div class="detail_support_card">
+
+        <!-- 헤더 부분 -->
+        <div class="detail_support_header">
+            <span class="detail_support_category">[{{ support.category }}]</span>
+            <h2 class="detail_support_title">{{ support.title }}</h2>
+            <div class="detail_support_date">작성일: {{ support.created_at.strftime('%Y.%m.%d %H:%M') }}</div>
+        </div>
+
+        <!-- 본문 내용 -->
+        <div class="detail_support_body">
+        {{ support.content }}
+
+        <!-- [수정] 이미지 경로 확인 및 스타일 보정 -->
+        {% if support.image_url %}
+            <div class="detail_support_img_box" style="display: block; visibility: visible; opacity: 1; margin-top: 30px;">
+                <img src="{{ url_for('static', filename=support.image_url) }}"
+                     class="detail_support_img"
+                     alt="첨부 이미지"
+                     onerror="this.style.display='none';"
+                     style="max-width: 100%; height: auto; display: block;">
+            </div>
+        {% endif %}
+        </div>
+
+        <!-- 답변 영역 -->
+        {% if support.answers %}
+            {% for answer in support.answers %}
+            <div class="detail_support_answer_section">
+                <span class="detail_support_answer_label">운영자 답변</span>
+                <div style="color: #fff; line-height: 1.6;">{{ answer.content }}</div>
+                <div style="color: #666; font-size: 12px; margin-top: 10px;">답변일: {{ answer.created_at.strftime('%Y.%m.%d') }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="detail_support_empty_msg">
+                아직 등록된 답변이 없습니다. 조금만 기다려 주세요!
+            </div>
+        {% endif %}
+
+        <!-- 하단 버튼 -->
+        <div class="detail_support_actions">
+            <a href="{{ url_for('mypage.mypage') }}" class="detail_support_back_btn">목록으로 돌아가기</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
