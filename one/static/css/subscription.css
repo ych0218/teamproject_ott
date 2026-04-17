@@ -1,0 +1,206 @@
+/* 전체 배경 및 기본 설정 */
+.subscription-wrapper {
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    padding: 60px 20px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+}
+
+.sub-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sub-header {
+    text-align: center;
+    margin-bottom: 80px; /* 기존 50px에서 80px로 확대하여 여유 공간 확보 */
+}
+
+.sub-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.sub-header p {
+    color: #a3a3a3;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    margin-bottom: 40px; /* 설명 문구와 카드 사이 추가 간격 */
+}
+
+
+/* 요금제 카드 그리드 */
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    padding-top: 20px; /* 위쪽에 미세한 패딩 추가 */
+}
+
+/* 개별 카드 스타일 */
+.plan-card {
+    background-color: #1f1f1f;
+    border-radius: 16px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    position: relative; /* 중요: 라벨 배치의 기준 */
+    overflow: hidden
+}
+.current-badge {
+    position: absolute;
+    top: 12px;
+    right: -32px;        /* 수치는 화면 보면서 미세조정 가능 */
+    width: 120px;
+    background-color: #e50914; /* 브랜드 레드 */
+    color: white;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 0;
+    transform: rotate(45deg); /* 45도 회전 */
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.plan-card:hover {
+    border-color: #555;
+    transform: translateY(-5px);
+}
+
+/* 현재 이용 중인 카드 강조 */
+.plan-card.active-border {
+    border-color: #e50914; /* 넷플릭스 레드 */
+}
+
+/* 카드 내부 텍스트 */
+.ott-pass {
+    color: #e50914;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+}
+
+.plan-title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 5px 0 20px 0;
+    text-transform: uppercase;
+}
+
+.plan-price {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.plan-duration {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* 특징 리스트 */
+.plan-features {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0 0 30px 0;
+    border-top: 1px solid #333;
+    flex-grow: 1;
+}
+
+.plan-features li {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 12px;
+}
+
+.plan-features .feature-highlight {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* 버튼 스타일 */
+.purchase-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.purchase-btn:hover {
+    background-color: #b20710;
+}
+
+.disabled-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #444;
+    color: #888;
+    border-radius: 8px;
+    cursor: not-allowed;
+    border: none;
+}
+/* 아이콘 박스 스타일 */
+.plan-icon-box {
+    margin-bottom: 15px; /* 아래 텍스트와의 간격 */
+    display: flex;
+    justify-content: flex-start; /* 왼쪽 정렬 (가운데 정렬 원하시면 center) */
+}
+.plan-icon {
+    width: 40px;  /* 이미지 크기 조절 (원하시는 대로 숫자를 바꿔보세요) */
+    height: 40px;
+    object-fit: contain; /* 이미지 비율 유지 */
+}
+.card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 왼쪽 정렬 */
+}
+.discount-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e50914; /* 넷플릭스 레드 */
+    color: #fff;
+    font-size: 0.7rem; /* 크기를 작게 조절 */
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px; /* 가격과의 간격 */
+    vertical-align: middle;
+    position: relative;
+    top: -2px; /* 위치 미세 조정 */
+}
+.discount-badge.highlight {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); /* 살짝 빛나는 효과 */
+}
+
+.price-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 자식 요소들을 왼쪽으로 밀기 */
+    margin-bottom: 30px;
+}
+
+
+.current-plan-btn {
+    background-color: #2a2a2a !important; /* 진한 회색 */
+    color: #e50914 !important;           /* 글자는 브랜드 빨간색 */
+    border: 1px solid #e50914 !important; /* 빨간색 얇은 테두리 */
+    font-weight: 700;
+}
+
+.current-plan-btn:hover {
+    background-color: #333333 !important;
+    filter: brightness(1.2);
+}

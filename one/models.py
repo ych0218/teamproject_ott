@@ -214,8 +214,8 @@ class Support(db.Model):
     title = db.Column(db.String(255), nullable=False)  # 제목
     content = db.Column(db.Text, nullable=False)  # 내용
 
-    # 상태 관리 (접수, 처리중, 완료 등 / 영문 권장: pending, processing, completed)
-    status = db.Column(db.String(20), nullable=False, default='pending')
+    # 상태 관리 (답변전, 답변완료 2가지만 가능)
+    status = db.Column(db.String(20), nullable=False, default='답변전')
 
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     image_url = db.Column(db.String(500))  # 이미지 첨부 경로

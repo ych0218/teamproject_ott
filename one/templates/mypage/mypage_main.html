@@ -15,7 +15,7 @@
         <div class="right-actions">
             <a href="{{ url_for('mypage.change_info') }}" class="actionbtn"><span>회원정보 수정</span></a>
             <a href="{{ url_for('mypage.support_write') }}" class="actionbtn"><span>문의하기</span></a>
-            <a href="{{ url_for('mypage.subscription') }}" class="actionbtn primary"><span>이용권 구매</span></a>
+            <a href="{{ url_for('mypage.subscribe') }}" class="actionbtn primary"><span>이용권 구매</span></a>
         </div>
     </div>
 
@@ -25,24 +25,34 @@
                 <div class="user-main">
                     <h2 class="user-name">{{ user.user_name }}</h2>
 
-                    {% if user.subscriptions %}
-                        {% set plan = user.subscriptions[0].plan.plan_name.lower() %}
-                        <img src="{{ url_for('static', filename='img/' + plan + '.png') }}" class="name-grade-icon" alt="{{ plan }}">
+                    <!-- 💡 1. 아이콘 표시 로직 수정 -->
+                    {% set active_sub = user.subscriptions | selectattr("status", "equalto", "active") | first %}
+                    {% if active_sub %}
+                        {% set plan_name = active_sub.plan.plan_name.lower() %}
+                        <img src="{{ url_for('static', filename='img/' + plan_name + '.png') }}" class="name-grade-icon" alt="{{ plan_name }}">
                     {% endif %}
 
                     <span class="user-id">@{{ user.user_email }}</span>
                 </div>
 
                 <div class="subscription-status">
-                   <span class="plan-badge">
-    {% if user.subscriptions %}
-        {% set plan = user.subscriptions[0].plan.plan_name.lower() %}
-        <img src="{{ url_for('static', filename='img/' + plan + '.png') }}" class="badge-icon">
-        <span class="badge-text">{{ user.subscriptions[0].plan.plan_name }} 이용 중</span>
-    {% else %}
-        미구독
-    {% endif %}
-</span>
+                    <!-- 구독 뱃지 -->
+                    <span class="plan-badge">
+                        {% if active_sub %}
+                            {% set plan_name = active_sub.plan.plan_name.lower() %}
+                            <img src="{{ url_for('static', filename='img/' + plan_name + '.png') }}" class="badge-icon">
+                            <span class="badge-text">{{ active_sub.plan.plan_name.upper() }} 이용 중</span>
+                        {% else %}
+                            <span class="badge-text no-sub">이용권이 없습니다</span>
+                        {% endif %}
+                    </span>
+
+                    <!-- 💡 여기에 추가하세요! -->
+                    {% if active_sub %}
+                    <p class="expire-date" style="font-size: 0.75rem; color: #888; margin-top: 4px; letter-spacing: -0.02em;">
+                        만료 예정일: {{ active_sub.end_date.strftime('%Y.%m.%d') }}
+                    </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -67,9 +77,12 @@
                             <div class="img-box">
                                 <img src="{{ history.video.video_thumbnail }}" alt="thumbnail">
                                 {% if not history.is_finished %}
-                                <div class="progress-bar">
-                                    <div class="progress" style="width: 50%;"></div>
-                                </div>
+                                   {% if history.total_time and history.total_time > 0 %}
+                                        {% set percentage = (history.current_time / history.total_time * 100)|int %}
+                                        <div class="progress" style="width: {{ percentage }}%;"></div>
+                                    {% else %}
+                                        <div class="progress" style="width: 10%;"></div> <!-- 기본값 -->
+                                    {% endif %}
                                 {% endif %}
                             </div>
                             <div class="text-box">
