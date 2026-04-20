@@ -1,0 +1,69 @@
+ /* 1. 배경 및 컨테이너 */
+    .detail_support_wrapper {
+        width: 100%;
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+
+    /* 2. 카드 박스 */
+    .detail_support_card {
+        width: 100%;
+        background-color: #1f1f1f;
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 헤더 */
+    .detail_support_header { padding: 40px 50px; }
+    .detail_support_category { color: #ff153c; font-weight: bold; font-size: 14px; margin-bottom: 10px; display: block; }
+    .detail_support_title { font-size: 28px; color: #fff; margin: 10px 0; font-weight: 700; }
+    .notice_meta_box { color: #666; font-size: 14px; margin-top: 15px; }
+
+    /* 3. 본문 영역: min-height 추가하여 세로 길이 확보 */
+    .detail_support_body {
+        padding: 20px 50px 60px;
+        color: #ccc;
+        font-size: 17px;
+        line-height: 1.8;
+        white-space: pre-wrap;
+
+        /* 💡 최소 높이를 450px로 설정 (원하시는 만큼 조절 가능) */
+        min-height: 450px;
+
+        border-bottom: 1px solid #333;
+    }
+
+    /* 하단 메시지 영역 */
+    .detail_support_empty_msg {
+        text-align: center;
+        color: #555;
+        padding: 40px 0;
+        font-size: 14px;
+    }
+
+    /* 4. 하단 버튼 영역 */
+    .detail_support_actions {
+        padding-bottom: 60px;
+        text-align: center;
+    }
+
+    .detail_support_back_btn {
+        display: inline-block;
+        padding: 14px 45px;
+        background-color: #2a2a2a;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 15px;
+        transition: 0.3s;
+    }
+
+    .detail_support_back_btn:hover {
+        background-color: #3a3a3a;
+        transform: translateY(-2px);
+    }

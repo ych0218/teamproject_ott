@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import json # 상단에 추가
-from one.models import User, Support, SupportAnswer, Plan, Subscription, Payment
+from one.models import User, Support, SupportAnswer, Plan, Subscription, Payment, Notice
 from one import db
 import base64  # 토스 API 인증용
 
@@ -165,25 +165,38 @@ def support_detail(support_id):
 
 @bp.route('/support-center')
 def support_center():
-    # 1. 세션에서 로그인한 유저의 unique_id 가져오기
     user_unique_id = session.get('user')
 
     if not user_unique_id:
         return redirect(url_for('auth.login'))
 
-    # 2. 유저 정보 및 문의 내역 조회
     user_data = User.query.get_or_404(user_unique_id)
 
-    # 해당 유저의 모든 문의 내역 (최신순)
+    # 1. 내 문의 내역 조회
     my_supports = Support.query.filter_by(user_unique_id=user_unique_id) \
         .order_by(Support.created_at.desc()).all()
 
-    # (선택 사항) 전체 유저 공통 공지사항 가져오기
-    # notices = Notice.query.order_by(Notice.created_at.desc()).limit(5).all()
+    # 2. 공지사항 조회 (고정글 우선 -> 최신순 정렬)
+    # .desc()를 사용하면 True(1)가 False(0)보다 먼저 나옵니다.
+    notices = Notice.query.order_by(Notice.is_pinned.desc(), Notice.created_at.desc()).all()
 
     return render_template('mypage/support_center.html',
                            user=user_data,
-                           supports=my_supports)
+                           supports=my_supports,
+                           notices=notices) # notices 추가
+
+
+@bp.route('/notice/<int:notice_id>')
+def notice_detail(notice_id):
+    # DB에서 해당 공지사항 조회
+    notice = Notice.query.get_or_404(notice_id)
+
+    # 조회수 증가 (선택 사항)
+    notice.view_count += 1
+    db.session.commit()
+
+    return render_template('mypage/notice_detail.html', notice=notice)
+
 
 
 @bp.route('/support-center/write', methods=['POST'])

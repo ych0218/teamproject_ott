@@ -1,12 +1,9 @@
 {% extends "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/mypage.css') }}">
-<style>
-    /* 고객센터 전용 추가 스타일 */
-    .support-title { font-size: 28px; color: #fff; margin-bottom: 40px; font-weight: bold; }
-    .tab-btn { margin-right: 40px; font-size: 18px; }
-</style>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mypage_change.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/support_center.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -15,29 +12,63 @@
 
     <!-- 💡 이미지의 4개 메뉴 구성 -->
     <nav class="mypage-nav">
-    <div class="mypage-tabs">
-        <button class="tab-btn active" data-target="notice">공지사항</button>
-        <button class="tab-btn" data-target="faq">FAQ</button>
-        <button class="tab-btn" data-target="policy">서비스 정책</button>
-        <button class="tab-btn" data-target="my-support">고객문의</button> <!-- data-target 수정 -->
-    </div>
-</nav>
+        <div class="mypage-tabs">
+            <button class="tab-btn active" data-target="pin-notice">공지사항</button>
+            <button class="tab-btn" data-target="pin-faq">FAQ</button>
+            <button class="tab-btn" data-target="pin-policy">서비스 정책</button>
+            <button class="tab-btn" data-target="pin-my-support">고객문의</button>
+        </div>
+    </nav>
 
 <div class="tab-content-container">
-    <section id="notice" class="tab-section active">
-        <div class="empty-msg">공지사항이 없습니다.</div>
+   <section id="pin-notice" class="tab-section active">
+        <div class="pin-list-wrapper">
+            <table class="pin-table">
+                <thead>
+                    <tr class="pin-thead-row">
+                        <th class="pin-th-num">번호</th>
+                        <th class="pin-th-title">제목</th>
+                        <th class="pin-th-date">작성일</th>
+                        <th class="pin-th-views">조회수</th>
+                    </tr>
+                </thead>
+                   <tbody>
+                    {% for notice in notices %}
+                    <tr class="pin-row {{ 'is-pinned-row' if notice.is_pinned else '' }}"
+                        onclick="location.href='{{ url_for('mypage.notice_detail', notice_id=notice.notice_id) }}'">
+
+                        <td class="pin-td-num">
+                            {% if notice.is_pinned %}
+                                <span class="pin-badge">중요</span>
+                            {% else %}
+                                {# 전체 개수에서 거꾸로 숫자를 매깁니다 (예: 100, 99, 98...) #}
+                                {{ loop.revindex }}
+                            {% endif %}
+                        </td>
+
+                        <td class="pin-td-title">
+                            <span class="{{ 'pin-highlight' if notice.is_pinned else '' }}">{{ notice.title }}</span>
+                        </td>
+
+                        <td class="pin-td-date">{{ notice.created_at.strftime('%Y.%m.%d') }}</td>
+                        <td class="pin-td-views">{{ notice.view_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <section id="faq" class="tab-section">
-        <div class="empty-msg">자주 묻는 질문이 없습니다.</div>
+    <section id="pin-faq" class="tab-section">
+        <div class="pin-empty-msg">자주 묻는 질문이 없습니다.</div>
     </section>
 
-    <section id="policy" class="tab-section">
-        <div class="empty-msg">서비스 정책 내용입니다.</div>
+    <section id="pin-policy" class="tab-section">
+        <div class="pin-empty-msg">등록된 서비스 정책이 없습니다.</div>
     </section>
 
     <!-- 💡 고객문의 섹션: ID가 탭의 data-target과 일치해야 함 -->
-   <section id="my-support" class="tab-section">
+   <section id="pin-my-support" class="tab-section">
     <div class="support-split-container" style="display: flex; gap: 30px; align-items: flex-start;">
 
         <!-- ⬅️ 좌측: 1:1 문의 작성 폼 -->
@@ -98,72 +129,53 @@
 {% endblock %}
 
 {% block script %}
-<script>
-    document.querySelectorAll('.tab-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const target = button.dataset.target;
-
-            // 모든 탭 버튼 비활성화 -> 클릭한 것만 활성화
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            // 모든 섹션 숨기기 -> 타겟 섹션만 보이기
-            document.querySelectorAll('.tab-section').forEach(section => section.classList.remove('active'));
-
-            const targetSection = document.getElementById(target);
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
-        });
-    });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("=== [체크 1] 고객센터 JS 로드 성공 ===");
+    console.log("=== 고객센터 JS 로드 완료 ===");
 
-    // 1. 탭 전환 로직 (하나로 통합)
+    // 1. 탭 전환 로직
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabSections = document.querySelectorAll('.tab-section');
 
     tabBtns.forEach(button => {
         button.addEventListener('click', () => {
-            const target = button.dataset.target;
+            const targetId = button.getAttribute('data-target');
 
-            // 버튼 활성화 클래스 교체
+            // 모든 버튼 비활성화 -> 클릭한 버튼 활성화
             tabBtns.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
-            // 섹션 활성화 클래스 교체
-            tabSections.forEach(section => section.classList.remove('active'));
-            const targetSection = document.getElementById(target);
+            // 모든 섹션 숨기기
+            tabSections.forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+
+            // 선택한 섹션만 보이기
+            const targetSection = document.getElementById(targetId);
             if (targetSection) {
                 targetSection.classList.add('active');
+                targetSection.style.display = 'block';
+                console.log("현재 탭:", targetId);
             }
         });
     });
 
-    // 2. 💡 문의 등록 성공 알림 (문법 에러 수정 완료)
+    // 2. 문의 등록 성공 알림 (Jinja2)
     {% if success %}
         Swal.fire({
             title: '등록 완료!',
             text: '문의가 성공적으로 접수되었습니다.',
             icon: 'success',
             width: '360px',
-            background: '#343a40',
+            background: '#1a1a1a',
             color: '#fff',
             confirmButtonText: '확인',
-            confirmButtonColor: '#ff4d4f',
-            customClass: {
-                popup: 'swal-popup-custom',
-                confirmButton: 'swal-confirm-btn'
-            },
-            buttonsStyling: false
+            confirmButtonColor: '#ff153c'
         }).then((result) => {
             if (result.isConfirmed) {
-                // 확인 버튼 클릭 시 고객센터 메인으로 리다이렉트
-                window.location.href = "/mypage/support-center";
+                window.location.href = "{{ url_for('mypage.support_center') }}";
             }
         });
     {% endif %}

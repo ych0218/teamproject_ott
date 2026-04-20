@@ -1,0 +1,189 @@
+/* 고객센터 전체 컨테이너 */
+.mypage-wrapper {
+    padding: 40px 20px;
+    background-color: #000; /* 다크 테마 유지 */
+    color: #fff;
+}
+
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 15px 0;
+    color: #888;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+}
+/* 마우스를 올리거나 활성화 되었을 때 */
+.tab-btn:hover, .tab-btn.active {
+    color: #fff;
+}
+
+/* 활성화 된 탭 아래 흰색 줄 */
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; /* 부모 border-bottom과 겹치게 */
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+}
+
+
+/* 공지사항 테이블 스타일 복구 */
+.pin-list-wrapper {
+    background: #111;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.pin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pin-thead-row th {
+    border-bottom: 1px solid #333;
+    padding: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.pin-row {
+    border-bottom: 1px solid #222;
+    transition: 0.2s;
+}
+
+.pin-row:hover {
+    background-color: #1a1a1a !important;
+}
+
+.pin-td-num, .pin-td-date, .pin-td-views {
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.pin-td-title {
+    text-align: left;
+    padding: 15px 20px;
+}
+
+.pin-badge {
+    background: #ff153c;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+/* 탭 섹션 숨김/표시 (이게 없으면 다 겹쳐 보입니다) */
+.tab-section {
+    display: none;
+}
+.tab-section.active {
+    display: block;
+}
+/* 탭 섹션 제어 (필수) */
+.tab-section { display: none; width: 100%; }
+.tab-section.active { display: block; }
+
+/* 공지사항 전용 컨테이너 */
+.pin-list-wrapper {
+    background: #141414;
+    border-top: 2px solid #333;
+    margin-top: 20px;
+}
+
+.pin-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    table-layout: fixed;
+}
+
+/* 헤더 스타일 */
+.pin-thead-row th {
+    padding: 15px;
+    background: #1a1a1a;
+    color: #888;
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 1px solid #333;
+}
+
+/* 열 너비 고정 */
+.pin-th-num { width: 80px; }
+.pin-th-date { width: 130px; }
+.pin-th-views { width: 100px; }
+
+/* 행 스타일 */
+.pin-row {
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.pin-row:hover { background-color: #1f1f1f; }
+
+/* 고정 공지사항(중요) 강조 */
+.is-pinned-row {
+    background-color: transparent !important; /* 배경색 삭제 */
+}
+.pin-highlight {
+    color: #ff153c; /* 4FLEX 레드 */
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.pin-badge {
+    background: #ff153c;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* 텍스트 정렬 */
+.pin-td-num, .pin-td-date, .pin-td-views { text-align: center; color: #888; font-size: 13px; }
+.pin-td-title {
+    text-align: left;
+    padding: 15px 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 빈 메시지 스타일 */
+.pin-empty-msg {
+    padding: 100px 0;
+    text-align: center;
+    color: #666;
+    background: #141414;
+}
+
+/* 1. 마이페이지 내비게이션 스타일 이식 */
+.mypage-nav {
+    width: 100%;
+    border-bottom: 1px solid #333;
+    margin-bottom: 30px;
+}
+
+.mypage-tabs {
+    display: flex;
+    gap: 30px; /* 버튼 사이 간격 */
+}
+
+/* 4. 탭 콘텐츠 영역 숨김 제어 */
+.tab-section {
+    display: none;
+}
+
+.tab-section.active {
+    display: block;
+}
