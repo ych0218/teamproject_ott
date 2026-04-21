@@ -2,8 +2,9 @@ from one import db
 from datetime import datetime, timezone
 from . import login_manager
 
+
 # https://blog.naver.com/red0808/223888577210
-class User (db.Model):
+class User(db.Model):
     __tablename__ = 'user'
     # 프라이머리 키
     user_unique_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,7 +27,8 @@ class User (db.Model):
     kakao_id = db.Column(db.String(100), unique=True, nullable=True)
     # [추가] 3. 네이버 연동
     naver_id = db.Column(db.String(100), unique=True, nullable=True)
-    user_active = db.Column(db.Boolean, nullable=False,default=True)  # 활성화된 유저인지, 차단(블락된)유저인지 True는 로그인가능 False는 로그인 불가능
+    user_active = db.Column(db.Boolean, nullable=False,
+                            default=True)  # 활성화된 유저인지, 차단(블락된)유저인지 True는 로그인가능 False는 로그인 불가능
 
     # --- 관계 설정 (Relationship) ---
     # 다른 테이블에서 이 사용자를 참조할 때 편리하게 가져오기 위함입니다.
@@ -84,8 +86,9 @@ class Video(db.Model):
     def __repr__(self):
         return f'<Video {self.video_title}>'
 
+
 class VideoLike(db.Model):
-    __tablename__ = 'videos_like' # ERD에 표기된 이름으로 맞춤
+    __tablename__ = 'videos_like'  # ERD에 표기된 이름으로 맞춤
 
     # 프라이머리 키
     like_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -194,7 +197,7 @@ class Subscription(db.Model):
     # 한 번의 구독(연장 포함)에 여러 결제 시도가 있을 수 있으므로 1:N으로 설정하는 경우가 많습니다.
     payments = db.relationship('Payment', backref='subscription', lazy=True)
 
-# 배치 작업: 나중에 end_date가 현재 시간보다 과거인 데이터를 찾아 status를 'expired'로 바꾸는 간단한 스케줄러(예: Celery, Flask-APScheduler)를 연동하면 관리가 편해집니다.
+    # 배치 작업: 나중에 end_date가 현재 시간보다 과거인 데이터를 찾아 status를 'expired'로 바꾸는 간단한 스케줄러(예: Celery, Flask-APScheduler)를 연동하면 관리가 편해집니다.
     def __repr__(self):
         return f'<Subscription User:{self.user_unique_id} Plan:{self.plan_id}>'
 
@@ -237,7 +240,6 @@ class SupportAnswer(db.Model):
     # 외래키: 어떤 관리자가 답변을 작성했는가
     admin_unique_id = db.Column(db.Integer, db.ForeignKey('admin.admin_unique_id'), nullable=False)
 
-
     content = db.Column(db.Text)  # 답변 내용
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -259,12 +261,12 @@ class WatchHistory(db.Model):
 
     # [추가] 마지막 시청 시간 (최근 본 영상 목록 정렬용)
     updated_at = db.Column(db.DateTime,
-                          default=lambda: datetime.now(timezone.utc),
-                          onupdate=lambda: datetime.now(timezone.utc))
+                           default=lambda: datetime.now(timezone.utc),
+                           onupdate=lambda: datetime.now(timezone.utc))
+
 
 # 결제 테이블
 class Payment(db.Model):
-
     __tablename__ = 'payments'  # ERD 상의 이름과 일치
 
     # 프라이머리 키
@@ -273,7 +275,6 @@ class Payment(db.Model):
     # 외래키 연결
     user_unique_id = db.Column(db.Integer, db.ForeignKey('user.user_unique_id'), nullable=False)
     subscription_id = db.Column(db.Integer, db.ForeignKey('subscription.subscription_id'), nullable=False)
-
 
     # 결제 정보
     price = db.Column(db.Numeric(10, 2))  # 결제 금액
@@ -300,11 +301,12 @@ class Notice(db.Model):
 
     # 작성일
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    # --- 외래 키 (Foreign Key) ---
 
+    # --- 외래 키 (Foreign Key) ---
 
     def __repr__(self):
         return f'<Notice {self.title}>'
+
 
 class Admin(db.Model):
     __tablename__ = 'admin'
@@ -336,6 +338,7 @@ class Admin(db.Model):
     def __repr__(self):
         return f'<Admin {self.admin_id} ({self.admin_name})>'
 
+
 @login_manager.user_loader
-def load_user(user_unique_id ):
-    return User.query.get(int(user_unique_id ))
+def load_user(user_unique_id):
+    return User.query.get(int(user_unique_id))

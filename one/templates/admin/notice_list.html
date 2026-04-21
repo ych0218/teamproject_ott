@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 관리</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+
+<div class="admin_wrap">
+
+    <aside class="admin_sidebar">
+        <h2>
+            <a href="{{ url_for('admin.admin_main') }}" class="admin_title">관리자</a>
+        </h2>
+        <ul>
+            <li><a href="{{ url_for('admin.member_list') }}">회원 관리</a></li>
+            <li><a href="{{ url_for('admin.content_list') }}">콘텐츠 관리</a></li>
+            <li><a href="{{ url_for('admin.inquiry_list') }}">문의 관리</a></li>
+            <li><a href="{{ url_for('admin.review_list') }}">리뷰 관리</a></li>
+            <li><a href="{{ url_for('admin.notice_list') }}" class="active">공지사항 관리</a></li>
+        </ul>
+    </aside>
+
+    <main class="admin_content">
+        <h1>공지사항 관리</h1>
+
+        <div class="content_top_bar">
+            <form method="get" action="{{ url_for('admin.notice_list') }}" class="search_form">
+
+                <select name="search_type">
+                    <option value="all" {% if search_type == 'all' %}selected{% endif %}>전체</option>
+                    <option value="notice_id" {% if search_type == 'notice_id' %}selected{% endif %}>번호</option>
+                    <option value="title" {% if search_type == 'title' %}selected{% endif %}>제목</option>
+                    <option value="content" {% if search_type == 'content' %}selected{% endif %}>내용</option>
+                </select>
+
+                <input type="text"
+                       name="keyword"
+                       value="{{ keyword }}"
+                       placeholder="검색어 입력">
+
+                <button type="submit" class="search_btn">검색</button>
+
+                <a href="{{ url_for('admin.notice_list') }}" class="reset_btn">전체보기</a>
+
+            </form>
+
+            <a href="{{ url_for('admin.notice_create') }}" class="content_add_btn">
+                공지사항 등록
+            </a>
+        </div>
+
+        <table class="admin_table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>고정</th>
+                <th>조회수</th>
+                <th>등록일</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for notice in notice_list.items %}
+            <tr>
+                <td>{{ notice.notice_id }}</td>
+                <td>{{ notice.title }}</td>
+                <td>{{ 'Y' if notice.is_pinned else '-' }}</td>
+                <td>{{ notice.view_count }}</td>
+                <td>{{ notice.created_at.strftime('%Y-%m-%d') if notice.created_at else '-' }}</td>
+                <td>
+                    <a href="{{ url_for('admin.notice_edit', notice_id=notice.notice_id) }}"
+                       class="content_action_btn content_edit_btn">수정</a>
+
+                    <form action="{{ url_for('admin.notice_delete', notice_id=notice.notice_id) }}"
+                          method="post"
+                          class="content_delete_form"
+                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                        <button type="submit" class="content_action_btn content_delete_btn">삭제</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">등록된 공지사항이 없습니다.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            {% if notice_list.has_prev %}
+            <a href="{{ url_for('admin.notice_list', page=notice_list.prev_num, keyword=keyword, search_type=search_type) }}">이전</a>
+            {% endif %}
+
+            {% for page_num in notice_list.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == notice_list.page %}
+                <span class="current">{{ page_num }}</span>
+                {% else %}
+                <a href="{{ url_for('admin.notice_list', page=page_num, keyword=keyword, search_type=search_type) }}">{{ page_num }}</a>
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+
+            {% if notice_list.has_next %}
+            <a href="{{ url_for('admin.notice_list', page=notice_list.next_num, keyword=keyword, search_type=search_type) }}">다음</a>
+            {% endif %}
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>
