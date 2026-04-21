@@ -31,16 +31,12 @@
         <div class="profile-card">
             <div class="profile-info">
                 <div class="user-main">
-                    <h2 class="user-name">{{ user.user_name | default('', true) }}</h2>
+                <h2 class="user-name">{{ user.user_name | default('', true) }}</h2>
 
-                    <!-- 💡 1. 아이콘 표시 로직 수정 -->
-                    {% set active_sub = user.subscriptions | selectattr("status", "equalto", "active") | first %}
-                    {% if active_sub %}
-                        {% set plan_name = active_sub.plan.plan_name.lower() %}
-                        <img src="{{ url_for('static', filename='img/' + plan_name + '.png') }}" class="name-grade-icon" alt="{{ plan_name }}">
-                    {% endif %}
+                <!-- 💡 이 위치에 있던 아이콘 로직을 삭제했습니다. -->
+                {% set active_sub = user.subscriptions | selectattr("status", "equalto", "active") | first %}
 
-                    <span class="user-id">@{{ user.user_email }}</span>
+                <span class="user-id">@{{ user.user_email }}</span>
                 </div>
 
                 <div class="subscription-status">
@@ -57,7 +53,7 @@
 
                     <!-- 💡 여기에 추가하세요! -->
                     {% if active_sub %}
-                    <p class="expire-date" style="font-size: 0.75rem; color: #888; margin-top: 4px; letter-spacing: -0.02em;">
+                    <p class="expire-date" style="font-size: 0.75rem; color: #888; margin-top: 6px; margin-left: 14px; padding: 0; letter-spacing: -0.02em;">
                         만료 예정일: {{ active_sub.end_date.strftime('%Y.%m.%d') }}
                     </p>
                     {% endif %}
