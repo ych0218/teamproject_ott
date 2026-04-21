@@ -77,7 +77,8 @@ def naver_callback():
     db.session.commit()
 
     session['user'] = user.user_unique_id
-    return redirect(url_for('home.home'))
+    flash("로그인 완료", "success")
+    return redirect(url_for('home.main'))
 
 
 @bp.route('/auth/kakao/login')
@@ -146,7 +147,8 @@ def kakao_callback():
     session['user'] = user.user_unique_id
     session['kakao_token'] = access_token
 
-    return redirect(url_for('home.index'))
+    flash("로그인 완료", "success")
+    return redirect(url_for('home.main'))
 
 
 @bp.route('/signup', methods=['GET', 'POST'])
@@ -222,7 +224,7 @@ def login():
             flash("이메일 또는 비밀번호를 다시 확인해주세요.", "error")
 
     return render_template('auth/login.html', form=form)
-# todo admin로그인
+
 
 @bp.route('/logout')
 def logout():

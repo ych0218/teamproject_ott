@@ -187,3 +187,53 @@
 .tab-section.active {
     display: block;
 }
+
+/* 페이지네이션 컨테이너 */
+.notice_pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* 공통 번호 스타일 */
+.page_num, .page_arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    color: #ffffff; /* 기본 흰색 텍스트 */
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 50%; /* 원형 모양 */
+    transition: all 0.3s ease;
+}
+
+/* 💡 현재 활성화된 페이지 (붉은 원) */
+.page_num.active {
+    background-color: #ff153c; /* 티빙 레드 포인트 */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 마우스 호버 효과 */
+.page_num:hover:not(.active), .page_arrow:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* 살짝 밝아지는 효과 */
+    color: #ff153c;
+}
+
+/* 화살표 스타일 */
+.page_arrow {
+    font-family: serif; /* 화살표 기호를 더 깔끔하게 */
+    color: #666; /* 화살표는 살짝 어둡게 */
+}
+
+/* 말줄임표(...) 스타일 */
+.page_dots {
+    color: #444;
+    padding: 0 5px;
+}

@@ -1,69 +1,96 @@
- /* 1. 배경 및 컨테이너 */
-    .detail_support_wrapper {
-        width: 100%;
-        max-width: 1200px;
-        margin: 50px auto;
-        padding: 0 20px;
-        box-sizing: border-box;
-    }
+/* 컨테이너 */
+.notice_detail_wrapper {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 2%;
+    box-sizing: border-box;
+}
 
-    /* 2. 카드 박스 */
-    .detail_support_card {
-        width: 100%;
-        background-color: #1f1f1f;
-        border-radius: 12px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
+/* 💡 상세 카드 박스: 버튼을 안으로 넣기 위해 하단 padding을 조절하고 Flex 적용 */
+.notice_detail_card {
+    width: 100%;
+    background-color: #1f1f1f;
+    /* 하단 padding을 0으로 설정하여 버튼 영역이 끝까지 닿게 함 */
+    padding: 50px 60px 0 60px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-sizing: border-box;
 
-    /* 헤더 */
-    .detail_support_header { padding: 40px 50px; }
-    .detail_support_category { color: #ff153c; font-weight: bold; font-size: 14px; margin-bottom: 10px; display: block; }
-    .detail_support_title { font-size: 28px; color: #fff; margin: 10px 0; font-weight: 700; }
-    .notice_meta_box { color: #666; font-size: 14px; margin-top: 15px; }
+    /* 💡 핵심: 길이감을 주고 하단 정렬을 위한 Flex 설정 */
+    display: flex;
+    flex-direction: column;
+    min-height: 750px; /* 💡 길이감을 위해 최소 높이 설정 */
+}
 
-    /* 3. 본문 영역: min-height 추가하여 세로 길이 확보 */
-    .detail_support_body {
-        padding: 20px 50px 60px;
-        color: #ccc;
-        font-size: 17px;
-        line-height: 1.8;
-        white-space: pre-wrap;
+/* 헤더 영역 */
+.notice_detail_header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 30px;
+    margin-bottom: 40px;
+}
 
-        /* 💡 최소 높이를 450px로 설정 (원하시는 만큼 조절 가능) */
-        min-height: 450px;
+.notice_detail_category {
+    color: #ff153c;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 15px;
+    display: block;
+}
 
-        border-bottom: 1px solid #333;
-    }
+.notice_detail_title {
+    font-size: 36px;
+    color: #fff;
+    margin: 10px 0;
+    font-weight: 700;
+}
 
-    /* 하단 메시지 영역 */
-    .detail_support_empty_msg {
-        text-align: center;
-        color: #555;
-        padding: 40px 0;
-        font-size: 14px;
-    }
+.notice_detail_date {
+    color: #666;
+    font-size: 14px;
+    text-align: right;
+}
 
-    /* 4. 하단 버튼 영역 */
-    .detail_support_actions {
-        padding-bottom: 60px;
-        text-align: center;
-    }
+/* 💡 본문 영역: flex: 1을 주어 공간이 남으면 버튼을 아래로 밀어냄 */
+.notice_detail_body {
+    color: #ccc;
+    font-size: 17px;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    padding: 10px 0;
+    flex: 1;
+    min-height: 400px;
+}
 
-    .detail_support_back_btn {
-        display: inline-block;
-        padding: 14px 45px;
-        background-color: #2a2a2a;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-        font-size: 15px;
-        transition: 0.3s;
-    }
+/* 안내 메시지 */
+.notice_detail_empty_msg {
+    text-align: center;
+    color: #555;
+    padding: 40px;
+    border-top: 1px solid #333;
+    margin-top: 60px;
+    font-size: 16px;
+}
 
-    .detail_support_back_btn:hover {
-        background-color: #3a3a3a;
-        transform: translateY(-2px);
-    }
+/* 💡 하단 버튼 영역: 카드 내부 하단에 안착 */
+.notice_detail_actions {
+    padding: 40px 0 60px; /* 카드 안쪽에서의 여백 */
+    text-align: center;
+    margin-top: auto; /* 내용이 적어도 항상 바닥으로 밀림 */
+}
+
+.notice_detail_back_btn {
+    display: inline-block;
+    padding: 15px 60px;
+    background-color: #2a2a2a;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.notice_detail_back_btn:hover {
+    background-color: #3a3a3a;
+    transform: translateY(-2px);
+}

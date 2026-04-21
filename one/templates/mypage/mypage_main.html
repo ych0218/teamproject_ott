@@ -15,11 +15,11 @@
         <div class="right-actions">
             {% if user.signup_method == 'email' or user.user_password %}
                 <!-- 1. 통합 유저: 바로 이동 -->
-                <a href="{{ url_for('mypage.change_info') }}" class="action-btn edit-profile-btn">회원정보 수정</a>
+                <a href="{{ url_for('mypage.change_info') }}" class="actionbtn edit-profile-btn">회원정보 수정</a>
             {% else %}
                 <!-- 2. 미통합 소셜 유저: JS 함수 실행 (data-method 추가) -->
-                <a href="#"
-                   class="action-btn edit-profile-btn-js"
+                <a href="javascript:void(0)"
+                   class="actionbtn edit-profile-btn-js"
                    data-method="{{ user.signup_method }}">회원정보 수정</a>
             {% endif %}
              <a href="{{ url_for('mypage.support_center') }}" class="actionbtn">고객센터</a>
@@ -158,12 +158,7 @@
     <!-- 💡 문의하기 버튼을 포함한 헤더 영역 추가 -->
     <div class="support-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
         <h3 class="section-title" style="margin: 0; font-size: 20px; color: #fff;">문의 내역</h3>
-
-        {% if user.signup_method == 'email' or user.user_password %}
             <a href="{{ url_for('mypage.support_write') }}" class="actionbtn primary" style="font-size: 12px; padding: 6px 14px;">문의하기</a>
-        {% else %}
-            <a href="#" class="actionbtn edit-profile-btn-js" data-method="{{ user.signup_method }}" style="font-size: 12px; padding: 6px 14px;">문의하기</a>
-        {% endif %}
     </div>
 
     <div class="support-list">
@@ -192,7 +187,8 @@
 {% block script %}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>document.addEventListener("DOMContentLoaded", function () {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
     // 세션에 결제 완료 데이터가 있는지 확인
     {% if session.get('show_payment_modal') %}
         const payData = {{ session.pop('show_payment_modal') | tojson }};
@@ -221,7 +217,8 @@
             buttonsStyling: false
         });
     {% endif %}
-document.addEventListener("DOMContentLoaded", function () {
+
+
 
     // ✅ 회원정보 수정 버튼 (팝업)
     const editBtn = document.querySelector('.edit-profile-btn-js');
@@ -261,7 +258,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
-});
     // ✅ 탭 기능
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {

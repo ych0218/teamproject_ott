@@ -16,8 +16,11 @@
 .top-action-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 40px; /* 폼과의 간격을 위해 조금 더 키움 */
+    margin-bottom: 40px;
     width: 100%;
+    /* 💡 아래 두 줄을 추가하세요 */
+    position: relative;
+    z-index: 100;
 }
 
 .actionbtn {

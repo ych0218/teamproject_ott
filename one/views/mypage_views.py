@@ -166,25 +166,39 @@ def support_detail(support_id):
 @bp.route('/support-center')
 def support_center():
     user_unique_id = session.get('user')
-
     if not user_unique_id:
         return redirect(url_for('auth.login'))
 
     user_data = User.query.get_or_404(user_unique_id)
+    page = request.args.get('page', 1, type=int)
+    keyword = request.args.get('keyword', '', type=str)  # 💡 검색어 가져오기
 
     # 1. 내 문의 내역 조회
     my_supports = Support.query.filter_by(user_unique_id=user_unique_id) \
         .order_by(Support.created_at.desc()).all()
 
-    # 2. 공지사항 조회 (고정글 우선 -> 최신순 정렬)
-    # .desc()를 사용하면 True(1)가 False(0)보다 먼저 나옵니다.
-    notices = Notice.query.order_by(Notice.is_pinned.desc(), Notice.created_at.desc()).all()
+    # 2. 중요 공지 (검색 시에도 중요 공지는 상단 노출을 원할 경우 유지)
+    pinned_notices = Notice.query.filter_by(is_pinned=True) \
+        .order_by(Notice.created_at.desc()).all()
+
+    # 3. 일반 공지 쿼리 (검색 필터 추가)
+    query = Notice.query.filter_by(is_pinned=False)
+    if keyword:
+        # 제목(title)에 검색어가 포함된 경우 필터링
+        query = query.filter(Notice.title.ilike(f'%{keyword}%'))
+
+    pagination = query.order_by(Notice.created_at.desc()) \
+        .paginate(page=page, per_page=10, error_out=False)
+
+    normal_notices = pagination.items
 
     return render_template('mypage/support_center.html',
                            user=user_data,
                            supports=my_supports,
-                           notices=notices) # notices 추가
-
+                           pinned_notices=pinned_notices,
+                           notices=normal_notices,
+                           pagination=pagination,
+                           keyword=keyword) # 💡 검색어 다시 전달
 
 @bp.route('/notice/<int:notice_id>')
 def notice_detail(notice_id):
