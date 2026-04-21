@@ -21,6 +21,7 @@
             <li><a href="{{ url_for('admin.content_list') }}">콘텐츠 관리</a></li>
             <li><a href="{{ url_for('admin.inquiry_list') }}">문의 관리</a></li>
             <li><a href="{{ url_for('admin.review_list') }}">리뷰 관리</a></li>
+            <li><a href="{{ url_for('admin.notice_list') }}">공지사항 관리</a></li>
         </ul>
     </aside>
 
@@ -75,6 +76,12 @@
                 <h3>리뷰 관리</h3>
                 <p>리뷰확인 및 삭제</p>
                 <a href="{{ url_for('admin.review_list') }}">바로가기</a>
+            </div>
+
+            <div class="card">
+                <h3>공지사항 관리</h3>
+                <p>공지사항 등록, 수정, 삭제</p>
+                <a href="{{ url_for('admin.notice_list') }}">바로가기</a>
             </div>
         </div>
     </main>

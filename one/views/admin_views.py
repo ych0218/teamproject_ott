@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from sqlalchemy import or_
 from one import db
-from one.models import User, Video, Support, Review, SupportAnswer
+from one.models import User, Video, Support, Review, SupportAnswer, Notice
 from datetime import datetime
 
 import os
@@ -11,8 +11,10 @@ from flask import current_app
 ALLOWED_VIDEO_EXTENSIONS = {'mp4'}
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
+
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
 
 def get_unique_filename(upload_folder, filename):
     filename = secure_filename(filename)
@@ -28,11 +30,17 @@ def get_unique_filename(upload_folder, filename):
 
     return unique_filename
 
+
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 
 @bp.route('/')
 def admin_main():
+    # 💡 세션에 관리자 플래그가 없거나 False인 경우 쫓아냄
+    if not session.get('is_admin'):
+        flash("관리자 권한이 없습니다.", "error")
+        return redirect(url_for('auth.login'))
+
     user_count = User.query.count()
     content_count = Video.query.count()
     inquiry_pending_count = Support.query.filter_by(status='pending').count()
@@ -45,7 +53,6 @@ def admin_main():
         inquiry_pending_count=inquiry_pending_count,
         review_count=review_count
     )
-
 
 # ================= 회원 관리 =================
 @bp.route('/members')
@@ -328,6 +335,109 @@ def content_delete(content_id):
     return redirect(url_for('admin.content_list'))
 
 
+# ================= 공지사항 관리 =================
+@bp.route('/notices')
+def notice_list():
+    keyword = request.args.get('keyword', '').strip()
+    search_type = request.args.get('search_type', 'all').strip()
+    page = request.args.get('page', 1, type=int)
+
+    query = Notice.query
+
+    if keyword:
+        if search_type == 'notice_id':
+            if keyword.isdigit():
+                query = query.filter(Notice.notice_id == int(keyword))
+            else:
+                query = query.filter(Notice.notice_id == -1)
+
+        elif search_type == 'title':
+            query = query.filter(Notice.title.contains(keyword))
+
+        elif search_type == 'content':
+            query = query.filter(Notice.content.contains(keyword))
+
+        else:
+            query = query.filter(
+                or_(
+                    Notice.title.contains(keyword),
+                    Notice.content.contains(keyword)
+                )
+            )
+
+    notice_list = query.order_by(
+        Notice.is_pinned.desc(),
+        Notice.notice_id.desc()
+    ).paginate(page=page, per_page=10)
+
+    return render_template(
+        'admin/notice_list.html',
+        notice_list=notice_list,
+        keyword=keyword,
+        search_type=search_type
+    )
+
+
+# ================= 공지사항 등록 =================
+@bp.route('/notices/create', methods=['GET', 'POST'])
+def notice_create():
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        is_pinned = request.form.get('is_pinned') == '1'
+
+        notice = Notice(
+            title=title,
+            content=content,
+            is_pinned=is_pinned,
+            view_count=0,
+            admin_unique_id=1  # 임시 (로그인 붙이면 아래 주석으로 바꿔야됨)
+            # admin_unique_id = session['admin_id']
+        )
+
+        db.session.add(notice)
+        db.session.commit()
+        flash('공지사항이 등록되었습니다.')
+        return redirect(url_for('admin.notice_list'))
+
+    return render_template(
+        'admin/notice_form.html',
+        mode='create',
+        notice=None
+    )
+
+
+# ================= 공지사항 수정 =================
+@bp.route('/notices/edit/<int:notice_id>', methods=['GET', 'POST'])
+def notice_edit(notice_id):
+    notice = Notice.query.get_or_404(notice_id)
+
+    if request.method == 'POST':
+        notice.title = request.form.get('title', '').strip()
+        notice.content = request.form.get('content', '').strip()
+        notice.is_pinned = request.form.get('is_pinned') == '1'
+
+        db.session.commit()
+        flash('공지사항이 수정되었습니다.')
+        return redirect(url_for('admin.notice_list'))
+
+    return render_template(
+        'admin/notice_form.html',
+        mode='edit',
+        notice=notice
+    )
+
+
+# ================= 공지사항 삭제 =================
+@bp.route('/notices/delete/<int:notice_id>', methods=['POST'])
+def notice_delete(notice_id):
+    notice = Notice.query.get_or_404(notice_id)
+    db.session.delete(notice)
+    db.session.commit()
+    flash('공지사항이 삭제되었습니다.')
+    return redirect(url_for('admin.notice_list'))
+
+
 # ================= 문의 관리 =================
 @bp.route('/inquiries')
 def inquiry_list():
@@ -457,7 +567,7 @@ def review_list():
     page = request.args.get('page', 1, type=int)
 
     query = Review.query.join(User, Review.user_unique_id == User.user_unique_id) \
-                        .join(Video, Review.video_unique_id == Video.video_unique_id)
+        .join(Video, Review.video_unique_id == Video.video_unique_id)
 
     if keyword:
         if search_type == 'review_id':
