@@ -81,34 +81,36 @@
 {% block script %}
 <script src="https://js.tosspayments.com/v2/standard"></script>
 <script>
-    async function requestPayment(planName, price, planId) {
-        const clientKey = 'test_ck_24xLea5zVAo0LBzeyD968QAMYNwW';
-        const tossPayments = TossPayments(clientKey);
+async function requestPayment(planName, price, planId) {
+    const clientKey = 'test_ck_24xLea5zVAo0LBzeyD968QAMYNwW';
+    const tossPayments = TossPayments(clientKey);
 
-        // v2는 'payment' 객체를 먼저 생성해야 합니다.
-        const payment = tossPayments.payment({
-            customerKey: "ANONYMOUS", // 또는 유저 고유 ID
-        });
+    const payment = tossPayments.payment({
+        customerKey: "USER_" + new Date().getTime(), // 가급적 유저 고유 ID 권장
+    });
 
-        const orderId = 'ORDER-' + new Date().getTime();
+    const orderId = 'ORDER-' + new Date().getTime();
 
-       await payment.requestPayment({
-    method: "CARD", // v2에서는 CARD를 기본으로 하고 옵션에서 간편결제를 선택하는 것이 안전합니다.
-    amount: {
-        currency: "KRW",
-        value: price
-    },
-    orderId: orderId,
-    orderName: 'OTT PASS ' + planName.toUpperCase(),
-    successUrl: window.location.origin + '/mypage/payment/success?planId=' + planId,
-    failUrl: window.location.origin + '/mypage/payment/fail',
+    await payment.requestPayment({
+        method: "CARD", // 카드 결제창 호출
+        amount: {
+            currency: "KRW",
+            value: price
+        },
+        orderId: orderId,
+        orderName: 'OTT PASS ' + planName.toUpperCase(), // 여기에 적은 내용이 결제창에 뜹니다
+        successUrl: window.location.origin + '/mypage/payment/success?planId=' + planId,
+        failUrl: window.location.origin + '/mypage/payment/fail',
 
-    // ✨ v2 Standard에서 토스페이 호출을 강제하는 옵션
-    card: {
-        flowMode: "DIRECT",
-        easyPay: "TOSSPAY"
-    }
-});
-    }
+        // ✨ 이 부분을 수정합니다: 특정 결제수단 강제 호출을 해제하여 표준 결제창을 띄웁니다.
+        card: {
+            useEscrow: false,
+            flowMode: "DIRECT", // DIRECT 대신 DEFAULT 사용
+            useCardPoint: false,
+            useAppCardOnly: false,
+             easyPay: "TOSSPAY"
+        }
+    });
+}
 </script>
 {% endblock %}

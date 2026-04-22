@@ -29,7 +29,7 @@
             {% if mode == 'create' %}콘텐츠 등록{% else %}콘텐츠 수정{% endif %}
         </h1>
 
-        <form method="post" class="content_form">
+        <form method="post" enctype="multipart/form-data" class="content_form">
 
             <div class="content_form_group">
                 <label for="video_title">제목</label>
@@ -63,15 +63,34 @@
             </div>
 
             <div class="content_form_group">
-                <label for="video_url">영상 URL</label>
-                <input type="text" id="video_url" name="video_url"
-                       value="{{ content.video_url if content else '' }}" required>
+                <label for="video_file">동영상 파일</label>
+                <input type="file" id="video_file" name="video_file" accept="video/mp4">
+
+                {% if mode == 'edit' and content and content.video_url %}
+                <p class="current_file_text">
+                    현재 영상: {{ content.video_url.split('/')[-1] }}
+                </p>
+
+                <video class="current_video_preview" controls>
+                    <source src="{{ content.video_url }}" type="video/mp4">
+                    브라우저가 video 태그를 지원하지 않습니다.
+                </video>
+                {% endif %}
             </div>
 
             <div class="content_form_group">
-                <label for="video_thumbnail">썸네일 URL</label>
-                <input type="text" id="video_thumbnail" name="video_thumbnail"
-                       value="{{ content.video_thumbnail if content else '' }}" required>
+                <label for="thumbnail_file">썸네일 파일</label>
+                <input type="file" id="thumbnail_file" name="thumbnail_file" accept="image/*">
+
+                {% if mode == 'edit' and content and content.video_thumbnail %}
+                <p class="current_file_text">
+                    현재 썸네일: {{ content.video_thumbnail.split('/')[-1] }}
+                </p>
+
+                <img src="{{ content.video_thumbnail }}"
+                     alt="현재 썸네일"
+                     class="current_thumbnail_preview">
+                {% endif %}
             </div>
 
             <div class="content_form_group">

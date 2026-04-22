@@ -615,3 +615,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: white;
     border: 1px solid red;
 }
+
+.current_file_text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #bbb;
+}
+
+.current_thumbnail_preview {
+    display: block;
+    margin-top: 10px;
+    width: 180px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.current_video_preview {
+    display: block;
+    margin-top: 10px;
+    width: 300px;
+    border-radius: 8px;
+    border: 1px solid #444;
+}

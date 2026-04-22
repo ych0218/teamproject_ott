@@ -15,7 +15,7 @@ body {
 /* ------------------------------배너----------------------------- */
 .banner {
     width: 100%;
-    height: 720px;
+    height: calc(100vh - 70px); /* Viewport Height: 화면 높이의 100%를 차지 */
     background: url("/static/img/banner.jpg") no-repeat center/cover;
     position: relative;
     display: flex;
@@ -92,6 +92,19 @@ body {
     height: 280px;
     background: #222;
     border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.content_card1 img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+.content_card1:hover {
+    transform: scale(1.05);
 }
 
 .content_card2 {
@@ -132,9 +145,9 @@ body {
     }
 
     .banner {
-        height: auto;
-        min-height: 720px;
-        padding: 120px 20px 80px;
+        height: calc(100vh - 70px); /* 모바일에서도 전체 화면 유지 */
+        min-height: auto; /* 기존 설정 해제 */
+        padding: 0 20px; /* 불필요한 상단 패딩 제거 (중앙 정렬 위해) */
     }
 
     .banner_content h1 {
@@ -154,69 +167,155 @@ body {
     }
 }
 
-.swal2-container * {
-    outline: none !important;
+.content_card2 {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease-in-out; /* 나갈 때도 부드럽게 */
 }
 
-.netflixst-toast {
-    border: none !important;
-    outline: none !important;
+.content_card2.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.netflixst-toast {
-    border-radius: 10px !important;
-    padding: 14px 18px 14px 16px !important;
+.content_card1 {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease-in-out;
+}
 
-    background: #2a2a2a !important;   /* ✅ 불투명 */
-    color: #f1f1f1 !important;
+/* 나타날 때의 클래스 */
+.content_card1.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.content_card1.visible:hover {
+    transform: translateY(-10px) scale(1.05); /* 살짝 위로 더 뜨면서 커짐 */
+    z-index: 10; /* 커질 때 다른 카드보다 위에 보이게 */
+}
 
-    box-shadow: 0 6px 18px rgba(0,0,0,0.5);  /* ✅ 부드럽게 */
 
-    font-size: 14px;
 
+
+
+/* 홈 화면용 카드 기본 설정 및 애니메이션 준비 */
+.content_section_k .plan-card {
+    background-color: #1f1f1f;
+    border-radius: 16px;
+    padding: 30px;
+    padding-bottom: 40px; /* 하단 여유 공간 */
+    display: flex;
+    height: 100%;          /* 부모 그리드 높이에 맞춤 */
+    flex-direction: column;
+     min-height: auto; /* 고정 높이 해제 */
+    border: 2px solid transparent;
     position: relative;
     overflow: hidden;
+    /* JS 애니메이션을 위한 초기값 */
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s ease-in-out;
 }
 
-/* 🔴 왼쪽 빨간 라인 (핵심) */
-.netflixst-toast::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    background: #e50914;
+/* 스크롤 시 나타나는 상태 */
+.content_section_k .plan-card.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* 🔥 등장 애니메이션 (위에서 내려옴) */
-.animate-toast-in {
-    animation: toastSlideDown 0.35s ease forwards;
+/* 호버 효과: 기존 sub-page와 동일하게 유지 */
+.content_section_k.plan-card.visible:hover {
+    border-color: #555;
+    transform: translateY(-10px); /* 위에서 만든 팝업과 통일감을 위해 -10px 추천 */
+    z-index: 10;
 }
 
-/* 🔥 사라질 때 */
-.animate-toast-out {
-    animation: toastFadeOut 0.2s ease forwards;
+/* 가격 및 할인 배지 스타일 */
+.price-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 30px;
 }
 
-/* 등장 */
-@keyframes toastSlideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+.discount-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e50914;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
-/* 사라짐 */
-@keyframes toastFadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+/* 프리미엄 특별 강조 */
+.discount-badge.highlight {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4);
+}
+
+/* 요금제 타이틀 & 특징 */
+.ott-pass { color: #e50914; font-weight: 700; font-size: 0.75rem; letter-spacing: 2px; }
+.plan-title { font-size: 1.8rem; font-weight: 900; margin: 5px 0 20px 0; text-transform: uppercase; }
+.plan-price { font-size: 1.8rem; font-weight: 800; margin: 0; }
+.plan-features { list-style: none; padding: 20px 0; margin: 0 0 30px 0; border-top: 1px solid #333; flex-grow: 1;}
+.plan-features li { font-size: 0.9rem; color: #ccc; margin-bottom: 12px; }
+
+.main-start-btn {
+    display: inline-block;
+    background-color: #e50914; /* 넷플릭스 레드 */
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 18px 60px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+}
+
+.main-start-btn:hover {
+    background-color: #ff0a16;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
+    color: #fff;
+}
+
+.cta-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 60px; /* 카드들과의 간격 */
+    margin-bottom: 40px;
+}
+
+.main-start-btn {
+    display: inline-block;
+    background-color: #e50914;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding: 20px 80px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.main-start-btn:hover {
+    background-color: #ff0a16;
+    transform: scale(1.05);
+    color: #fff;
+}
+.scroll-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+}
+
+.scroll-fade.visible {
+    opacity: 1;
+    transform: translateY(0);
 }

@@ -13,8 +13,16 @@
 <div class="mypage-wrapper">
     <div class="top-action-wrapper">
         <div class="right-actions">
-            <a href="{{ url_for('mypage.change_info') }}" class="actionbtn edit-profile-btn"><span>회원정보 수정</span></a>
-            <a href="{{ url_for('mypage.support_write') }}" class="actionbtn"><span>문의하기</span></a>
+            {% if user.signup_method == 'email' or user.user_password %}
+                <!-- 1. 통합 유저: 바로 이동 -->
+                <a href="{{ url_for('mypage.change_info') }}" class="actionbtn edit-profile-btn">회원정보 수정</a>
+            {% else %}
+                <!-- 2. 미통합 소셜 유저: JS 함수 실행 (data-method 추가) -->
+                <a href="javascript:void(0)"
+                   class="actionbtn edit-profile-btn-js"
+                   data-method="{{ user.signup_method }}">회원정보 수정</a>
+            {% endif %}
+             <a href="{{ url_for('mypage.support_center') }}" class="actionbtn">고객센터</a>
             <a href="{{ url_for('mypage.subscribe') }}" class="actionbtn primary"><span>이용권 구매</span></a>
         </div>
     </div>
@@ -23,16 +31,12 @@
         <div class="profile-card">
             <div class="profile-info">
                 <div class="user-main">
-                    <h2 class="user-name">{{ user.user_name }}</h2>
+                <h2 class="user-name">{{ user.user_name | default('', true) }}</h2>
 
-                    <!-- 💡 1. 아이콘 표시 로직 수정 -->
-                    {% set active_sub = user.subscriptions | selectattr("status", "equalto", "active") | first %}
-                    {% if active_sub %}
-                        {% set plan_name = active_sub.plan.plan_name.lower() %}
-                        <img src="{{ url_for('static', filename='img/' + plan_name + '.png') }}" class="name-grade-icon" alt="{{ plan_name }}">
-                    {% endif %}
+                <!-- 💡 이 위치에 있던 아이콘 로직을 삭제했습니다. -->
+                {% set active_sub = user.subscriptions | selectattr("status", "equalto", "active") | first %}
 
-                    <span class="user-id">@{{ user.user_email }}</span>
+                <span class="user-id">@{{ user.user_email }}</span>
                 </div>
 
                 <div class="subscription-status">
@@ -49,7 +53,7 @@
 
                     <!-- 💡 여기에 추가하세요! -->
                     {% if active_sub %}
-                    <p class="expire-date" style="font-size: 0.75rem; color: #888; margin-top: 4px; letter-spacing: -0.02em;">
+                    <p class="expire-date" style="font-size: 0.75rem; color: #888; margin-top: 6px; margin-left: 14px; padding: 0; letter-spacing: -0.02em;">
                         만료 예정일: {{ active_sub.end_date.strftime('%Y.%m.%d') }}
                     </p>
                     {% endif %}
@@ -147,9 +151,14 @@
     </section>
 
     <section id="support" class="tab-section">
+    <!-- 💡 문의하기 버튼을 포함한 헤더 영역 추가 -->
+    <div class="support-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+        <h3 class="section-title" style="margin: 0; font-size: 20px; color: #fff;">문의 내역</h3>
+            <a href="{{ url_for('mypage.support_write') }}" class="actionbtn primary" style="font-size: 12px; padding: 6px 14px;">문의하기</a>
+    </div>
+
     <div class="support-list">
         {% for support in user.supports | sort(attribute='created_at', reverse=True) %}
-        <!-- [수정] 클릭 이벤트 및 마우스 커서 스타일 추가 -->
         <div class="support-item"
              onclick="location.href='{{ url_for('mypage.support_detail', support_id=support.support_id) }}'"
              style="cursor: pointer;">
@@ -175,10 +184,40 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
+    // 세션에 결제 완료 데이터가 있는지 확인
+    {% if session.get('show_payment_modal') %}
+        const payData = {{ session.pop('show_payment_modal') | tojson }};
+
+        Swal.fire({
+            title: '결제가 완료되었습니다!',
+            html: `
+                <div style="text-align: center; margin-top: 10px;">
+                    <p style="margin: 5px 0;">이용권: <b>${payData.plan}</b></p>
+                    <p style="margin: 5px 0;">결제 금액: <b>${payData.amount}원</b></p>
+                    <p style="margin: 5px 0; color: #ff4d4f;">만료일: ${payData.end_date}</p>
+                </div>
+            `,
+            icon: 'success',
+            width: '360px',
+            background: '#343a40',
+            color: '#fff',
+
+            confirmButtonText: '확인',
+            confirmButtonColor: '#ff4d4f',
+
+            customClass: {
+                popup: 'swal-popup-custom',
+                confirmButton: 'swal-confirm-btn'
+            },
+            buttonsStyling: false
+        });
+    {% endif %}
+
+
 
     // ✅ 회원정보 수정 버튼 (팝업)
-    const editBtn = document.querySelector('.edit-profile-btn');
+    const editBtn = document.querySelector('.edit-profile-btn-js');
 
     console.log('버튼 확인:', editBtn); // 🔥 디버깅용
 
@@ -210,12 +249,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = editBtn.href;
+                    window.location.href = "/mypage/change";
                 }
             });
         });
     }
-
     // ✅ 탭 기능
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {

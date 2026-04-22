@@ -26,12 +26,12 @@ body {
     font-family: Arial, sans-serif;
     width: 100%;
     min-height: 100vh;
-    /* height: 100% 대신 min-height: 100vh 추천 */
     display: flex;
     flex-direction: column;
     margin: 0;
     min-width: 1440px;
 }
+
 
 .navbar {
     color: white;
@@ -94,6 +94,7 @@ footer {
     color: gray;
     font-size: 12px;
     margin-left: 15px;
+    margin-top: auto; /* 컨텐츠가 적어도 항상 바닥에 위치 */
 }
 
 .footer_hr {
@@ -145,11 +146,30 @@ a {
 
 section {
     width: 95%;
-    height: 100%;
     background-color: black;
     margin: 0 auto;
     display: flex;
+    position: relative;
+    align-items: flex-start;
 }
+
+.col-8 {
+    flex: 0 0 66.6666%; /* 기존 col-8 비율 유지 */
+    height: auto;
+}
+
+.col-4 {
+    top: 60px; /* 헤더(#wrap) 높이만큼 띄워야 가려지지 않음 */
+    height: calc(100vh - 60px);
+    flex: 0 0 33.3333%; /* 기존 col-4 비율 유지 */
+    display: flex;
+    flex-direction: column;
+    /* 화면 높이를 초과하지 않도록 제한하여 스크롤 유도 */
+    max-height: 100vh; 
+    position: sticky;
+    overflow: hidden;
+}
+
 
 .header_box {
     width: 100%;
@@ -162,7 +182,85 @@ section {
 .tv {
     width: 100%;
     height: 680px;
+    position: relative;
+    display: block;
+    overflow: hidden;
     background-color: skyblue;
+}
+
+/* 이미지 박스 및 이미지 설정 */
+.tv-thumbnail, .tv-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* 이미지가 찌그러지지 않게 꽉 채움 */
+    transition: transform 0.4s ease; /* 호버 시 이미지 확대 효과 */
+}
+
+/* 검정색 반투명 오버레이 레이어 */
+.tv-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 마우스 올렸을 때 어두워지는 정도 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* 처음에는 안 보이게 설정 */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 재생 버튼 디자인 */
+.tv-button {
+    background: none;    
+    border: none;       
+    color: white;        
+    font-size: 40px;    
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease; 
+}
+
+
+.tv-button:hover {
+    color: #0084FF;
+    text-shadow: 0 0 15px rgba(248, 210, 16, 0.8);
+}
+
+.tv:hover .tv-overlay {
+    opacity: 1; 
+}
+
+/* 우측 상단 음소거 버튼 위치 */
+.mute-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.5); /* 버튼 배경 원형 */
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px; /* 이미지 크기 조절용 */
+    transition: background 0.2s;
+}
+
+.mute-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 버튼 내 이미지 스타일 */
+.mute-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: invert(1); /* 검정 아이콘일 경우 흰색으로 반전 (선택) */
 }
 
 .tv2 {
@@ -220,7 +318,7 @@ section {
 .tv2 .display_box {
     width: 30px;
     height: 24px;
-    font-size: 13px;
+    font-size: 14px;
     font-family: "Gabarito", sans-serif;
     font-weight: 600;
     background-color: #656b78;
@@ -349,7 +447,6 @@ section {
 .info {
     width: 80%;
     height: 100%;
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -357,7 +454,7 @@ section {
 
 .info .info_box {
     width: 95%;
-    height: 95%;
+    height: 1000px;
     background-color: olive;
 }
 
@@ -365,22 +462,26 @@ section {
 
 .tab {
     width: 95%;
-    height: calc(100% - 60px); /* 헤더 영역 등을 제외한 나머지 높이 다 쓰기 */
+    height: 100%; /* 부모 .col-4의 높이를 다 씀 */
     margin-top: 30px;
-    margin-left: 33px;
+    margin-left: 30px;
     display: flex;
     flex-direction: column; /* 메뉴와 콘텐츠를 세로로 배치 */
+    overflow: hidden;
 }
 
 .tab-menu {
+    display: flex;
+    position: sticky;
+    top: 0;
     flex-shrink: 0; /* 높이가 줄어들지 않도록 고정 */
     width: 100%;
+    z-index: 10;
     background-color: #000;
     border-bottom: 1px solid hsla(0, 0%, 100%, .1);
 }
 
 .tab-content {
-    max-height: 80%;
     flex: 1;
     overflow-y: auto; 
     overflow-x: hidden;
@@ -396,11 +497,10 @@ section {
 
 .tab-content.active {
     display: block ;
-    flex-grow: 1;      /* 남은 부모 높이를 가득 채움 */
-    height: 100%;      /* 부모(.tab) 대비 100% */
-    overflow-y: auto;  /* 내용이 넘치면 스크롤 생성 */
+    flex-grow: 1;      
+    height: 100%;      
 }
-/* 마우스 올렸을 때와 활성화되었을 때 색상 */
+
 .tab-menu button:hover {
     background-color: #202022;
 }
@@ -515,6 +615,91 @@ section {
     background-color: none;
 }
 
+.item {
+    display: flex; /* 기본적으로 플렉스 레이아웃 적용 */
+    gap: 10px;    /* 박스 사이 간격 */
+    align-items: center;
+}
+
+/* 필터링되어 숨겨질 때 사용할 클래스 */
+.item.hidden {
+    display: none !important;
+}
+
+/* 제목(시즌1, 시즌2)은 플렉스가 필요 없을 수 있으니 별도 처리 가능 */
+.season-title {
+    display: block; 
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.item-box1 {
+    position: relative;
+    width: 35%;
+    height: 112px;
+    border-radius: 12px;
+    overflow: hidden;  
+    cursor: pointer;
+}
+
+.item-box1 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+.play-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* 어두운 반투명 배경 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* 평소엔 숨김 */
+    transition: opacity 0.3s ease;
+}
+
+.play-button a {
+    color: white;
+    font-size: 30px;
+    width: 50px; height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ⭐ 핵심: .item-box1에 마우스 올렸을 때만 작동 */
+.item-box1:hover .play-overlay {
+    opacity: 1; /* 재생 버튼 나타남 */
+}
+
+.item-box1:hover img {
+    transform: scale(1.08); /* 이미지 살짝 확대 */
+}
+
+.item-box2 {
+    width: 65%;
+    height: 112px;
+    background-color: wheat;
+}
+
+.item-box2 h5 {
+    font-size: 18px;
+    margin-bottom: 1px;
+}
+
+.item-box2 span {
+    font-size: 14px;
+}
+
+.item-box2 h6 {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 400;
+}
 
 .show {
     display: block;
@@ -617,7 +802,7 @@ section {
 }
 
 #comment-text {
-    height: 80px;
+    height: 120px;
     padding: 10px;
     resize: none;
     color: #ffffffcc;
@@ -745,12 +930,8 @@ section {
     color: #fff;
 }
 
-.btn-action:hover {
-}
-
 #tab3 .title-container {
     height: auto;
-    background-color: tomato;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -763,21 +944,59 @@ section {
     background-color: yellowgreen;
 }
 
+#tab3 a {
+    color: #fff;
+}
+
+#tab3 .title-box:hover {
+    background-color: #202022;
+}
+
 #tab3 .title-thumbnail {
     width: 100%;
     height: 55%;
     background-color: purple;
     border-radius: 12px;
+    overflow: hidden;
+}
+
+#tab3 .title-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    object-position: center;
 }
 
 #tab3 h5 {
+    margin-top: 10px;
+    font-weight: 600;
     font-size: 18px;
 }
 
-#tab3 p {
-    font-size: 16px;
+#tab3 .inf {
+    margin-bottom: 5px;
+    display: flex;
+    font-size: 15px;
 }
 
-#tab3 p img {
+#tab3 .display_box {
+    width: 30px;
+    height: 24px;
+    font-size: 14px;
+    font-family: "Gabarito", sans-serif;
+    font-weight: 600;
+    background-color: #656b78;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 9px;
+    margin-top: -2px;
+}
+
+#tab3 .inf img {
+    margin: 3px 3px 0 0;
     width: 16px;
+    height: 16px;
+
 }

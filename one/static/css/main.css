@@ -169,13 +169,14 @@ h3 {
     margin: 0 auto;
 }
 
-.box1 .rank_num {
+.rank_num {
     font-family: "Bangers", system-ui;
     font-size: 120px;
-    margin-bottom: -10px;
+    margin-bottom: -43px;
     margin-right: 20px;   /* 카드와 살짝 겹치는 효과 (유지) */
     letter-spacing: 0px;
     color: #ffffff;
+    z-index: 10;
 }
 
 .box1 .section_slider .swiper-slide {

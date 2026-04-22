@@ -73,38 +73,65 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // ===== 비밀번호 =====
+       // ===== 비밀번호 =====
     const password1 = document.getElementById("password1");
     const password2 = document.getElementById("password2");
     const errorEl = document.getElementById("pw-error");
     const matchMsg = document.getElementById("password-match-msg");
+    const bar = document.getElementById("pw-strength-bar"); // ⭐ 추가
 
     if (password1 && password2) {
 
-        // 🔹 조건 체크
         function checkPasswordStrength() {
             const pw = password1.value;
 
-            const lengthOk = pw.length >= 8;
-            const engOk = /[A-Za-z]/.test(pw);
-            const numOk = /[0-9]/.test(pw);
-            const specialOk = /[!@#$%^&*]/.test(pw);
-
             if (!pw) {
                 errorEl.textContent = "";
+                bar.style.width = "0%"; // ⭐ 초기화
                 return;
             }
 
-            if (lengthOk && engOk && numOk && specialOk) {
-                errorEl.textContent = "사용 가능한 비밀번호입니다.";
-                errorEl.style.color = "#00ff9d";
-            } else {
-                errorEl.textContent = "영문, 숫자, 특수문자를 포함한 8자 이상으로 입력해주세요.";
+            let score = 0;
+
+            const lengthOk = pw.length >= 10;
+            const upperOk = /[A-Z]/.test(pw);
+            const lowerOk = /[a-z]/.test(pw);
+            const numOk = /[0-9]/.test(pw);
+            const specialOk = /[^A-Za-z0-9]/.test(pw);
+
+            if (lengthOk) score++;
+            if (upperOk) score++;
+            if (lowerOk) score++;
+            if (numOk) score++;
+            if (specialOk) score++;
+
+            // ⭐ 게이지 길이
+            bar.style.width = (score * 20) + "%";
+
+            // ⭐ 색상 + 메시지
+            if (score <= 2) {
+                errorEl.textContent = "보안등급: 약함 (위험)";
                 errorEl.style.color = "#ff4d4d";
+                bar.style.backgroundColor = "#ff4d4d";
+            } else if (score === 3) {
+                errorEl.textContent = "보안등급: 보통 (조금 더 강화하세요)";
+                errorEl.style.color = "#ffa500";
+                bar.style.backgroundColor = "#ffa500";
+            } else if (score === 4) {
+                errorEl.textContent = "보안등급: 강함 (안전한 편)";
+                errorEl.style.color = "#00c853";
+                bar.style.backgroundColor = "#00c853";
+            } else if (score === 5) {
+                errorEl.textContent = "보안등급: 매우 강함 (아주 안전)";
+                errorEl.style.color = "#00ff9d";
+                bar.style.backgroundColor = "#00ff9d";
+            }
+
+            if (!lengthOk || !upperOk || !lowerOk || !numOk || !specialOk) {
+                errorEl.textContent += " / 10자 이상, 대소문자·숫자·특수문자 포함";
             }
         }
 
-        // 🔹 일치 체크
         function checkPasswordMatch() {
             const pw1 = password1.value;
             const pw2 = password2.value;
@@ -123,7 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // 🔹 이벤트 연결
         password1.addEventListener("input", () => {
             checkPasswordStrength();
             checkPasswordMatch();
@@ -143,3 +169,56 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+const bar = document.getElementById("pw-strength-bar");
+
+function checkPasswordStrength() {
+    const pw = password1.value;
+
+    if (!pw) {
+        errorEl.textContent = "";
+        bar.style.width = "0%";
+        return;
+    }
+
+    let score = 0;
+
+    const lengthOk = pw.length >= 10;
+    const upperOk = /[A-Z]/.test(pw);
+    const lowerOk = /[a-z]/.test(pw);
+    const numOk = /[0-9]/.test(pw);
+    const specialOk = /[^A-Za-z0-9]/.test(pw);
+
+    if (lengthOk) score++;
+    if (upperOk) score++;
+    if (lowerOk) score++;
+    if (numOk) score++;
+    if (specialOk) score++;
+
+    // 🔹 게이지 길이 (0~100%)
+    bar.style.width = (score * 20) + "%";
+
+    // 🔹 등급별 UI
+    if (score <= 2) {
+        errorEl.textContent = "보안등급: 약함";
+        errorEl.style.color = "#ff4d4d";
+        bar.style.backgroundColor = "#ff4d4d";
+    } else if (score === 3) {
+        errorEl.textContent = "보안등급: 보통";
+        errorEl.style.color = "#ffa500";
+        bar.style.backgroundColor = "#ffa500";
+    } else if (score === 4) {
+        errorEl.textContent = "보안등급: 강함";
+        errorEl.style.color = "#00c853";
+        bar.style.backgroundColor = "#00c853";
+    } else if (score === 5) {
+        errorEl.textContent = "보안등급: 매우 강함";
+        errorEl.style.color = "#00ff9d";
+        bar.style.backgroundColor = "#00ff9d";
+    }
+
+    // 🔹 조건 부족 시 안내 추가
+    if (!lengthOk || !upperOk || !lowerOk || !numOk || !specialOk) {
+        errorEl.textContent += " / 10자 이상, 대소문자·숫자·특수문자 포함";
+    }
+}

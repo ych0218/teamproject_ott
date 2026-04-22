@@ -2,7 +2,7 @@ from flask import Blueprint, session, render_template, redirect, request, flash,
 from one.forms import LoginForm, UserCreateForm, FindIdForm, ResetPasswordForm
 from datetime import datetime
 from functools import wraps
-from one.models import User, db
+from one.models import User, db, Admin
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import urllib.parse
@@ -209,6 +209,20 @@ def login():
         email = form.email.data
         password = form.password.data
 
+
+
+        admin = Admin.query.filter_by(admin_id=email).first()
+
+        if admin and check_password_hash(admin.admin_password, password):
+            # 관리자 세션 생성
+            session.clear()  # 기존 세션 초기화
+            session['admin_user'] = admin.admin_unique_id
+            session['admin_name'] = admin.admin_name
+            session['is_admin'] = True  # 관리자 여부 플래그
+            session['show_admin_login_success'] = True
+            return redirect(url_for('admin.admin_main'))  # 관리자 메인 페이지로 이동
+
+        # 2. 관리자가 아니면 일반 유저(User) 테이블 확인
         user = User.query.filter_by(user_email=email).first()
 
         if user and check_password_hash(user.user_password, password):
@@ -220,6 +234,7 @@ def login():
             session['user'] = user.user_unique_id
             flash("로그인 완료", "success")
             return redirect(url_for('home.main'))
+        # 3. 둘 다 해당하지 않을 경우
         else:
             flash("이메일 또는 비밀번호를 다시 확인해주세요.", "error")
 

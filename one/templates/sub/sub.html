@@ -12,6 +12,19 @@
     <div class="col-8 h-100 text-white">
         <div class="header_box">
             <div class="tv">
+                <div class="tv-thumbnail">
+                    <img src="" alt="">
+                </div>
+
+                <div class="tv-overlay">
+                    <div class="tv-button">▶</div>
+
+                    <button class="mute-btn" onclick="toggleMute(event)">
+                        <img id="mute-icon" src="{{url_for('static', filename='img/main_img/volume_up.svg')}}"
+                            data-on="{{url_for('static', filename='img/main_img/volume_up.svg')}}"
+                            data-off="{{url_for('static', filename='img/main_img/volume_off.svg')}}" alt="소리켬">
+                    </button>
+                </div>
 
             </div>
             <div class="tv2">
@@ -99,9 +112,39 @@
                 </div>
 
                 <div id="content-list">
-                    <div class="item" data-season="1" data-sort="old">시즌 1 - 오래된 영상 A</div>
-                    <div class="item" data-season="1" data-sort="new">시즌 1 - 최신 영상 B</div>
-                    <div class="item" data-season="2" data-sort="old">시즌 2 - 오래된 영상 C</div>
+                    <p class="item season-title" data-season="1" data-type="title">시즌 1</p>
+                    <div class="item" data-season="1" data-sort="old">
+                        <div class="item-box1"><img src="{{url_for('static', filename='img/main_img/sub-ep.jpg')}}"
+                                alt="ep-thumbnail">
+
+                            <div class="play-overlay">
+                                <div class="play-button"><a href="{{ url_for('home.anime') }}">▶</a></div>
+                            </div>
+                        </div>
+                        <div class="item-box2">
+                            <h5>시즌 1 - 오래된 영상 A</h5>
+                            <span>년 월 일 • 방영시간</span>
+                            <h6>줄거리</h6>
+                        </div>
+                    </div>
+                    <div class="item" data-season="1" data-sort="new">
+                        <div class="item-box1"><img src="{{url_for('static', filename='img/main_img/sub-ep.jpg')}}"
+                                alt="ep-thumbnail">
+
+                            <div class="play-overlay">
+                                <div class="play-button"><a href="{{ url_for('sub.index') }}">▶</a></div>
+                            </div>
+                        </div>
+                        <div class="item-box2">
+                            <h5>시즌 1 - 최신 영상 B</h5>
+                            <span>년 월 일 • 방영시간</span>
+                            <h6>줄거리</h6>
+                        </div>
+                    </div>
+
+                    <p class="item season-title" data-season="2" data-type="title">시즌 2</p>
+                    <div class="item" data-season="2" data-sort="old">
+                        시즌 2 - 오래된 영상 C</div>
                     <div class="item" data-season="2" data-sort="new">시즌 2 - 최신 영상 D</div>
                 </div>
             </div>
@@ -125,7 +168,6 @@
                 </div>
 
                 <div class="comment-input-wrap">
-                    <input type="text" id="nickname" placeholder="닉네임">
                     <textarea id="comment-text" placeholder="리뷰 내용을 입력하세요."></textarea>
                     <button id="submit-btn" type="button">등록</button>
                 </div>
@@ -148,27 +190,32 @@
             </div>
 
             <div id="tab3" class="tab-content">
-            <div class="title-container w-100">
-                <div class="title-box">
-                    <div class="title-thumbnail"></div>
-                    <div class="title-text">
-                        <h5>제목/타이틀</h5>
-                        <p><img src="{{ url_for('static', filename='img/main_img/icon-star-full-v2.svg') }}"
-                                    alt="별">별점 • 장르 • 년도 • 방영시간 • 시즌</p>
+                <div class="title-container w-100">
+                    <div class="title-box">
+                        <a href="{{ url_for('sub.index') }}">
+                            <div class="title-thumbnail"><img
+                                    src="{{ url_for('static', filename='img/main_img/ep-content.avif') }}" alt=""></div>
+                            <div class="title-text">
+                                <h5>제목/타이틀</h5>
+                                <p class="inf"><img
+                                        src="{{ url_for('static', filename='img/main_img/icon-star-full-v2.svg') }}"
+                                        alt="별">별점 • 장르 • 년도 <span class="display_box">HD</span></p>
+                                <p>줄거리</p>
+                            </div>
+                        </a>
                     </div>
+                    <div class="title-box"></div>
+                    <div class="title-box"></div>
+                    <div class="title-box"></div>
+                    <div class="title-box"></div>
+                    <div class="title-box"></div>
+                    <div class="title-box"></div>
+                    <div class="title-box"></div>
                 </div>
-                <div class="title-box"></div>
-                <div class="title-box"></div>
-                <div class="title-box"></div>
-                <div class="title-box"></div>
-                <div class="title-box"></div>
-                <div class="title-box"></div>
-                <div class="title-box"></div>
             </div>
         </div>
-        </div>
 
-        
+
     </div>
 </section>
 <br><br>
@@ -176,11 +223,30 @@
 
 {% block script %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
+        crossorigin="anonymous"></script>
 
 <script>
+
+    // -------------------------------------------------------------음소거--------------------------------------------
+    function toggleMute(event) {
+        event.preventDefault(); // 페이지 이동 방지
+
+        const icon = document.getElementById('mute-icon');
+        const onSrc = icon.getAttribute('data-on');   // 켜진 이미지 경로
+        const offSrc = icon.getAttribute('data-off'); // 꺼진 이미지 경로
+
+        // 현재 src가 on 이미지와 같다면 off로, 아니면 on으로 교체
+        if (icon.src.includes(onSrc)) {
+            icon.src = offSrc;
+        } else {
+            icon.src = onSrc;
+        }
+    }
+
+    // -------------------------------------------------------------탭 화면--------------------------------------------
+
     function openTab(evt, tabName) {
         // 1. 모든 tab-content 숨기기
         var tabContent = document.getElementsByClassName("tab-content");
@@ -214,6 +280,8 @@
         season: 'all',
         sort: 'new'
     };
+
+    // --------------------------------------------------------드롭다운--------------------------------------------------------
 
     // 드롭다운 열기/닫기
     function toggleMenu(menuId) {
@@ -257,6 +325,7 @@
         });
     }
 
+
     // 처음 실행 시 필터 적용 (초기값 설정)
     applyFilters();
 
@@ -269,7 +338,7 @@
 
     function copyLink() {
         // 1. 복사하고 싶은 주소를 여기에 입력하세요.
-        const urlToCopy = "https://www.your-link.com";
+        const urlToCopy = "http://127.0.0.1:5000/sub";
 
         // 2. 클립보드로 복사 실행
         navigator.clipboard.writeText(urlToCopy).then(() => {
@@ -285,6 +354,29 @@
             console.error("복사 실패:", err);
         });
     }
+
+    function applyFilters() {
+        const items = document.querySelectorAll('.item');
+
+        items.forEach(item => {
+            const itemSeason = item.getAttribute('data-season');
+            const itemSort = item.getAttribute('data-sort');
+            const isTitle = item.getAttribute('data-type') === 'title';
+
+            const seasonMatch = (currentFilters.season === 'all' || currentFilters.season === itemSeason);
+            const sortMatch = isTitle || (currentFilters.sort === itemSort);
+
+            if (seasonMatch && sortMatch) {
+                // 필터 조건에 맞으면 hidden 클래스 제거 (보임)
+                item.classList.remove('hidden');
+            } else {
+                // 조건에 맞지 않으면 hidden 클래스 추가 (숨김)
+                item.classList.add('hidden');
+            }
+        });
+    }
+
+    //--------------------------------------------------찜----------------------------------------
 
     const icon = document.getElementById("wishIcon");
     const toast = document.getElementById("toast1");
@@ -334,6 +426,8 @@
         setTimeout(() => { toast.className = ""; }, 3000);
     }
 
+    // -----------------------------별점리뷰-----------------------------------
+
     const stars = document.querySelectorAll('.comments .star');
     let currentRating = 0;
 
@@ -371,6 +465,8 @@
             }
         });
     }
+
+
 
     const star = document.querySelectorAll('.comments .star');
     const container = document.querySelector('.comments');
@@ -412,9 +508,8 @@
         renderStars(fixedRating);
     });
 
-    /**
-     * 별점 표시 핵심 함수
-     */
+
+
     function renderStars(rating) {
         stars.forEach((star) => {
             const starValue = parseFloat(star.getAttribute('data-value'));
@@ -432,17 +527,70 @@
         });
     }
 
-    // 1. 좋아요/싫어요 함수 (전역 유지)
+    // 좋아요 함수
+
     window.handleLike = function (btn) {
         const span = btn.querySelector('span');
-        span.innerText = parseInt(span.innerText) + 1;
+        const img = btn.querySelector('img');
+        const dislikeBtn = btn.parentElement.querySelector('.btn-action2');
+        const dislikeImg = dislikeBtn.querySelector('img');
+
+        // 이미지 경로 설정 (Flask url_for 문법 사용)
+        const staticPath = "{{ url_for('static', filename='img/main_img/') }}";
+        const upDefault = 'icon-thumbs-up-v2.svg';
+        const upFilled = 'icon-thumbs-up-filled-v2.svg';
+        const downDefault = 'icon-thumbs-down-v2.svg';
+        const downFilled = 'icon-thumbs-down-filled-v2.svg';
+
+        // 현재 파일명만 추출
+        const currentFileName = img.src.split('/').pop();
+        const currentDislikeFile = dislikeImg.src.split('/').pop();
+
+        // 1. 싫어요가 눌려있다면? -> 싫어요 취소 (아이콘 변경)
+        if (currentDislikeFile === downFilled) {
+            dislikeImg.src = staticPath + downDefault;
+        }
+
+        // 2. 내(좋아요) 상태 토글
+        if (currentFileName === upFilled) {
+            img.src = staticPath + upDefault;
+            if (span) span.innerText = Math.max(0, (parseInt(span.innerText) || 0) - 1);
+        } else {
+            img.src = staticPath + upFilled;
+            if (span) span.innerText = (parseInt(span.innerText) || 0) + 1;
+        }
     };
 
+
+    // 싫어요 함수 수정
     window.handleDislike = function (btn) {
-        const span = btn.querySelector('span');
-        span.innerText = parseInt(span.innerText) + 1;
-    };
+        const img = btn.querySelector('img');
+        const likeBtn = btn.parentElement.querySelector('.btn-action1');
+        const likeImg = likeBtn.querySelector('img');
+        const likeSpan = likeBtn.querySelector('span');
 
+        const staticPath = "{{ url_for('static', filename='img/main_img/') }}";
+        const upDefault = 'icon-thumbs-up-v2.svg';
+        const upFilled = 'icon-thumbs-up-filled-v2.svg';
+        const downDefault = 'icon-thumbs-down-v2.svg';
+        const downFilled = 'icon-thumbs-down-filled-v2.svg';
+
+        const currentFileName = img.src.split('/').pop();
+        const currentLikeFile = likeImg.src.split('/').pop();
+
+        // 1. 좋아요가 눌려있다면? -> 좋아요 취소 (숫자 -1)
+        if (currentLikeFile === upFilled) {
+            likeImg.src = staticPath + upDefault;
+            if (likeSpan) likeSpan.innerText = Math.max(0, (parseInt(likeSpan.innerText) || 0) - 1);
+        }
+
+        // 2. 내(싫어요) 상태 토글
+        if (currentFileName === downFilled) {
+            img.src = staticPath + downDefault;
+        } else {
+            img.src = staticPath + downFilled;
+        }
+    };
     // [추가] 닉네임을 가져오는 함수
     // 나중에 로그인 정보를 여기서 가져오도록 수정하면 됩니다.
     function getNickname() {
@@ -488,7 +636,7 @@
             <div class="comment-content">${data.content}</div>
             <div class="comment-actions">
                 <button type="button" class="btn-action1" onclick="handleLike(this)"><img src="{{url_for('static', filename='img/main_img/icon-thumbs-up-v2.svg')}}" alt="thumb-up"> <span>0</span></button>
-                <button type="button" class="btn-action2" onclick="handleDislike(this)"><img src="{{url_for('static', filename='img/main_img/icon-thumbs-down-v2.svg')}}" alt="thumb-down"> </button>
+                <button type="button" class="btn-action2" onclick="handleDislike(this)"><img src="{{url_for('static', filename='img/main_img/icon-thumbs-down-v2.svg')}}" alt="thumb-down"></button>
             </div>
         `;
             commentList.prepend(newItem);

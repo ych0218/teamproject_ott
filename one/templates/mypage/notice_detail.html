@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}공지사항 상세{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notice_detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="notice_detail_wrapper">
+    <div class="notice_detail_card">
+
+        <!-- 헤더 영역 -->
+        <header class="notice_detail_header">
+            <span class="notice_detail_category">NOTICE</span>
+            <h2 class="notice_detail_title">{{ notice.title }}</h2>
+            <div class="notice_detail_date">
+                관리자({{ notice.admin_unique_id }}) | {{ notice.created_at.strftime('%Y.%m.%d') }}
+            </div>
+        </header>
+
+        <!-- 본문 영역 -->
+        <article class="notice_detail_body">
+            {{ notice.content }}
+        </article>
+
+        <!-- 하단 정보 메시지 -->
+        <div class="notice_detail_empty_msg">
+            공지사항의 상세 내용입니다. 관련 문의는 고객센터를 이용해 주세요.
+        </div>
+
+        <!-- 하단 버튼 영역 -->
+        <div class="notice_detail_actions">
+            <a href="{{ url_for('mypage.support_center') }}" class="notice_detail_back_btn">목록으로 돌아가기</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

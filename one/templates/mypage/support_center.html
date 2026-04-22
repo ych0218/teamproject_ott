@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block styles %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mypage_change.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/support_center.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="mypage-wrapper">
+    <h1 class="support-title">고객센터</h1>
+
+    <!-- 💡 이미지의 4개 메뉴 구성 -->
+    <nav class="mypage-nav">
+        <div class="mypage-tabs">
+            <button class="tab-btn active" data-target="pin-notice">공지사항</button>
+            <button class="tab-btn" data-target="pin-faq">FAQ</button>
+            <button class="tab-btn" data-target="pin-policy">서비스 정책</button>
+            <button class="tab-btn" data-target="pin-my-support">고객문의</button>
+        </div>
+    </nav>
+
+<div class="tab-content-container">
+<section id="pin-notice" class="tab-section active">
+    <!-- 💡 검색창 영역 추가 -->
+    <div class="notice_search_bar" style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+        <form action="{{ url_for('mypage.support_center') }}" method="GET" style="display: flex; gap: 10px;">
+            <input type="text" name="keyword" value="{{ keyword }}" placeholder="공지사항 제목 검색"
+                   style="padding: 8px 15px; border-radius: 20px; border: 1px solid #444; background: #1a1a1a; color: #fff; width: 250px; font-size: 14px;">
+            <button type="submit" class="search_btn"
+                    style="background: #ff153c; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 13px;">
+                검색
+            </button>
+        </form>
+    </div>
+    <div class="pin-list-wrapper">
+        <table class="pin-table">
+            <thead>
+                <tr class="pin-thead-row">
+                    <th class="pin-th-num">번호</th>
+                    <th class="pin-th-title">제목</th>
+                    <th class="pin-th-date">작성일</th>
+                    <th class="pin-th-views">조회수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 💡 1. 중요 공지 루프 (항상 상단 고정) -->
+                {% for notice in pinned_notices %}
+                <tr class="pin-row is-pinned-row"
+                    onclick="location.href='{{ url_for('mypage.notice_detail', notice_id=notice.notice_id) }}'">
+                    <td class="pin-td-num">
+                        <span class="pin-badge">중요</span>
+                    </td>
+                    <td class="pin-td-title">
+                        <span class="pin-highlight">{{ notice.title }}</span>
+                    </td>
+                    <td class="pin-td-date">{{ notice.created_at.strftime('%Y.%m.%d') }}</td>
+                    <td class="pin-td-views">{{ notice.view_count }}</td>
+                </tr>
+                {% endfor %}
+
+                <!-- 💡 2. 일반 공지 루프 (10개씩 표시) -->
+                {% for notice in notices %}
+                <tr class="pin-row"
+                    onclick="location.href='{{ url_for('mypage.notice_detail', notice_id=notice.notice_id) }}'">
+                    <td class="pin-td-num">
+                        {# 페이지가 넘어가도 전체 개수 기준 역순 번호 유지 #}
+                        {{ pagination.total - ((pagination.page - 1) * pagination.per_page) - loop.index0 }}
+                    </td>
+                    <td class="pin-td-title">
+                        <span>{{ notice.title }}</span>
+                    </td>
+                    <td class="pin-td-date">{{ notice.created_at.strftime('%Y.%m.%d') }}</td>
+                    <td class="pin-td-views">{{ notice.view_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 💡 검색 결과가 없을 때 메시지 -->
+        {% if not notices and not pinned_notices %}
+        <div class="search-empty-msg" style="text-align: center; padding: 100px 0; color: #666; font-size: 16px;">
+            검색 결과가 없습니다.
+        </div>
+        {% endif %}
+
+        <!-- 💡 3. 페이지네이션 버튼 영역 -->
+         {% if pagination.pages > 1 %}
+        <div class="notice_pagination">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('mypage.support_center', page=pagination.prev_num, keyword=keyword) }}" class="page_arrow prev">&lt;</a>
+            {% endif %}
+
+            {% for page_num in pagination.iter_pages(left_edge=1, left_current=2, right_current=2, right_edge=1) %}
+                {% if page_num %}
+                    <a href="{{ url_for('mypage.support_center', page=page_num, keyword=keyword) }}"
+                       class="page_num {{ 'active' if page_num == pagination.page else '' }}">
+                        {{ page_num }}
+                    </a>
+                {% else %}
+                    {# 💡 None일 때 말줄임표 출력 #}
+                    <span class="page_dots" style="color: #444; padding: 0 5px;">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <a href="{{ url_for('mypage.support_center', page=pagination.next_num, keyword=keyword) }}" class="page_arrow next">&gt;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+    <section id="pin-faq" class="tab-section">
+        <div class="pin-empty-msg">자주 묻는 질문이 없습니다.</div>
+    </section>
+
+    <section id="pin-policy" class="tab-section">
+        <div class="pin-empty-msg">등록된 서비스 정책이 없습니다.</div>
+    </section>
+
+    <!-- 💡 고객문의 섹션: ID가 탭의 data-target과 일치해야 함 -->
+   <section id="pin-my-support" class="tab-section">
+    <div class="support-split-container" style="display: flex; gap: 30px; align-items: flex-start;">
+
+        <!-- ⬅️ 좌측: 1:1 문의 작성 폼 -->
+        <div class="write-wrapper" style="flex: 1; background: #1a1a1a; padding: 30px; border-radius: 12px; border: 1px solid #333;">
+            <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.2rem;">1:1 문의하기</h3>
+            <form action="{{ url_for('mypage.support_center_write') }}" method="POST" enctype="multipart/form-data">
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label style="color: #888; font-size: 13px;">문의 유형</label>
+                    <select name="category" style="width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #333; color: #fff; border-radius: 6px;">
+                        <option value="이용권/결제">이용권/결제</option>
+                        <option value="재생오류">재생오류</option>
+                        <option value="계정/인증">계정/인증</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <input type="text" name="title" placeholder="제목을 입력하세요" required style="width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #333; color: #fff; border-radius: 6px; box-sizing: border-box;">
+                </div>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <textarea name="content" rows="6" placeholder="상세 내용을 입력하세요" required style="width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #333; color: #fff; border-radius: 6px; resize: none; box-sizing: border-box;"></textarea>
+                </div>
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="file" name="support_img" style="font-size: 12px; color: #888;">
+                </div>
+                <button type="submit" class="actionbtn primary" style="width: 100%; padding: 12px; font-weight: bold; border: none;">문의 등록</button>
+            </form>
+        </div>
+
+        <!-- ➡️ 우측: 내 문의 내역 목록 -->
+        <div class="list-wrapper" style="flex: 1.2; background: #1a1a1a; padding: 30px; border-radius: 12px; border: 1px solid #333; min-height: 500px;">
+            <h3 style="color: #fff; margin-bottom: 20px; font-size: 1.2rem;">내 문의 내역</h3>
+            <div class="support-scroll-list" style="max-height: 450px; overflow-y: auto; padding-right: 10px;">
+                {% for support in supports %}
+                <div class="support-item"
+                     onclick="location.href='{{ url_for('mypage.support_detail', support_id=support.support_id) }}'"
+                     style="background: #2a2a2a; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; border: 1px solid transparent;"
+                     onmouseover="this.style.borderColor='#ff153c'" onmouseout="this.style.borderColor='transparent'">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span style="color: {{ '#4caf50' if support.status == 'completed' else '#ff9800' }}; font-weight: bold;">
+                            {{ '답변완료' if support.status == 'completed' else '검토중' }}
+                        </span>
+                        <span style="color: #666;">{{ support.created_at.strftime('%Y.%m.%d') }}</span>
+                    </div>
+                    <h4 style="color: #fff; margin: 0; font-size: 14px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        {{ support.title }}
+                    </h4>
+                </div>
+                {% else %}
+                <div class="empty-msg" style="text-align: center; color: #666; margin-top: 100px;">작성한 문의가 없습니다.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</section>
+</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("=== 고객센터 JS 로드 완료 ===");
+
+    // 1. 탭 전환 로직
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabSections = document.querySelectorAll('.tab-section');
+
+    tabBtns.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+
+            // 모든 버튼 비활성화 -> 클릭한 버튼 활성화
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // 모든 섹션 숨기기
+            tabSections.forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+
+            // 선택한 섹션만 보이기
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.style.display = 'block';
+                console.log("현재 탭:", targetId);
+            }
+        });
+    });
+
+    // 2. 문의 등록 성공 알림 (Jinja2)
+    {% if success %}
+        Swal.fire({
+            title: '등록 완료!',
+            text: '문의가 성공적으로 접수되었습니다.',
+            icon: 'success',
+            width: '360px',
+            background: '#1a1a1a',
+            color: '#fff',
+            confirmButtonText: '확인',
+            confirmButtonColor: '#ff153c'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ url_for('mypage.support_center') }}";
+            }
+        });
+    {% endif %}
+});
+</script>
+{% endblock %}

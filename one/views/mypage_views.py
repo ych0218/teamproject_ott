@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import json # 상단에 추가
-from one.models import User, Support, SupportAnswer, Plan, Subscription, Payment
+from one.models import User, Support, SupportAnswer, Plan, Subscription, Payment, Notice
 from one import db
 import base64  # 토스 API 인증용
 from one.forms import UserCreateForm
@@ -52,36 +52,57 @@ def change_info():
             return render_template('mypage/mypage_integrate.html', user=user_data,form=form)
 
 
+        # 그 외(일반 유저 또는 이미 정보를 입력한 소셜 유저) -> 일반 수정 페이지로
+        return render_template('mypage/mypage_change.html', user=user_data)
+
+    # --- [POST 요청 처리: 데이터 저장] ---
     if request.method == 'POST':
-        # --- 공통 정보 수집 ---
-        new_name = request.form.get('user_name')
-        new_phone = request.form.get('user_phone')
+        current_pw_input = request.form.get('current_password')
+        new_pw = request.form.get('user_password')
+        confirm_pw = request.form.get('confirm_password')
 
-        year = request.form.get('birth_year')
-        month = request.form.get('birth_month')
-        day = request.form.get('birth_day')
+        # 1. 가입 방식에 따른 비밀번호 검증 분기
+        # 💡 [보안 강화] 소셜 유저라도 이미 비밀번호를 설정했다면 검증을 거쳐야 합니다.
+        # 즉, 비밀번호가 DB에 존재(통합 완료)하는 유저만 현재 비밀번호 확인을 실행합니다.
+        if user_data.user_password:
+            if not current_pw_input or not check_password_hash(user_data.user_password, current_pw_input):
+                flash('현재 비밀번호가 일치하지 않습니다.', 'danger')
+                return redirect(url_for('mypage.change_info'))
+        else:
+            print(f"🔗 미통합 소셜유저({user_data.signup_method}) 첫 비밀번호 설정 진행")
+            # 소셜 유저는 현재 비밀번호가 없으므로 통과 (로그 확인용)
+            print(f"🔗 소셜유저({user_data.signup_method}) 통합/수정 진행")
 
-        new_password = request.form.get('user_password')
+        # 2. 새 비밀번호 등록/변경 로직
+        if new_pw:
+            if new_pw == user_data.user_email:
+                flash('비밀번호는 이메일 주소와 동일할 수 없습니다.', 'danger')
+                return redirect(url_for('mypage.change_info'))
+            if new_pw != confirm_pw:
+                flash('새 비밀번호가 일치하지 않습니다.', 'danger')
+                return redirect(url_for('mypage.change_info'))
 
-        # 2. 비밀번호 처리 (신규 등록 또는 변경)
-        if new_password:
-            # 해시로 변환하여 저장
-            user_data.user_password = generate_password_hash(new_password)
+            # 해싱하여 저장
+            user_data.user_password = generate_password_hash(new_pw)
 
-        # 3. 일반 정보 업데이트
-        user_data.user_name = new_name
-        user_data.user_phone = new_phone
-        if year and month and day:
-            user_data.user_birth = datetime(
-                int(year), int(month), int(day)
-            )
+        # 3. 사용자 정보 업데이트
+        user_data.user_name = request.form.get('user_name')
+        user_data.user_phone = request.form.get('user_phone')
+
+        raw_birth = request.form.get('user_birth')
+        if raw_birth:
+            try:
+                user_data.user_birth = datetime.strptime(raw_birth, '%Y-%m-%d')
+            except:
+                pass
 
         try:
             db.session.commit()
-            flash('계정 통합 및 정보 수정이 완료되었습니다.', 'success')
+            flash('회원 정보가 성공적으로 반영되었습니다.', 'success')
             return redirect(url_for('mypage.mypage'))
-        except:
+        except Exception as e:
             db.session.rollback()
+            print(f"❌ DB 저장 에러: {e}")
             flash('저장 중 오류가 발생했습니다.', 'danger')
 
     return render_template('mypage/mypage_change.html', user=user_data,form=form)
@@ -151,25 +172,138 @@ def support_detail(support_id):
     return render_template('mypage/support_detail.html', support=support)
 
 
-
-
-
-@bp.route('/subscribe')
-def subscribe():
+@bp.route('/support-center')
+def support_center():
     user_unique_id = session.get('user')
     if not user_unique_id:
         return redirect(url_for('auth.login'))
 
     user_data = User.query.get_or_404(user_unique_id)
+    page = request.args.get('page', 1, type=int)
+    keyword = request.args.get('keyword', '', type=str)  # 💡 검색어 가져오기
 
-    # 모든 요금제 정보 가져오기 (가격순)
+    # 1. 내 문의 내역 조회
+    my_supports = Support.query.filter_by(user_unique_id=user_unique_id) \
+        .order_by(Support.created_at.desc()).all()
+
+    # 2. 중요 공지 (검색 시에도 중요 공지는 상단 노출을 원할 경우 유지)
+    pinned_notices = Notice.query.filter_by(is_pinned=True) \
+        .order_by(Notice.created_at.desc()).all()
+
+    # 3. 일반 공지 쿼리 (검색 필터 추가)
+    query = Notice.query.filter_by(is_pinned=False)
+    if keyword:
+        # 제목(title)에 검색어가 포함된 경우 필터링
+        query = query.filter(Notice.title.ilike(f'%{keyword}%'))
+
+    pagination = query.order_by(Notice.created_at.desc()) \
+        .paginate(page=page, per_page=10, error_out=False)
+
+    normal_notices = pagination.items
+
+    return render_template('mypage/support_center.html',
+                           user=user_data,
+                           supports=my_supports,
+                           pinned_notices=pinned_notices,
+                           notices=normal_notices,
+                           pagination=pagination,
+                           keyword=keyword) # 💡 검색어 다시 전달
+
+@bp.route('/notice/<int:notice_id>')
+def notice_detail(notice_id):
+    # DB에서 해당 공지사항 조회
+    notice = Notice.query.get_or_404(notice_id)
+
+    # 조회수 증가 (선택 사항)
+    notice.view_count += 1
+    db.session.commit()
+
+    return render_template('mypage/notice_detail.html', notice=notice)
+
+
+
+@bp.route('/support-center/write', methods=['POST'])
+def support_center_write():
+    user_id = session.get('user')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+
+    # 1. 데이터 및 파일 수집
+    category = request.form.get('category')
+    title = request.form.get('title')
+    content = request.form.get('content')
+    image_file = request.files.get('support_img')
+
+    saved_file_path = None
+
+    # 2. 이미지 저장 로직 (기존 로직 활용)
+    if image_file and image_file.filename != '':
+        filename = secure_filename(image_file.filename)
+        unique_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
+        upload_folder = os.path.join(current_app.root_path, 'static', 'img', 'support')
+
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        image_file.save(os.path.join(upload_folder, unique_filename))
+        saved_file_path = f"img/support/{unique_filename}"
+
+    # 3. DB 저장
+    new_support = Support(
+        user_unique_id=user_id,
+        category=category,
+        title=title,
+        content=content,
+        image_url=saved_file_path,
+        status='pending',
+        created_at=datetime.now(timezone.utc)
+    )
+
+    try:
+        db.session.add(new_support)
+        db.session.commit()
+
+        # 💡 [핵심] 성공 후 다시 고객센터 페이지를 렌더링하며 success 플래그 전달
+        user_data = User.query.get(user_id)
+        supports = Support.query.filter_by(user_unique_id=user_id).all()
+
+        # 문의 등록 성공 시 'success' 변수를 들고 고객센터 메인으로 갑니다.
+        return render_template('mypage/support_center.html',
+                               user=user_data,
+                               supports=supports,
+                               success=True)
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return "처리 중 오류 발생", 500
+
+
+
+
+
+
+@bp.route('/subscribe')
+def subscribe():
+    user_id = session.get('user')
+    now = datetime.now()
+
+    # ⏳ [상태 자동 업데이트] 만료시간 지났는데 아직 active인 것들 찾기
+    overdue_subs = Subscription.query.filter(
+        Subscription.user_unique_id == user_id,
+        Subscription.status == 'active',
+        Subscription.end_date < now
+    ).all()
+
+    for sub in overdue_subs:
+        sub.status = 'expired'
+
+    if overdue_subs:
+        db.session.commit()
+
+    # (이후 기존 로직...)
+    user_data = User.query.get_or_404(user_id)
     plans = Plan.query.order_by(Plan.price).all()
-
-    # 현재 유저가 이미 사용 중인 활성 구독권이 있는지 확인
-    active_sub = Subscription.query.filter_by(
-        user_unique_id=user_unique_id,
-        status='active'
-    ).first()
+    active_sub = Subscription.query.filter_by(user_unique_id=user_id, status='active').first()
 
     return render_template('mypage/subscription.html', user=user_data, plans=plans, active_sub=active_sub)
 
@@ -215,7 +349,7 @@ def purchase_plan(plan_id):
             user_unique_id=user_unique_id,
             subscription_id=new_sub.subscription_id,
             price=plan.price,
-            status='success',
+            status='결제완료',
             paid_at=now
         )
         db.session.add(new_payment)
@@ -263,57 +397,60 @@ def payment_success():
     if res.status_code == 200:
         # --- [DB 작업 시작] ---
         try:
+            plan_id = request.args.get('planId')
+            amount = request.args.get('amount')
             plan = Plan.query.get_or_404(plan_id)
             now = datetime.now()
 
-            # 2. 이용권 기간 계산 (개월 수에 따라 30일씩 추가)
+            # 1. 이용 기간 계산 (개월 수 대응)
             duration_map = {'starter': 1, 'basic': 3, 'standard': 6, 'premium': 12}
             add_days = 30 * duration_map.get(plan.plan_name.lower(), 1)
 
-            # 3. 기존 구독 확인 (연장 로직)
-            active_sub = Subscription.query.filter_by(
-                user_unique_id=user_unique_id,
-                status='active'
+            # 2. 연장 대상 찾기 (상태가 active이고 아직 만료 전인 구독)
+            active_sub = Subscription.query.filter(
+                Subscription.user_unique_id == session.get('user'),
+                Subscription.status == 'active',
+                Subscription.end_date > now
             ).first()
 
-            new_start_date = now
             if active_sub:
-                # 기존 구독이 남았다면 그 종료일부터 시작, 아니면 지금부터 시작
-                current_end = active_sub.end_date.replace(
-                    tzinfo=None) if active_sub.end_date.tzinfo else active_sub.end_date
-                new_start_date = max(current_end, now)
-                active_sub.status = 'expired'  # 기존 기록은 만료 처리
+                # 🔄 [기존 구독 연장]
+                active_sub.end_date += timedelta(days=add_days)
+                active_sub.plan_id = plan.plan_id  # 요금제 변경 시 업데이트
+                target_sub = active_sub
+            else:
+                # ✨ [신규 구독 생성] (처음이거나 이미 만료된 경우)
+                target_sub = Subscription(
+                    user_unique_id=session.get('user'),
+                    plan_id=plan.plan_id,
+                    start_date=now,
+                    end_date=now + timedelta(days=add_days),
+                    status='active'
+                )
+                db.session.add(target_sub)
+                db.session.flush()
 
-            # 4. 새 구독 레코드 생성
-            new_sub = Subscription(
-                user_unique_id=user_unique_id,
-                plan_id=plan.plan_id,
-                start_date=new_start_date,
-                end_date=new_start_date + timedelta(days=add_days),
-                status='active'
-            )
-            db.session.add(new_sub)
-            db.session.flush()  # payment에서 참조하기 위해 ID 미리 생성
-
-            # 5. 결제 내역 저장
+            # 3. 결제 내역 저장
             new_payment = Payment(
-                user_unique_id=user_unique_id,
-                subscription_id=new_sub.subscription_id,
+                user_unique_id=session.get('user'),
+                subscription_id=target_sub.subscription_id,
                 price=amount,
-                status='success',
+                status='결제완료',
                 paid_at=now
             )
             db.session.add(new_payment)
-
-            db.session.commit()  # 최종 저장
-            print("DB 저장 성공!")  # 터미널에 찍히는지 확인
+            db.session.commit()
+            session['show_payment_modal'] = {
+                'plan': plan.plan_name.upper(),
+                'amount': "{:,.0f}".format(int(amount)),
+                'end_date': target_sub.end_date.strftime('%Y-%m-%d')
+            }
             flash(f"{plan.plan_name.upper()} 이용권 결제가 완료되었습니다!")
             return redirect(url_for('mypage.mypage'))
 
         except Exception as e:
             db.session.rollback()
-            print(f"DB 에러 발생: {e}")
-            flash("결제는 완료되었으나 정보 저장 중 오류가 발생했습니다. 고객센터로 문의하세요.", "danger")
+            flash("정보 저장 중 오류가 발생했습니다.")
             return redirect(url_for('mypage.subscribe'))
     else:
         print(f"토스 승인 실패: {res.text}")  # 터미널에 찍히는 메시지가 중요합니다!

@@ -1,0 +1,65 @@
+{% extends "main/main.html" %}
+{% block title %}
+메인페이지(드라마)
+{% endblock %}
+
+{# 1. 헤드 슬라이더 교체 #}
+{% block head_slider %}
+    {% for video in (anime_videos | default([]))[:3] %}
+    <div class="swiper-slide">
+        <a href="{{ url_for('sub.index', id=video['video_unique_id']) }}">
+            <img src="{{ video['video_thumbnail'] }}" alt="드라마 헤드">
+        </a>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% block nav_slider %}{% endblock %}
+
+{# 2. TOP 15 교체 (제목도 "인기 드라마 TOP 10"로 변경) #}
+{% block top15_section %}
+    <div class="h3"><h3>실시간 인기 드라마 TOP 10</h3></div>
+    <div class="section_slider">
+        <div class="swiper mySwiper3">
+            <div class="swiper-wrapper">
+                {% for video in (anime_videos | default([]))[:10] %}
+                <div class="swiper-slide">
+                    <div class="rank_num">{{ loop.index }}</div>
+                    <a href="{{ url_for('sub.index', id=video['video_unique_id']) }}">
+                        <img src="{{ video['video_thumbnail'] }}" alt="드라마 랭킹">
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block sections_area %}
+    {# 드라마 페이지용 데이터로 새로 정의 #}
+    {% set sections = [
+        ('이번 주 인기 드라마', (anime_videos | default([]))[0:12]),
+        ('정주행 필수 명작', (anime_videos | default([]))[12:24])
+    ] %}
+
+    {% for title, section_videos in sections %}
+    <div class="box{{ loop.index + 1 }}">
+        <div class="h3"><h3>{{ title }}</h3></div>
+        <div class="section_slider">    
+            <div class="swiper mySwiper4">
+                <div class="swiper-wrapper">
+                    {% for video in section_videos %}
+                    <div class="swiper-slide">
+                        <a href="{{ url_for('sub.index', id=video['video_unique_id']) }}">
+                            <img src="{{ video['video_thumbnail'] }}" alt="thumbnail">
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

@@ -37,9 +37,9 @@
             </div>
 
             <!-- 비밀번호 확인 (2차) -->
-            <div class="input-group">
+             <div class="input-group">
                 <label>비밀번호 확인</label>
-                <input type="password" id="password2" placeholder="비밀번호를 한 번 더 입력하세요" required>
+                <input type="password" name="confirm_password" id="pw2" placeholder="비밀번호를 한 번 더 입력하세요" required>
                 <small id="pw_msg" style="color: #ff153c; display: none;">비밀번호가 일치하지 않습니다.</small>
             </div>
 
@@ -79,7 +79,14 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="save-btn">정보 저장 및 통합 완료</button>
+               <button type="submit"
+                        id="save_btn"
+                        class="save-btn"
+                        data-email="{{ user.user_email }}"
+                        data-method="{{ user.signup_method }}"
+                        disabled>
+                    정보 저장 및 통합 완료
+                </button>
                 <a href="{{ url_for('mypage.mypage') }}" class="cancel-btn">나중에 하기</a>
             </div>
         </form>
@@ -90,4 +97,5 @@
 
 {% block script %}
 <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mypage_change.js') }}"></script>
 {% endblock %}

@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const newPw = document.getElementById('new_pw');
     const confirmPw = document.getElementById('confirm_pw');
     const saveBtn = document.getElementById('save_btn');
+    const pw1 = document.getElementById('pw1') || document.getElementById('new_pw');
+    const pw2 = document.getElementById('pw2') || document.getElementById('confirm_pw');
     const pwMsg = document.getElementById('pw_msg');
     const matchMsg = document.getElementById('match_msg');
 

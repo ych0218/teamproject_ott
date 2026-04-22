@@ -20,42 +20,29 @@
     <div class="overlay"></div>
 
     <div class="banner_content container position-relative text-center">
-        <h1><b>4FLEX</b> 만의 특별한 혜택<br>오직 <b>4FLEX</b> 에서만</h1>
-        <p class="text1">7,000원으로 시작해보세요. 멤버십은 언제든지 해지 가능합니다.</p>
-        <p class="text2">시청할 준비가 되셨나요? 이메일 주소를 입력하세요.</p>
-
-        <div class="row justify-content-center g-2 email_row">
-            <div class="col-12 col-md-6 col-lg-5">
-                <input type="email" class="form-control email_input" placeholder="이메일 주소">
-            </div>
-            <div class="col-12 col-md-auto">
-                <button class="btn btn-danger start_btn">시작하기 &gt;</button>
-            </div>
-        </div>
+        <h1><b>4FLEX</b> 만의 특별한 경험<br>오직 <b>4FLEX</b> 에서만</h1>
     </div>
 </section>
 
 <!------------------------------------- 콘텐츠 1 ---------------------------------->
 <section class="content_section container">
-    <h2 class="mb-4">지금 뜨는 콘텐츠</h2>
+    <h2 class="mb-4">새 콘텐츠</h2>
 
+    {% if video_list %}
     <ul class="row g-4 list-unstyled">
+        {% for video in video_list[:5] %}
         <li class="col-6 col-md-4 col-lg">
-            <div class="content_card1"></div>
+<!--            <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}" class="text-decoration-none">-->
+                <div class="content_card1">
+                    <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
+                </div>
+<!--            </a>-->
         </li>
-        <li class="col-6 col-md-4 col-lg">
-            <div class="content_card1"></div>
-        </li>
-        <li class="col-6 col-md-4 col-lg">
-            <div class="content_card1"></div>
-        </li>
-        <li class="col-6 col-md-6 col-lg">
-            <div class="content_card1"></div>
-        </li>
-        <li class="col-6 col-md-6 col-lg">
-            <div class="content_card1"></div>
-        </li>
+        {% endfor %}
     </ul>
+    {% else %}
+    <p class="text-white">등록된 콘텐츠가 없습니다.</p>
+    {% endif %}
 </section>
 
 <!------------------------------------- 콘텐츠 2 ---------------------------------->
@@ -64,20 +51,63 @@
 
     <ul class="row g-4 list-unstyled">
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="../.././static/img/reason1.png" alt="reason1.png"></div>
+            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason1.png') }}" alt="reason1"></div>
         </li>
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="../.././static/img/reason2.png" alt="reason2.png"></div>
+            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason2.png') }}" alt="reason2"></div>
         </li>
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="../.././static/img/reason3.png" alt="reason3.png"></div>
+            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason3.png') }}" alt="reason3"></div>
         </li>
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="../.././static/img/reason4.png" alt="reason4.png"></div>
+            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason4.png') }}" alt="reason4"></div>
         </li>
     </ul>
 </section>
 
+<!------------------------------------- 콘텐츠 3 ---------------------------------->
+<section class="content_section_k container">
+    <h2 class="mb-4">합리적인 선택!</h2>
+         <div class="plan-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px;">
+                {% for plan in plans %}
+                <div class="plan-card">
+                    <div class="card-header">
+                        <span class="ott-pass">OTT PASS</span>
+                        <div class="plan-title-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                            <h2 class="plan-title">{{ plan.plan_name }}</h2>
+                            <img src="{{ url_for('static', filename='img/' + plan.plan_name.lower() + '.png') }}"
+                                 style="width: 32px; height: 32px; object-fit: contain;">
+                        </div>
+                    </div>
+
+                    <div class="price-section">
+                        <div style="display: flex; align-items: center;">
+                            <p class="plan-price">₩{{ "{:,.0f}".format(plan.price) }}</p>
+                            {% if plan.plan_name == 'basic' %}<span class="discount-badge">-10%</span>
+                            {% elif plan.plan_name == 'standard' %}<span class="discount-badge">-18%</span>
+                            {% elif plan.plan_name == 'premium' %}<span class="discount-badge highlight">-30%</span>
+                            {% endif %}
+                        </div>
+                        <p class="plan-duration">
+                            {% if plan.plan_name == 'starter' %}1개월{% elif plan.plan_name == 'basic' %}3개월{% elif plan.plan_name == 'standard' %}6개월{% else %}12개월{% endif %} 이용
+                        </p>
+                    </div>
+
+                    <ul class="plan-features">
+                        <li>✓ 모든 시리즈 & 영화 시청</li>
+                        <li>✓ 광고 없는 깨끗한 재생</li>
+                        {% if plan.plan_name == 'premium' %}
+                        <li class="feature-highlight">✓ 최대 4K UHD 화질</li>
+                        <li class="feature-highlight">✓ 동시 접속 4인</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% endfor %}
+         </div>
+         <div class="cta-container">
+                <a href="{{ url_for('auth.login') }}" class="main-start-btn scroll-fade">4FLEX 시작하기</a>
+         </div>
+</section>
 <!--------------------------------------- 푸터 ---------------------------------->
 {% include 'footer.html'%}
 
@@ -126,7 +156,32 @@
             });
         });
 
+
+
+    <!--스크롤 내렸을 떄 이미지 모양 팝업?되게 하는 js-->
+    const cards = document.querySelectorAll('.content_card1, .content_card2, .plan-card ,.scroll-fade');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                // 화면에 들어올 때: 순차적으로 등장
+                const listItems = Array.from(document.querySelectorAll('.row.g-4 > li'));
+                const index = listItems.indexOf(entry.target.parentElement);
+
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                }, index * 150);
+            } else {
+                // 화면 밖으로 나갈 때: 다시 초기화
+                entry.target.classList.remove('visible');
+            }
+        });
+    }, { threshold: 0.1 }); // 10%만 보여도 작동 시작
+
+    cards.forEach(card => observer.observe(card));
+
     });
+
 </script>
 </body>
 </html>

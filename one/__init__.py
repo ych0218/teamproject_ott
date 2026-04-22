@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
+import os
 import config
 
 db = SQLAlchemy()
@@ -12,6 +13,13 @@ login_manager = LoginManager() # 추가됨: 이 줄이 있어야 빨간 줄이 �
 def create_app():
     app=Flask(__name__)
     app.config.from_object(config)
+
+    # 콘텐츠 파일 업로드 설정
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    app.config['UPLOAD_FOLDER_VIDEOS'] = os.path.join(BASE_DIR, 'static', 'uploads', 'videos')
+    app.config['UPLOAD_FOLDER_THUMBNAILS'] = os.path.join(BASE_DIR, 'static', 'uploads', 'thumbnails')
+    app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
 
     # ORM
     db.init_app(app)
@@ -24,7 +32,7 @@ def create_app():
 
     #블루프린트 목록 이쪽으로 등록해주세요
 
-    from .views import mypage_views,main_views,policy_views,auth_views, admin_views,sub_views
+    from .views import mypage_views,main_views,policy_views,auth_views, admin_views,sub_views,video_views
 
 
 
@@ -34,6 +42,7 @@ def create_app():
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(admin_views.bp)
     app.register_blueprint(sub_views.bp)
+    app.register_blueprint(video_views.bp)
 
     # 필터 등록
     from .filters import format_datetime
