@@ -9,8 +9,7 @@
 body {
     background-color: #000;
     color: #fff;
-    font-family: Arial, sans-serif;
-}
+    font-family: 'Pretendard', sans-serif;
 
 .netflixst-toast {
     position: relative;
@@ -65,31 +64,69 @@ body {
 /* ------------------------------배너----------------------------- */
 .banner {
     width: 100%;
-    height: calc(100vh - 70px); /* Viewport Height: 화면 높이의 100%를 차지 */
-    background: url("/static/img/banner.jpg") no-repeat center/cover;
-    position: relative;
-    display: flex;
+    height: calc(100vh - 70px);
+    align-items: flex-start;
     justify-content: center;
-    align-items: center;
-    text-align: center;
+    padding-top: 200px;
+    position: relative;
+    overflow: hidden;
 }
 
-.overlay {
+/* 🎬 영상 배경 */
+.bg-video {
     position: absolute;
+    top: 50%;
+    left: 50%;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.65);
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    z-index: 0;
 }
 
+/* 어둡게 덮는 레이어 */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4); /* 어둡기 조절 */
+    z-index: 1;
+}
+
+/* 텍스트 위로 */
 .banner_content {
     position: relative;
     z-index: 2;
+    color: white;
     max-width: 900px;
 }
 
 .banner_content h1 {
-    font-size: 64px;
-    margin-bottom: 20px;
+    letter-spacing: -1px;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 68px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.3;
+    color: #fff;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+
+}
+
+/* 4FLEX 강조 */
+.main {
+    font-weight: 900;
+    font-size: 80px;
+    color: #e50914;
+}
+
+/* 서브 텍스트 */
+.sub {
+    margin-top: 20px;
+    font-size: 25px;
+    color: #ccc;
 }
 
 .text1 {

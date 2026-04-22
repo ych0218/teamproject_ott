@@ -36,7 +36,7 @@
     border: 1px solid transparent;
 }
 .actionbtn.primary {
-    background-color: #ff153c; /* 티빙 레드 */
+    background-color: #e50914;
 }
 
 /* hover */
@@ -91,7 +91,7 @@
     margin-top: 15px;
     padding: 5px 12px;
     background-color: #333;
-    color: #ff153c;
+    color: #e50914;
     border-radius: 15px;
     font-size: 13px;
     font-weight: 600;
@@ -160,7 +160,7 @@
 .content-card img { width: 100%; height: 100%; object-fit: cover; }
 
 .progress-bar { position: absolute; bottom: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.2); }
-.progress { height: 100%; background: #ff153c; } /* 티빙 레드 */
+.progress { height: 100%; background: #e50914; }
 
 .text-box h4 { margin: 10px 0 5px; font-size: 15px; font-weight: 500; }
 .text-box p, .genre-text { color: #888; font-size: 13px; }
@@ -217,7 +217,7 @@
     padding: 4px 12px;
     border-radius: 20px;
     background-color: #222;
-    color: #ff153c;
+    color: #e50914;
     font-size: 13px;
     font-weight: 600;
 }
