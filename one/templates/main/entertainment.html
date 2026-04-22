@@ -1,14 +1,12 @@
 {% extends "main/main.html" %}
-{% block title %}
-메인페이지(예능)
-{% endblock %}
+{% block title %} 메인페이지(드라마) {% endblock %}
 
-{# 1. 헤드 슬라이더 교체 #}
+{# 1. 헤드 슬라이더 (상단 큰 배너 3개) #}
 {% block head_slider %}
-    {% for video in (anime_videos | default([]))[:3] %}
+    {% for video in (video_list | default([]))[:3] %}
     <div class="swiper-slide">
-        <a href="{{ url_for('sub.index', id=video['video_unique_id']) }}">
-            <img src="{{ video['video_thumbnail'] }}" alt="예능 헤드">
+        <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
+            <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
         </a>
     </div>
     {% endfor %}
@@ -16,17 +14,17 @@
 
 {% block nav_slider %}{% endblock %}
 
-{# 2. TOP 15 교체 (제목도 "인기 예능 TOP 10"로 변경) #}
-{% block top15_section %}
-    <div class="h3"><h3>실시간 인기 예능 TOP 10</h3></div>
+{# 2. TOP 10 섹션 (순위가 표시되는 인기 리스트) #}
+{% block top10_section %}
+    <div class="h3"><h3>실시간 인기 TOP 10 (테스트 중)</h3></div>
     <div class="section_slider">
         <div class="swiper mySwiper3">
             <div class="swiper-wrapper">
-                {% for video in (anime_videos | default([]))[:10] %}
+                {% for video in (video_list | default([]))[:10] %}
                 <div class="swiper-slide">
                     <div class="rank_num">{{ loop.index }}</div>
-                    <a href="{{ url_for('sub.index', id=video['video_unique_id']) }}">
-                        <img src="{{ video['video_thumbnail'] }}" alt="예능 랭킹">
+                    <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
+                        <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
                     </a>
                 </div>
                 {% endfor %}
@@ -35,23 +33,25 @@
     </div>
 {% endblock %}
 
+{# 3. 나머지 장르/테마별 섹션 구역 #}
 {% block sections_area %}
-    {# 예능 페이지용 데이터로 새로 정의 #}
+    {# 페이지 성격에 맞춰 제목만 수정하세요 #}
     {% set sections = [
-        ('이번 주 인기 예능', (anime_videos | default([]))[0:12]),
-        ('정주행 필수 명작', (anime_videos | default([]))[12:24])
+        ('지금 뜨는 콘텐츠', (video_list | default([]))[0:12]),
+        ('정주행 추천 명작', (video_list | default([]))[12:24]),
     ] %}
 
-    {% for title, section_videos in sections %}
+    {% for title, section_video_list in sections %}
+    {% if section_video_list %} {# 해당 구간에 데이터가 있을 때만 화면에 표시 #}
     <div class="box2">
         <div class="h3"><h3>{{ title }}</h3></div>
         <div class="section_slider">    
             <div class="swiper mySwiper4">
                 <div class="swiper-wrapper">
-                    {% for video in section_videos %}
+                    {% for video in section_video_list %}
                     <div class="swiper-slide">
-                        <a href="{{ url_for('sub.index', id=video['video_unique_id']) }}">
-                            <img src="{{ video['video_thumbnail'] }}" alt="thumbnail">
+                        <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
+                            <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
                         </a>
                     </div>
                     {% endfor %}
@@ -61,5 +61,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
     {% endfor %}
 {% endblock %}
