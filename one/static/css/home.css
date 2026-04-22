@@ -12,6 +12,56 @@ body {
     font-family: Arial, sans-serif;
 }
 
+.netflixst-toast {
+    position: relative;
+    overflow: hidden; /* 중요 */
+}
+
+/* 왼쪽 빨간 라인 */
+.netflixst-toast::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #e50914; /* 넷플릭스 빨강 */
+}
+
+/.animate-toast-in {
+    animation: toastBlurIn 0.3s ease;
+}
+
+@keyframes toastBlurIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+        filter: blur(4px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+.animate-toast-out {
+    animation: toastBlurOut 0.4s ease forwards;
+}
+
+@keyframes toastBlurOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-10px); /* 살짝 위로 */
+        filter: blur(4px); /* ⭐ 블러 핵심 */
+    }
+}
+
 /* ------------------------------배너----------------------------- */
 .banner {
     width: 100%;

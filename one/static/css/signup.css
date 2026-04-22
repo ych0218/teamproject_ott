@@ -54,6 +54,8 @@ input:checked + .gender-btn {
     border-radius: 5px;
     margin-top: 6px;
     overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.25s;
 }
 
 #pw-strength-bar {
@@ -61,4 +63,31 @@ input:checked + .gender-btn {
     width: 0%;
     border-radius: 5px;
     transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.pw-bar.active {
+    opacity: 1;
+}
+
+
+#pw-error {
+    display: block;
+    color: #666;
+    margin-top: 5px;
+    font-size: 13px;
+}
+
+#password-match-msg {
+    font-size: 13px;
+}
+
+.pw-hint {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 5px;
+    transition: all 0.2s ease;
+}
+
+.pw-hint.active {
+    opacity: 0.5;
 }

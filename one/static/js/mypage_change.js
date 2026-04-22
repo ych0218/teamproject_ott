@@ -26,35 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isNewOk = true;
 
-        // 2. 새 비밀번호 입력 시 검증 로직
-        if (newVal.length > 0) {
-            if (newVal === userEmail) {
-                matchMsg.textContent = "⚠️ 이메일과 동일한 비밀번호는 사용할 수 없습니다.";
-                matchMsg.style.color = "#ff153c";
-                isNewOk = false;
-            } else if (newVal !== cfmVal) {
-                matchMsg.textContent = "⚠️ 새 비밀번호와 일치하지 않습니다.";
-                matchMsg.style.color = "#ff153c";
-                isNewOk = false;
-            } else {
-                matchMsg.textContent = "✅ 새 비밀번호와 일치합니다.";
-                matchMsg.style.color = "#4caf50";
-                isNewOk = true;
-            }
-        } else {
-            matchMsg.textContent = "";
-            isNewOk = true; // 새 비번 입력 안 할 경우(기존 비번 유지) 통과
-        }
-
-        // 3. 안내 메시지 업데이트
-        if (isCurrentOk) {
-            pwMsg.textContent = "정보를 저장할 준비가 되었습니다.";
-            pwMsg.style.color = "#4caf50";
-        } else {
-            pwMsg.textContent = "정보 수정을 위해 현재 비밀번호를 입력해 주세요.";
-            pwMsg.style.color = "#666";
-        }
-
         // 최종 버튼 활성화 여부
        saveBtn.disabled = !(isCurrentOk && isNewOk);
 }

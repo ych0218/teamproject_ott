@@ -77,18 +77,20 @@
                     placeholder="비밀번호",
                     style="background-color: #333b41; color: #fff;"
                     ) }}
+                    <div id="pw-hint" class="pw-hint">
+                        비밀번호는 10자 이상, 대소문자·숫자·특수문자를 포함해야 합니다.
+                    </div>
 
                     <div class="pw-bar">
                         <div id="pw-strength-bar"></div>
-                    </div>
 
-                    <!-- 상태 메시지 -->
-                    <div id="pw-error" class="small mt-1"></div>
+                    </div>
+                    <p id="pw-error"></p>
                 </div>
 
 
                 <!-- 비밀번호 확인 -->
-                <div class="mb-3">
+                <div class="mb-2">
                     {{ form.password2(
                     id="password2",
                     class="form-control py-3 border-0",
@@ -171,6 +173,7 @@
 
 {% include 'footer.html' %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
 <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
 </body>
 </html>

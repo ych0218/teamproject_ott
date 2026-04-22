@@ -44,7 +44,7 @@
                     {{ form.name(
                     class="form-control py-3 border-0",
                     placeholder="이름",
-                    style="background-color: #3f474d; color: #333;"
+                    style="background-color: #3f474d; color: #fff;"
                     ) }}
                 </div>
 
@@ -53,18 +53,25 @@
                     {{ form.phone(
                     class="form-control py-3 border-0",
                     placeholder="휴대전화",
-                    style="background-color: #3f474d; color: #333;"
+                    style="background-color: #3f474d; color: #fff;"
                     ) }}
                 </div>
 
                 <!-- 결과 메시지 -->
-                {% with messages = get_flashed_messages() %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                <div class="alert alert-info text-center">
-                    {% for msg in messages %}
-                    <div>{{ msg }}</div>
-                    {% endfor %}
+                {% for category, msg in messages %}
+                {% if category == 'success' %}
+                <div class="result-box text-center">
+                    회원님의 이메일은
+                    <span class="email-highlight">{{ msg }}</span> 입니다.
                 </div>
+                {% elif category == 'error' %}
+                <div class="result-box text-center">
+                    입력하신 정보와 일치하는 계정을 찾을 수 없습니다.
+                </div>
+                {% endif %}
+                {% endfor %}
                 {% endif %}
                 {% endwith %}
 

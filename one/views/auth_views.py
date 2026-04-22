@@ -316,9 +316,9 @@ def find_id():
         ).first()
 
         if user:
-            flash(f"회원님의 이메일은 {user.user_email} 입니다.")
+            flash(user.user_email, "success")
         else:
-            flash("일치하는 계정이 없습니다.")
+            flash("NOT_FOUND", "error")
 
     return render_template('auth/find_id.html', form=form)
 
@@ -341,7 +341,7 @@ def reset_password():
             user.user_password = generate_password_hash(form.password1.data)
             db.session.commit()
 
-            flash("비밀번호가 변경되었습니다!")
+            flash("비밀번호가 변경되었습니다!", "success")
             return redirect(url_for('auth.login'))
         else:
             flash("일치하는 계정이 없습니다.")
