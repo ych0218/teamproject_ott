@@ -1,691 +1,163 @@
 {% extends "base.html" %}
-{% block title %}
-서브페이지
-{% endblock %}
-
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/sub.css') }}">
 {% endblock %}
 
 {% block content %}
-<section>
-    <div class="col-8 h-100 text-white">
-        <div class="header_box">
-            <div class="tv">
-                <div class="tv-thumbnail">
-                    <img src="" alt="">
+<div class="container-fluid sub-page">
+    <div class="row">
+        <!-- [왼쪽 영역] 영상 및 주요 정보 -->
+        <div class="col-8 content-main">
+            <!-- 1. 영상 재생 영역 -->
+            <div class="video-hero">
+                <div id="thumbnailLayer" onclick="playVideo('{{ video.video_unique_id }}')">
+                    <img src="{{ video.video_thumbnail }}" alt="메인 썸네일">
+                    <div class="play-button-overlay">
+                        <div class="play-icon-circle">
+                            <span class="play-triangle">▶</span>
+                        </div>
+                    </div>
+                </div>
+                <video id="mainVideo" style="display:none;" controls controlsList="nodownload">
+                    <source src="{{ video.video_url }}" type="video/mp4">
+                </video>
+            </div>
+
+            <!-- 2. 제목 및 버튼 그룹 -->
+            <div class="video-header-info">
+                <div class="info-text-group">
+                    <h1 class="video-title">{{ video.video_title }}</h1>
+                    <div class="video-meta">
+                        <span class="rating">⭐ {{ avg_rating if avg_rating > 0 else '0.0' }}</span>
+                        <span class="genre">{{ video.video_genres }}</span>
+                        <span class="year">{{ video.video_date.year }}</span>
+                        <span class="age-badge">{{ video.video_age_limit }}</span>
+                        <span class="quality-badge">HD</span>
+                    </div>
                 </div>
 
-                <div class="tv-overlay">
-                    <div class="tv-button">▶</div>
-
-                    <button class="mute-btn" onclick="toggleMute(event)">
-                        <img id="mute-icon" src="{{url_for('static', filename='img/main_img/volume_up.svg')}}"
-                            data-on="{{url_for('static', filename='img/main_img/volume_up.svg')}}"
-                            data-off="{{url_for('static', filename='img/main_img/volume_off.svg')}}" alt="소리켬">
+                <div class="info-action-group">
+                    <button class="icon-circle" onclick="toggleWish('{{ video.video_unique_id }}')">
+                        <img id="wishIcon" src="{{ url_for('static', filename='img/main_img/' + ('icon-heart-filled.svg' if is_wished else 'icon-heart-outlined.svg')) }}">
+                    </button>
+                    <button class="icon-circle" onclick="copyLink()">
+                        <img src="{{ url_for('static', filename='img/main_img/icon-share-v2.svg') }}">
                     </button>
                 </div>
-
             </div>
-            <div class="tv2">
-                <div class="text_box">
-                    <div class="text_mini_box">
-                        <h2>제목-타이틀</h2>
-                        <div class="text_mini_box2">
-                            <p><img src="{{ url_for('static', filename='img/main_img/icon-star-full-v2.svg') }}"
-                                    alt="별">별점 • 장르 • 년도 • 방영시간 • 시즌</p>
-                            <div class="age_box">19+</div>
-                            <div class="display_box">HD</div>
-                        </div>
-                    </div>
-                    <div class="mini_box">
-                        <div class="button_box">
-                            <button class="wish-btn" onclick="toggleWish()">
-                                <img id="wishIcon"
-                                    src="{{url_for('static', filename='img/main_img/icon-heart-outlined.svg')}}"
-                                    alt="찜">
 
-                            </button>&nbsp; &nbsp;
+            <hr class="divider">
 
-                            <div id="toast1">
-                                <img id="toast1Img" src="{{url_for('static', filename='img/main_img/info.svg')}}"
-                                    alt="정보">
-                                <span id="toast1Text"></span>
-                            </div>
-
-                            <button type="button" class="copy-btn" onclick="copyLink('http://127.0.0.1:5000/sub/sub')">
-                                <img src="{{url_for('static', filename='img/main_img/icon-share-v2.svg')}}"
-                                    alt="링크"></button>
-
-                            <div id="toast">
-                                <img src="{{url_for('static', filename='img/main_img/link.svg')}}" alt="링크2">링크가
-                                복사되었습니다
-                            </div>
-                        </div>
-                        <div class="button_box2"><button>재생하기</button></div>
-                    </div>
+            <!-- 3. 상세 정보 (시놉시스) -->
+            <div class="detail-info-section">
+                <div class="info-group">
+                    <h4>시놉시스</h4>
+                    <p>{{ video.video_synopsis }}</p>
                 </div>
             </div>
         </div>
-        <div class="info">
-            <div class="info_box">시놉시스</div>
+
+        <!-- [오른쪽 영역] 탭 컨텐츠 (고정 영역) -->
+        <div class="col-4 side-tab-area">
+            <div class="tab-container">
+                <div class="tab-menu">
+                    {% if not video.video_is_movie %}
+                    <button class="tab-link active" onclick="openTab(event, 'tab_episodes')">에피소드</button>
+                    {% endif %}
+                    <button class="tab-link {{ 'active' if video.video_is_movie else '' }}" onclick="openTab(event, 'tab1')">
+                        리뷰 <span class="review-qty">{{ review_count }}</span>
+                    </button>
+                    <button class="tab-link" onclick="openTab(event, 'tab2')">추천 콘텐츠</button>
+                </div>
+
+                <!-- [탭1] 에피소드 리스트 (수정됨 🔥) -->
+                {% if not video.video_is_movie %}
+                <div id="tab_episodes" class="tab-content active">
+                    <div class="grid-list">
+                        {% for item in episodes %} <!-- 💡 episodes 변수 사용 -->
+                        <div class="item" onclick="location.href='{{ url_for('video.detail', video_id=item.video_unique_id) }}'">
+                            <div class="poster-box">
+                                <img src="{{ item.video_thumbnail }}" alt="썸네일">
+                            </div>
+                            <p>{{ item.video_title }}</p>
+                        </div>
+                        {% else %}
+                        <div class="empty-list-msg">
+                            <img src="{{ url_for('static', filename='img/main_img/info.svg') }}" alt="정보">
+                            <p>등록된 에피소드가 없습니다.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- [탭2] 리뷰 영역 -->
+                <div id="tab1" class="tab-content {{ 'active' if video.video_is_movie else '' }}">
+                    <div class="review-input-wrap">
+                        <div class="comments">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                        <textarea id="comment-text" placeholder="이 작품에 대한 후기를 남겨주세요."></textarea>
+                        <button type="button" id="submit-btn" onclick="submitReview('{{ video.video_unique_id }}')">등록</button>
+                    </div>
+
+                    <div class="comment-list">
+                        {% for review in reviews %}
+                        <div class="comment-card {{ 'is-me' if review.user_unique_id == user_id else '' }}">
+                            <div class="comment-header">
+                                <span class="user-name">
+                                    {{ review.user.user_name }}
+                                    {% if review.user_unique_id == user_id %}
+                                        <span class="my-tag">MY</span>
+                                    {% endif %}
+                                </span>
+                                <div class="user-stars">
+                                    {% for i in range(1, 6) %}
+                                        <span class="star {{ 'fill' if i <= review.rating else '' }}">★</span>
+                                    {% endfor %}
+                                </div>
+                                <span class="comment-date">{{ review.create_at.strftime('%Y.%m.%d') }}</span>
+                            </div>
+                            <div class="comment-body">{{ review.comment }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- [탭3] 추천 콘텐츠 (수정됨 🔥) -->
+                <div id="tab2" class="tab-content">
+                    <div class="grid-list">
+                        {% for rel in recommended_videos %} <!-- 💡 recommended_videos 변수 사용 -->
+                        <div class="item" onclick="location.href='{{ url_for('video.detail', video_id=rel.video_unique_id) }}'">
+                            <div class="poster-box">
+                                <img src="{{ rel.video_thumbnail }}" alt="포스터">
+                            </div>
+                            <p>{{ rel.video_title }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-4 text-white">
-        <div class="tab">
-            <div class="tab-menu">
-                <button class="tab-link active" onclick="openTab(event, 'tab1')">에피소드</button>
-                <button class="tab-link " onclick="openTab(event, 'tab2')">리뷰</button>
-                <button class="tab-link" onclick="openTab(event, 'tab3')">비슷한 콘텐츠</button>
-            </div>
+</div>
 
-            <div id="tab1" class="tab-content active">
-                <div class="head_box" style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
-
-                    <div class="dropdown">
-                        <button type="button" class="dropbtn" onclick="toggleMenu('menu1')">
-                            <span id="text1">전체 시즌</span>
-                            <img src="{{url_for('static', filename='img/main_img/drop_down.svg')}}" alt="▼">
-                        </button>
-                        <div id="menu1" class="dropdown-content">
-                            <button type="button" onclick="updateFilter('season', 'all', '전체 시즌', 'text1', 'menu1')">전체
-                                시즌</button>
-                            <button type="button" onclick="updateFilter('season', '1', '시즌 1', 'text1', 'menu1')">시즌
-                                1</button>
-                            <button type="button" onclick="updateFilter('season', '2', '시즌 2', 'text1', 'menu1')">시즌
-                                2</button>
-                        </div>
-                    </div>
-
-                    <div class="dropdown">
-                        <button type="button" class="dropbtn" onclick="toggleMenu('menu2')">
-                            <span id="text2">최신 순</span>
-                            <img src="{{url_for('static', filename='img/main_img/drop_down.svg')}}" alt="▼">
-                        </button>
-                        <div id="menu2" class="dropdown-content">
-                            <button type="button" onclick="updateFilter('sort', 'old', '오래된 순', 'text2', 'menu2')">오래된
-                                순</button>
-                            <button type="button" onclick="updateFilter('sort', 'new', '최신 순', 'text2', 'menu2')">최신
-                                순</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="content-list">
-                    <p class="item season-title" data-season="1" data-type="title">시즌 1</p>
-                    <div class="item" data-season="1" data-sort="old">
-                        <div class="item-box1"><img src="{{url_for('static', filename='img/main_img/sub-ep.jpg')}}"
-                                alt="ep-thumbnail">
-
-                            <div class="play-overlay">
-                                <div class="play-button"><a href="{{ url_for('home.anime') }}">▶</a></div>
-                            </div>
-                        </div>
-                        <div class="item-box2">
-                            <h5>시즌 1 - 오래된 영상 A</h5>
-                            <span>년 월 일 • 방영시간</span>
-                            <h6>줄거리</h6>
-                        </div>
-                    </div>
-                    <div class="item" data-season="1" data-sort="new">
-                        <div class="item-box1"><img src="{{url_for('static', filename='img/main_img/sub-ep.jpg')}}"
-                                alt="ep-thumbnail">
-
-                            <div class="play-overlay">
-                                <div class="play-button"><a href="{{ url_for('sub.index') }}">▶</a></div>
-                            </div>
-                        </div>
-                        <div class="item-box2">
-                            <h5>시즌 1 - 최신 영상 B</h5>
-                            <span>년 월 일 • 방영시간</span>
-                            <h6>줄거리</h6>
-                        </div>
-                    </div>
-
-                    <p class="item season-title" data-season="2" data-type="title">시즌 2</p>
-                    <div class="item" data-season="2" data-sort="old">
-                        시즌 2 - 오래된 영상 C</div>
-                    <div class="item" data-season="2" data-sort="new">시즌 2 - 최신 영상 D</div>
-                </div>
-            </div>
-            <!-- tab1 에피소드 end -->
-
-            <div id="tab2" class="tab-content">
-                <div class="review-box w-100 d-flex justify-content-between">
-                    <div class="rating1 d-flex align-items-center">
-                        <span class="star fill"></span> <span class="star fill"></span> <span class="star fill"></span>
-                        <span class="star half"></span> <span class="star"></span><span>&nbsp; &nbsp;평점 개수</span>
-                    </div>
-                    <div class="rating2 d-flex align-items-center">3.5</div>
-                </div>
-
-                <div class="comments w-100 d-flex justify-content-center">
-                    <span class="star" data-value="1"></span>
-                    <span class="star" data-value="2"></span>
-                    <span class="star" data-value="3"></span>
-                    <span class="star" data-value="4"></span>
-                    <span class="star" data-value="5"></span>
-                </div>
-
-                <div class="comment-input-wrap">
-                    <textarea id="comment-text" placeholder="리뷰 내용을 입력하세요."></textarea>
-                    <button id="submit-btn" type="button">등록</button>
-                </div>
-
-                <div class="review-box2 w-100 d-flex justify-content-end align-items-end">베스트순<img
-                        src="{{url_for('static', filename='img/main_img/drop_down.svg')}}" alt="아래화살"></div>
-
-                <div class="comment-list" id="comment-list"></div>
-
-            </div>
-
-
-
-            <div class="rating3">
-                <div class="user-box1 w-100 d-flex">
-                    <span class="mini_star fill"></span> <span class="mini_star fill"></span>
-                    <span class="mini_star fill"></span><span class="mini_star half"></span> <span
-                        class="mini_star"></span>
-                </div>
-            </div>
-
-            <div id="tab3" class="tab-content">
-                <div class="title-container w-100">
-                    <div class="title-box">
-                        <a href="{{ url_for('sub.index') }}">
-                            <div class="title-thumbnail"><img
-                                    src="{{ url_for('static', filename='img/main_img/ep-content.avif') }}" alt=""></div>
-                            <div class="title-text">
-                                <h5>제목/타이틀</h5>
-                                <p class="inf"><img
-                                        src="{{ url_for('static', filename='img/main_img/icon-star-full-v2.svg') }}"
-                                        alt="별">별점 • 장르 • 년도 <span class="display_box">HD</span></p>
-                                <p>줄거리</p>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="title-box"></div>
-                    <div class="title-box"></div>
-                    <div class="title-box"></div>
-                    <div class="title-box"></div>
-                    <div class="title-box"></div>
-                    <div class="title-box"></div>
-                    <div class="title-box"></div>
-                </div>
-            </div>
-        </div>
-
-
-    </div>
-</section>
-<br><br>
+<!-- 알림창 요소 -->
+<div id="toast">링크가 복사되었습니다.</div>
+<div id="toast1"><span id="toast1Text"></span></div>
 {% endblock %}
 
 {% block script %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
-        crossorigin="anonymous"></script>
-
-<script>
-
-    // -------------------------------------------------------------음소거--------------------------------------------
-    function toggleMute(event) {
-        event.preventDefault(); // 페이지 이동 방지
-
-        const icon = document.getElementById('mute-icon');
-        const onSrc = icon.getAttribute('data-on');   // 켜진 이미지 경로
-        const offSrc = icon.getAttribute('data-off'); // 꺼진 이미지 경로
-
-        // 현재 src가 on 이미지와 같다면 off로, 아니면 on으로 교체
-        if (icon.src.includes(onSrc)) {
-            icon.src = offSrc;
-        } else {
-            icon.src = onSrc;
-        }
-    }
-
-    // -------------------------------------------------------------탭 화면--------------------------------------------
-
-    function openTab(evt, tabName) {
-        // 1. 모든 tab-content 숨기기
-        var tabContent = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < tabContent.length; i++) {
-            tabContent[i].style.display = "none";
-        }
-
-        // 2. 모든 tab-link에서 "active" 클래스 제거
-        var tabLinks = document.getElementsByClassName("tab-link");
-        for (var i = 0; i < tabLinks.length; i++) {
-            tabLinks[i].className = tabLinks[i].className.replace(" active", "");
-        }
-
-        // 3. 현재 클릭한 탭 보이게 하고 active 클래스 추가
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-    }
-
-    function toggleDropdown(menuId) {
-        const menu = document.getElementById(menuId);
-        const allMenus = document.querySelectorAll('.dropdown-content');
-
-        allMenus.forEach(m => {
-            if (m.id !== menuId) m.classList.remove('show');
-        });
-        menu.classList.toggle('show');
-    }
-
-    // 현재 선택된 필터값 저장
-    let currentFilters = {
-        season: 'all',
-        sort: 'new'
+<script src="{{ url_for('static', filename='js/sub.js') }}"></script>
+  <script>
+    // 💡 HTML 안에서 파이썬 변수를 JS 전역 변수로 변환합니다.
+    window.VIDEO_DATA = {
+        id: parseInt("{{ video.video_unique_id }}"),
+        lastTime: parseInt("{{ history.last_played_time if history else 0 }}")
     };
-
-    // --------------------------------------------------------드롭다운--------------------------------------------------------
-
-    // 드롭다운 열기/닫기
-    function toggleMenu(menuId) {
-        const menus = document.querySelectorAll('.dropdown-content');
-        menus.forEach(m => {
-            if (m.id !== menuId) m.classList.remove('show');
-        });
-        document.getElementById(menuId).classList.toggle('show');
-    }
-
-    // 필터 업데이트 및 적용
-    function updateFilter(type, value, text, labelId, menuId) {
-        // 버튼 텍스트 바꾸고 메뉴 닫기
-        document.getElementById(labelId).innerText = text;
-        document.getElementById(menuId).classList.remove('show');
-
-        // 선택값 저장
-        currentFilters[type] = value;
-
-        // 리스트 새로고침
-        applyFilters();
-    }
-
-    function applyFilters() {
-        const items = document.querySelectorAll('.item');
-
-        items.forEach(item => {
-            const itemSeason = item.getAttribute('data-season');
-            const itemSort = item.getAttribute('data-sort');
-
-            // 필터 조건 체크
-            const seasonMatch = (currentFilters.season === 'all' || currentFilters.season === itemSeason);
-            const sortMatch = (currentFilters.sort === itemSort);
-
-            // 두 조건이 다 맞아야만 보임
-            if (seasonMatch && sortMatch) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-
-    // 처음 실행 시 필터 적용 (초기값 설정)
-    applyFilters();
-
-    // 화면 밖 클릭 시 닫기
-    window.onclick = function (e) {
-        if (!e.target.closest('.dropdown')) {
-            document.querySelectorAll('.dropdown-content').forEach(m => m.classList.remove('show'));
-        }
-    }
-
-    function copyLink() {
-        // 1. 복사하고 싶은 주소를 여기에 입력하세요.
-        const urlToCopy = "http://127.0.0.1:5000/sub";
-
-        // 2. 클립보드로 복사 실행
-        navigator.clipboard.writeText(urlToCopy).then(() => {
-            // 3. 복사 성공 시 토스트 알림 표시
-            const toast = document.getElementById("toast");
-            toast.className = "show";
-
-            // 3초 후 토스트 숨기기
-            setTimeout(() => {
-                toast.className = toast.className.replace("show", "");
-            }, 3000);
-        }).catch(err => {
-            console.error("복사 실패:", err);
-        });
-    }
-
-    function applyFilters() {
-        const items = document.querySelectorAll('.item');
-
-        items.forEach(item => {
-            const itemSeason = item.getAttribute('data-season');
-            const itemSort = item.getAttribute('data-sort');
-            const isTitle = item.getAttribute('data-type') === 'title';
-
-            const seasonMatch = (currentFilters.season === 'all' || currentFilters.season === itemSeason);
-            const sortMatch = isTitle || (currentFilters.sort === itemSort);
-
-            if (seasonMatch && sortMatch) {
-                // 필터 조건에 맞으면 hidden 클래스 제거 (보임)
-                item.classList.remove('hidden');
-            } else {
-                // 조건에 맞지 않으면 hidden 클래스 추가 (숨김)
-                item.classList.add('hidden');
-            }
-        });
-    }
-
-    //--------------------------------------------------찜----------------------------------------
-
-    const icon = document.getElementById("wishIcon");
-    const toast = document.getElementById("toast1");
-    const toastImg = document.getElementById("toast1Img");
-    const toastText = document.getElementById("toast1Text");
-
-    // 이미지 경로 설정
-    const imgOff = "https://assets.coupangplay.com/assets/icons/icon-heart-outlined.svg"; // 빈 하트
-    const imgOn = "https://assets.coupangplay.com/assets/icons/icon-heart-filled.svg";  // 찬 하트
-    const checkIcon = "{{url_for('static', filename='img/main_img/info.svg')}}"; // 토스트용 체크
-
-    // 1. 페이지 시작 시 상태 불러오기
-    window.addEventListener('DOMContentLoaded', () => {
-        const isWished = localStorage.getItem('myWishStatus');
-        if (isWished === 'active') {
-            icon.src = imgOn;
-        } else {
-            icon.src = imgOff;
-        }
-    });
-
-    // 2. 찜 토글 함수
-    function toggleWish() {
-        // 현재 저장된 상태 확인
-        const currentStatus = localStorage.getItem('myWishStatus');
-
-        if (currentStatus !== 'active') {
-            // 찜 하기
-            icon.src = imgOn;
-            localStorage.setItem('myWishStatus', 'active');
-            showImageToast(checkIcon, "찜 목록에 추가되었습니다!");
-        } else {
-            // 찜 취소
-            icon.src = imgOff;
-            localStorage.setItem('myWishStatus', 'inactive');
-            showImageToast(checkIcon, "찜이 취소되었습니다.");
-        }
-    }
-
-    // 3. 이미지 포함 토스트 표시 함수
-    function showImageToast(imgSrc, message) {
-        toastImg.src = imgSrc;
-        toastText.innerText = message;
-
-        // 애니메이션 초기화 후 재생
-        toast.className = "show";
-        setTimeout(() => { toast.className = ""; }, 3000);
-    }
-
-    // -----------------------------별점리뷰-----------------------------------
-
-    const stars = document.querySelectorAll('.comments .star');
-    let currentRating = 0;
-
-    stars.forEach((star) => {
-        // 1. 마우스를 올렸을 때 (Hover)
-        star.addEventListener('mouseenter', () => {
-            const hoverValue = star.getAttribute('data-value');
-            updateStarDisplay(hoverValue, 'hover');
-        });
-
-        // 2. 마우스가 나갔을 때 (Mouseleave)
-        star.addEventListener('mouseleave', () => {
-            // 호버 효과를 지우고, 클릭해서 고정된 점수(currentRating)로 복원
-            updateStarDisplay(currentRating, 'fill');
-        });
-
-        // 3. 클릭했을 때 (Click)
-        star.addEventListener('click', () => {
-            currentRating = star.getAttribute('data-value');
-            updateStarDisplay(currentRating, 'fill');
-            console.log(`선택한 평점: ${currentRating}점`);
-        });
-    });
-
-    function updateStarDisplay(targetValue, className) {
-        stars.forEach((s) => {
-            const starValue = s.getAttribute('data-value');
-
-            // 일단 모든 특수 클래스 제거
-            s.classList.remove('fill', 'hover');
-
-            // 목표 수치보다 작거나 같으면 클래스 추가
-            if (starValue <= targetValue) {
-                s.classList.add(className);
-            }
-        });
-    }
-
-
-
-    const star = document.querySelectorAll('.comments .star');
-    const container = document.querySelector('.comments');
-
-    let fixedRating = 0; // 클릭으로 고정된 점수
-
-    stars.forEach((star) => {
-        // 마우스 이동 시 (호버)
-        star.addEventListener('mousemove', (e) => {
-            // 클릭해서 고정된 상태면 호버 반응 중단
-
-            const rect = star.getBoundingClientRect();
-            const x = e.clientX - rect.left; // 별 영역 내 마우스 X 좌표
-            const value = parseFloat(star.getAttribute('data-value'));
-
-            // 0.5점 단위 계산: 별 폭의 절반보다 작으면 0.5점 차감
-            const isHalf = x < rect.width / 2;
-            const tempRating = isHalf ? value - 0.5 : value;
-
-            renderStars(tempRating);
-        });
-
-        // 클릭 시 (고정)
-        star.addEventListener('click', (e) => {
-            const rect = star.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const isHalf = x < rect.width / 2;
-            const value = parseFloat(star.getAttribute('data-value'));
-
-            fixedRating = isHalf ? value - 0.5 : value;
-            renderStars(fixedRating);
-            console.log("확정 점수:", fixedRating);
-        });
-    });
-
-    // 마우스가 영역을 벗어날 때
-    container.addEventListener('mouseleave', () => {
-        // 클릭된 게 없으면 초기화(0), 있으면 고정된 점수 유지
-        renderStars(fixedRating);
-    });
-
-
-
-    function renderStars(rating) {
-        stars.forEach((star) => {
-            const starValue = parseFloat(star.getAttribute('data-value'));
-
-            // 모든 상태 초기화
-            star.classList.remove('fill', 'half');
-
-            if (starValue <= rating) {
-                // 꽉 찬 별 (현재 별 값이 타겟 점수보다 작거나 같으면)
-                star.classList.add('fill');
-            } else if (starValue - 0.5 === rating) {
-                // 반쪽 별 (현재 별 값에서 0.5를 뺀 게 타겟 점수와 같으면)
-                star.classList.add('half');
-            }
-        });
-    }
-
-    // 좋아요 함수
-
-    window.handleLike = function (btn) {
-        const span = btn.querySelector('span');
-        const img = btn.querySelector('img');
-        const dislikeBtn = btn.parentElement.querySelector('.btn-action2');
-        const dislikeImg = dislikeBtn.querySelector('img');
-
-        // 이미지 경로 설정 (Flask url_for 문법 사용)
-        const staticPath = "{{ url_for('static', filename='img/main_img/') }}";
-        const upDefault = 'icon-thumbs-up-v2.svg';
-        const upFilled = 'icon-thumbs-up-filled-v2.svg';
-        const downDefault = 'icon-thumbs-down-v2.svg';
-        const downFilled = 'icon-thumbs-down-filled-v2.svg';
-
-        // 현재 파일명만 추출
-        const currentFileName = img.src.split('/').pop();
-        const currentDislikeFile = dislikeImg.src.split('/').pop();
-
-        // 1. 싫어요가 눌려있다면? -> 싫어요 취소 (아이콘 변경)
-        if (currentDislikeFile === downFilled) {
-            dislikeImg.src = staticPath + downDefault;
-        }
-
-        // 2. 내(좋아요) 상태 토글
-        if (currentFileName === upFilled) {
-            img.src = staticPath + upDefault;
-            if (span) span.innerText = Math.max(0, (parseInt(span.innerText) || 0) - 1);
-        } else {
-            img.src = staticPath + upFilled;
-            if (span) span.innerText = (parseInt(span.innerText) || 0) + 1;
-        }
-    };
-
-
-    // 싫어요 함수 수정
-    window.handleDislike = function (btn) {
-        const img = btn.querySelector('img');
-        const likeBtn = btn.parentElement.querySelector('.btn-action1');
-        const likeImg = likeBtn.querySelector('img');
-        const likeSpan = likeBtn.querySelector('span');
-
-        const staticPath = "{{ url_for('static', filename='img/main_img/') }}";
-        const upDefault = 'icon-thumbs-up-v2.svg';
-        const upFilled = 'icon-thumbs-up-filled-v2.svg';
-        const downDefault = 'icon-thumbs-down-v2.svg';
-        const downFilled = 'icon-thumbs-down-filled-v2.svg';
-
-        const currentFileName = img.src.split('/').pop();
-        const currentLikeFile = likeImg.src.split('/').pop();
-
-        // 1. 좋아요가 눌려있다면? -> 좋아요 취소 (숫자 -1)
-        if (currentLikeFile === upFilled) {
-            likeImg.src = staticPath + upDefault;
-            if (likeSpan) likeSpan.innerText = Math.max(0, (parseInt(likeSpan.innerText) || 0) - 1);
-        }
-
-        // 2. 내(싫어요) 상태 토글
-        if (currentFileName === downFilled) {
-            img.src = staticPath + downDefault;
-        } else {
-            img.src = staticPath + downFilled;
-        }
-    };
-    // [추가] 닉네임을 가져오는 함수
-    // 나중에 로그인 정보를 여기서 가져오도록 수정하면 됩니다.
-    function getNickname() {
-        // 예: return "{{ session['nickname'] }}"; // Flask 연동 시
-        return "방문자"; // 우선은 테스트용으로 고정값 반환
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const submitBtn = document.getElementById('submit-btn');
-        const commentInput = document.getElementById('comment-text');
-        const commentList = document.getElementById('comment-list');
-
-        loadComments();
-
-        if (!submitBtn || !commentInput || !commentList) {
-            console.error("HTML 요소를 찾을 수 없습니다. ID를 확인하세요.");
-            return;
-        }
-
-        // 별점 이미지 생성 함수
-        function createStarHtml(rating) {
-            let starHtml = '<div class="comment-star-wrap">';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= rating) starHtml += '<span class="comment-star fill"></span>';
-                else if (i - 0.5 === rating) starHtml += '<span class="comment-star half"></span>';
-                else starHtml += '<span class="comment-star"></span>';
-            }
-            starHtml += `<span class="rating-num"></span></div>`;
-            return starHtml;
-        }
-
-        // 댓글을 화면에 추가하는 함수
-        function addCommentToDOM(data) {
-            const newItem = document.createElement('div');
-            newItem.className = 'comment-item';
-
-            newItem.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-nickname">${data.nickname}</span>
-                <span class="comment-date">${data.date}</span>
-            </div>
-            <div class="comment-rating">${createStarHtml(data.rating)}</div>
-            <div class="comment-content">${data.content}</div>
-            <div class="comment-actions">
-                <button type="button" class="btn-action1" onclick="handleLike(this)"><img src="{{url_for('static', filename='img/main_img/icon-thumbs-up-v2.svg')}}" alt="thumb-up"> <span>0</span></button>
-                <button type="button" class="btn-action2" onclick="handleDislike(this)"><img src="{{url_for('static', filename='img/main_img/icon-thumbs-down-v2.svg')}}" alt="thumb-down"></button>
-            </div>
-        `;
-            commentList.prepend(newItem);
-        }
-
-        // 로컬 스토리지 저장 및 로드 로직
-        function saveComment(data) {
-            const reviews = JSON.parse(localStorage.getItem('my_reviews')) || [];
-            reviews.push(data);
-            localStorage.setItem('my_reviews', JSON.stringify(reviews));
-        }
-
-        function loadComments() {
-            const reviews = JSON.parse(localStorage.getItem('my_reviews')) || [];
-            reviews.forEach(data => addCommentToDOM(data));
-        }
-
-        // 등록 버튼 클릭 이벤트
-        submitBtn.onclick = function () {
-            const text = commentInput.value.trim();
-
-            // [수정] 함수를 호출하여 현재 닉네임을 가져옴
-            const currentNickname = getNickname();
-
-            if (typeof fixedRating === 'undefined' || fixedRating === 0) {
-                alert("별점을 선택해주세요!"); return;
-            }
-
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-
-            const dateString = `${year}.${month}.${day}`;
-
-            const commentData = {
-                nickname: currentNickname, // 함수에서 가져온 값 사용
-                date: dateString,
-                rating: fixedRating,
-                content: text
-            };
-
-            addCommentToDOM(commentData);
-            saveComment(commentData);
-
-            commentInput.value = "";
-            fixedRating = 0;
-            if (typeof renderStars === 'function') renderStars(0);
-        };
-    });
 </script>
 {% endblock %}

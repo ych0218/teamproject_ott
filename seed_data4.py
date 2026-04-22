@@ -165,7 +165,7 @@ def seed_data():
                     video_synopsis=item["desc"],
                     video_genres=item["genre"],
                     video_is_movie=0 if item["id"] >= 16 else 1, # 16번부터는 예능(0)으로 설정
-                    video_url=f"/static/uploads/videos/video_{item['id']}.mp4",
+                    video_url=f"/static/uploads/videos/video_{item['id'] % 2}.mp4",
                     video_thumbnail=f"/static/uploads/thumbnails/{item['id']}.jpg",
                     admin_unique_id=1
                 )

@@ -72,83 +72,94 @@
     </nav>
 
 
-        <div class="tab-content-container">
-            <section id="watch-history" class="tab-section active">
-                {% if user.watch_histories %}
-                    <div class="content-grid">
-                        {% for history in user.watch_histories | sort(attribute='updated_at', reverse=True) %}
-                        <div class="content-card">
-                            <div class="img-box">
-                                <img src="{{ history.video.video_thumbnail }}" alt="thumbnail">
-                                {% if not history.is_finished %}
-                                   {% if history.total_time and history.total_time > 0 %}
-                                        {% set percentage = (history.current_time / history.total_time * 100)|int %}
-                                        <div class="progress" style="width: {{ percentage }}%;"></div>
-                                    {% else %}
-                                        <div class="progress" style="width: 10%;"></div> <!-- 기본값 -->
+    <div class="tab-content-container">
+     <!-- [시청내역 섹션] -->
+    <!-- [시청내역 섹션] -->
+        <section id="watch-history" class="tab-section active">
+            {% if user.watch_histories %}
+                <div class="content-grid">
+                    {% for history in user.watch_histories | sort(attribute='updated_at', reverse=True) %}
+                        {# 💡 비디오 정보가 DB에 존재할 때만 출력 (에러 방지 핵심) #}
+                        {% if history.video %}
+                            <a href="{{ url_for('video.detail', video_id=history.video.video_unique_id) }}?autoplay=1" class="content-card">
+                                <div class="img-box">
+                                    <img src="{{ history.video.video_thumbnail }}" alt="thumbnail">
+
+                                    {# 시청 완료가 아닐 때만 하단에 진행바 표시 #}
+                                    {% if not history.is_finished %}
+                                        <div class="progress-container">
+                                            {% set total = history.video.video_duration if history.video.video_duration else 3600 %}
+                                            {% set percentage = (history.last_played_time / total * 100) | int %}
+                                            <div class="progress-bar" style="width: {{ percentage if percentage > 5 else 5 }}%;"></div>
+                                        </div>
                                     {% endif %}
-                                {% endif %}
-                            </div>
-                            <div class="text-box">
-                                <h4>{{ history.video.video_title }}</h4>
-                                <p>{{ history.updated_at.strftime('%Y.%m.%d') }} 시청</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-msg">시청하신 내역이 없습니다.</div>
-                {% endif %}
-            </section>
-
-    <section id="purchase-history" class="tab-section">
-        {% if user.payments %}
-            <div class="history-table-wrapper">
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>결제일</th>
-                            <th>이용권 정보</th>
-                            <th>결제금액</th>
-                            <th>상태</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for payment in user.payments | sort(attribute='paid_at', reverse=True) %}
-                        <tr>
-                            <td>{{ payment.paid_at.strftime('%Y.%m.%d') }}</td>
-                            <td>{{ payment.subscription.plan.plan_name }}</td>
-                            <td>{{ "{:,.0f}".format(payment.price) }}원</td>
-                            <td><span class="status-badge">{{ payment.status }}</span></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="empty-msg">구매 내역이 없습니다.</div>
-        {% endif %}
-    </section>
-
-    <section id="wishlist" class="tab-section">
-        {% if user.wishlist %}
-            <div class="content-grid">
-                {% for wish in user.wishlist %}
-                <div class="content-card">
-                    <div class="img-box">
-                        <img src="{{ wish.video.video_thumbnail }}" alt="thumbnail">
-                    </div>
-                    <div class="text-box">
-                        <h4>{{ wish.video.video_title }}</h4>
-                        <span class="genre-text">{{ wish.video.video_age_limit }}</span>
-                    </div>
+                                </div>
+                                <div class="text-box">
+                                    <h4>{{ history.video.video_title }}</h4>
+                                    <p>{{ history.updated_at.strftime('%Y.%m.%d') }} 시청</p>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-msg">찜한 콘텐츠가 없습니다.</div>
-        {% endif %}
-    </section>
+            {% else %}
+                <div class="empty-msg">시청하신 내역이 없습니다.</div>
+            {% endif %}
+        </section>
+
+        <!-- [구매내역 섹션] (기존 유지) -->
+        <section id="purchase-history" class="tab-section">
+            {% if user.payments %}
+                <div class="history-table-wrapper">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>결제일</th>
+                                <th>이용권 정보</th>
+                                <th>결제금액</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in user.payments | sort(attribute='paid_at', reverse=True) %}
+                            <tr>
+                                <td>{{ payment.paid_at.strftime('%Y.%m.%d') }}</td>
+                                <td>{{ payment.subscription.plan.plan_name if payment.subscription else '정보 없음' }}</td>
+                                <td>{{ "{:,.0f}".format(payment.price) }}원</td>
+                                <td><span class="status-badge">{{ payment.status }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-msg">구매 내역이 없습니다.</div>
+            {% endif %}
+        </section>
+
+        <!-- [찜 섹션] -->
+        <section id="wishlist" class="tab-section">
+            {% if user.wishlist %}
+                <div class="content-grid">
+                    {% for wish in user.wishlist %}
+                        {# 💡 찜 목록도 비디오 존재 여부 확인 #}
+                        {% if wish.video %}
+                            <a href="{{ url_for('video.detail', video_id=wish.video.video_unique_id) }}" class="content-card">
+                                <div class="img-box">
+                                    <img src="{{ wish.video.video_thumbnail }}" alt="thumbnail">
+                                </div>
+                                <div class="text-box">
+                                    <h4>{{ wish.video.video_title }}</h4>
+                                    <span class="genre-text">{{ wish.video.video_age_limit }}</span>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-msg">찜한 콘텐츠가 없습니다.</div>
+            {% endif %}
+        </section>
 
     <section id="support" class="tab-section">
     <!-- 💡 문의하기 버튼을 포함한 헤더 영역 추가 -->

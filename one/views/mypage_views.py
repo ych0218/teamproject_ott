@@ -39,77 +39,63 @@ def change_info():
     user_unique_id = session.get('user')
     user_data = User.query.get_or_404(user_unique_id)
 
-    # 폼 객체 생성
     form = UserCreateForm()
 
-    # [GET 요청] 기존 데이터를 폼에 채워넣기
-    if request.method == 'GET':
-        if user_data.user_birth:
-            form.birth_year.data = str(user_data.user_birth.year)
-            form.birth_month.data = str(user_data.user_birth.month)
-            form.birth_day.data = str(user_data.user_birth.day)
+    if request.method == 'GET' and user_data.user_birth:
+        form.birth_year.data = str(user_data.user_birth.year)
+        form.birth_month.data = str(user_data.user_birth.month)
+        form.birth_day.data = str(user_data.user_birth.day)
 
-        # 이름과 전화번호 초기값 세팅 (필요 시)
-        form.name.data = user_data.user_name
-        form.phone.data = user_data.user_phone
-        if hasattr(form, 'gender'):
-            form.gender.data = user_data.user_gender
+    # 1. 소셜 유저 필수 정보 확인 (GET 요청 시)
+    if user_data.signup_method in ['naver', 'kakao'] and request.method == 'GET':
+        if not user_data.user_name or not user_data.user_phone:
+            return render_template('mypage/mypage_integrate.html', user=user_data,form=form)
 
-        # 소셜 유저 필수 정보 확인 (미통합 유저라면 통합 페이지로)
-        if user_data.signup_method in ['naver', 'kakao']:
-            if not user_data.user_name or not user_data.user_phone:
-                return render_template('mypage/mypage_integrate.html', user=user_data, form=form)
 
-        return render_template('mypage/mypage_change.html', user=user_data, form=form)
+        # 그 외(일반 유저 또는 이미 정보를 입력한 소셜 유저) -> 일반 수정 페이지로
+        return render_template('mypage/mypage_change.html', user=user_data,form=form)
 
-    # --- [POST 요청 처리] ---
+    # --- [POST 요청 처리: 데이터 저장] ---
     if request.method == 'POST':
-        # 비밀번호 관련 데이터는 request.form에서 직접 가져옴 (JS 검증 완료 기준)
         current_pw_input = request.form.get('current_password')
         new_pw = request.form.get('user_password')
         confirm_pw = request.form.get('confirm_password')
 
-        # 1. 비밀번호 검증 로직
+        # 1. 가입 방식에 따른 비밀번호 검증 분기
+        # 💡 [보안 강화] 소셜 유저라도 이미 비밀번호를 설정했다면 검증을 거쳐야 합니다.
+        # 즉, 비밀번호가 DB에 존재(통합 완료)하는 유저만 현재 비밀번호 확인을 실행합니다.
         if user_data.user_password:
-            # 이미 비번이 있는 유저 (일반 또는 통합완료 소셜)
             if not current_pw_input or not check_password_hash(user_data.user_password, current_pw_input):
                 flash('현재 비밀번호가 일치하지 않습니다.', 'danger')
                 return redirect(url_for('mypage.change_info'))
+        else:
+            print(f"🔗 미통합 소셜유저({user_data.signup_method}) 첫 비밀번호 설정 진행")
+            # 소셜 유저는 현재 비밀번호가 없으므로 통과 (로그 확인용)
+            print(f"🔗 소셜유저({user_data.signup_method}) 통합/수정 진행")
 
-        # 2. 새 비밀번호 설정 (입력값이 있을 경우에만)
+        # 2. 새 비밀번호 등록/변경 로직
         if new_pw:
             if new_pw == user_data.user_email:
                 flash('비밀번호는 이메일 주소와 동일할 수 없습니다.', 'danger')
                 return redirect(url_for('mypage.change_info'))
             if new_pw != confirm_pw:
-                flash('새 비밀번호 확인이 일치하지 않습니다.', 'danger')
+                flash('새 비밀번호가 일치하지 않습니다.', 'danger')
                 return redirect(url_for('mypage.change_info'))
 
+            # 해싱하여 저장
             user_data.user_password = generate_password_hash(new_pw)
 
-        # 3. 사용자 정보 업데이트 (signup 양식과 동일하게 form 데이터 사용)
+        # 3. 사용자 정보 업데이트
         user_data.user_name = request.form.get('user_name')
         user_data.user_phone = request.form.get('user_phone')
 
-        if hasattr(form, 'gender') and request.form.get('gender'):
-            user_data.user_gender = request.form.get('gender')
+        raw_birth = request.form.get('user_birth')
+        if raw_birth:
+            try:
+                user_data.user_birth = datetime.strptime(raw_birth, '%Y-%m-%d')
+            except:
+                pass
 
-        # 4. 생년월일 처리 (signup 방식과 동일)
-        try:
-            year = request.form.get('birth_year')
-            month = request.form.get('birth_month')
-            day = request.form.get('birth_day')
-
-            if year and month and day:
-                user_data.user_birth = datetime(
-                    int(year),
-                    int(month),
-                    int(day)
-                )
-        except Exception as e:
-            print(f"⚠️ 생년월일 변환 에러: {e}")
-
-        # 5. DB 저장
         try:
             db.session.commit()
             flash('회원 정보가 성공적으로 반영되었습니다.', 'success')
@@ -119,7 +105,7 @@ def change_info():
             print(f"❌ DB 저장 에러: {e}")
             flash('저장 중 오류가 발생했습니다.', 'danger')
 
-    return render_template('mypage/mypage_change.html', user=user_data, form=form)
+    return render_template('mypage/mypage_change.html', user=user_data,form=form)
 
 
 @bp.route('/support/write', methods=['GET', 'POST'])

@@ -1,1002 +1,427 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=Gabarito:wght@400..900&family=Luxurious+Roman&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Sans+KR:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
-*:focus, button:focus, input:focus, select:focus, textarea:focus {
-    outline: none !important;      
-    box-shadow: none !important;   
-    -webkit-tap-highlight-color: transparent !important; 
-}
-
-a:active, a:focus {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-html {
-    height: 100%;
-}
-
-ul,
-ol {
-    list-style: none;
-}
-
-body {
+/* 1. 레이아웃 및 기본 제어 */
+.sub-page {
     background-color: #000;
     color: #fff;
-    font-family: Arial, sans-serif;
+    padding: 30px 4% 0;
+}
+
+.content-main {
+    padding-right: 30px;
+    margin-top: 30px;
+}
+
+.video-hero {
     width: 100%;
-    min-height: 100vh;
+    height: 550px; /* 🔥 우측 영역과 눈대중으로 맞춘 높이입니다. 필요시 조정하세요. */
+    background-color: #000;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+#mainVideo, #thumbnailLayer, #thumbnailLayer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 영상을 박스에 꽉 채움 */
+}
+.video-header-info {
+    display: flex;
+    justify-content: space-between; /* 양 끝 정렬 */
+    align-items: flex-end;        /* 하단 라인 맞춤 */
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+.info-text-group {
+    flex: 1;
+}
+.video-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 2. 타이틀 및 정보 */
+.video-title {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+.video-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #aaa;
+}
+.age-badge { border: 1px solid #444; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+.info-action-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 5px; /* 메타 정보 텍스트 라인과 맞추기 위해 살짝 조절 */
+}
+.action-bar { display: flex; gap: 15px; }
+.play-action-btn {
+    background-color: #0084FF; color: #fff; border: none;
+    padding: 12px 60px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer;
+}
+
+.icon-circle {
+    width: 50px; height: 50px; border-radius: 50%; border: 1px solid #333;
+    background: #111; cursor: pointer; display: flex; justify-content: center; align-items: center;
+}
+
+/* 3. 오른쪽 고정 탭 */
+.side-tab-area {
+    /* 우측 영역 높이도 550px로 고정하여 좌우 대칭을 맞춤 */
+    height: 800px;
+    position: sticky;
+    top: 100px;
+}
+
+.tab-container {
+    background: #111;
+    border-radius: 15px;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    margin: 0;
-    min-width: 1440px;
 }
 
+.tab-menu { display: flex; width: 100%; border-bottom: 1px solid #222; }
+.tab-link {
+    flex: 1; padding: 15px; background: none; border: none;
+    color: #666; cursor: pointer; font-size: 16px;
+}
+.tab-link.active { color: #fff; border-bottom: 2px solid #fff; font-weight: bold; }
 
-.navbar {
-    color: white;
+.tab-content { display: none; flex: 1; overflow-y: auto; padding: 20px; }
+.tab-content.active { display: block !important; }
+
+/* 4. ⭐ 통합 별점 스타일 (입력 & 리스트 공통) */
+.star {
+    display: inline-block;
+    color: #444; /* 빈 별 색상 */
+    transition: color 0.2s;
+    user-select: none;
 }
 
-.nav-item {
-    color: white;
+.star.fill {
+    color: #ff153c !important; /* 채워진 별 색상 */
 }
 
-#wrap {
-    width: 100%;
-    height: 80px;
-    position: sticky;
-    top: 0;
-    background-color: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding-top: 15px;
-    z-index: 999;
-}
-
-.header_left {
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-left: 30px;
-}
-
-.logo {
-    height: 45px;
-    margin-left: 30px;
-}
-
-.list-group-item {
-    background-color: #000;
-}
-
-.header_right {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    margin-right: 30px;
-    align-items: center;
-}
-
-.list {
-    display: flex;
-    background-color: #000;
-}
-
-.search_box {
-    border-radius: 10px;
-    margin-right: 5px;
-}
-
-footer {
-    width: 95%;
-    background-color: black;
-    height: 350px;
-    color: gray;
-    font-size: 12px;
-    margin-left: 15px;
-    margin-top: auto; /* 컨텐츠가 적어도 항상 바닥에 위치 */
-}
-
-.footer_hr {
-    width: 90%;
-    background-color: black;
-}
-
-.footer_top {
-    display: flex;
-}
-
-.footer_nav {
-    margin-right: 15px;
-    font-size: 16px;
-}
-
-.footer_nav:hover {
-    font-weight: bold;
+/* 4-1. 입력창 별 크기 */
+.comments .star {
+    font-size: 30px;
     cursor: pointer;
 }
 
-.footer_middle {
+/* 4-2. 리스트 내 별 크기 */
+.user-stars .star {
+    font-size: 14px;
+    cursor: default;
+}
+
+/* ⚠️ 중복 방지를 위해 ::before { content: '★' } 는 절대 사용하지 않습니다. */
+
+/* 5. 리뷰 입력창 및 리스트 */
+#comment-text {
+    width: 100%; height: 100px; background: #1c2024; color: #fff;
+    border: 1px solid #333; border-radius: 8px; padding: 12px; margin: 10px 0;
+}
+
+.review-input-wrap button {
+    width: 100%; padding: 12px; background: #ff153c; border: none;
+    color: #fff; font-weight: bold; border-radius: 8px; cursor: pointer;
+}
+
+.comment-list {
+    margin-top: 25px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.comment-card {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.comment-header {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
-.footer_middle .list .footer_list::after {
-    content: " | ";
+.user-name { font-weight: 600; font-size: 14px; color: #efefef; }
+.comment-date { margin-left: auto; font-size: 12px; color: #666; }
+
+.comment-body {
+    font-size: 14px; color: #ccc; line-height: 1.6; word-break: break-all;
 }
 
-.fa-brands {
-    font-size: 20px;
-    margin-right: 20px;
+/* 6. 알림 및 기타 */
+#toast, #toast1 {
+    visibility: hidden; position: fixed; left: 50%; bottom: 30px;
+    transform: translateX(-50%); background: rgba(51, 51, 51, 0.95);
+    color: #fff; padding: 12px 24px; border-radius: 30px; z-index: 9999;
+}
+#toast.show, #toast1.show { visibility: visible; animation: fadein 0.5s; }
+@keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+
+.divider { border-color: #222; margin: 40px 0; }
+.info-group { margin-bottom: 30px; }
+.info-group h4 { color: #888; font-size: 16px; margin-bottom: 10px; }
+.info-group p { line-height: 1.8; color: #ddd; font-size: 15px; }
+
+.my-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: #0084FF; /* 깔끔한 블루 톤 */
+    border: 1px solid #0084FF;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 8px;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+.comment-card.is-me {
+    border-left: 3px solid #0084FF; /* 왼쪽에 얇은 포인트 선 */
+    background: rgba(0, 132, 255, 0.03); /* 아주 미세한 배경색 */
+    padding-left: 15px !important;
 }
 
-.fa-brands:hover {
-    font-size: 24px;
+.tab-link.active .review-qty {
+    background: #ff153c; /* 활성화 시 포인트 컬러 */
+    color: #fff;
 }
 
-a {
-    text-decoration: none;
-    color: gray;
+.review-qty {
+    font-size: 12px;
+    background: #333;
+    color: #aaa;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 5px;
+    vertical-align: middle;
 }
-
-.term_title_list {
-    border: none;
-}
-
-
-section {
-    width: 95%;
-    background-color: black;
-    margin: 0 auto;
-    display: flex;
+/* 썸네일 영역 전체 설정 */
+#thumbnailLayer {
     position: relative;
-    align-items: flex-start;
-}
-
-.col-8 {
-    flex: 0 0 66.6666%; /* 기존 col-8 비율 유지 */
-    height: auto;
-}
-
-.col-4 {
-    top: 60px; /* 헤더(#wrap) 높이만큼 띄워야 가려지지 않음 */
-    height: calc(100vh - 60px);
-    flex: 0 0 33.3333%; /* 기존 col-4 비율 유지 */
-    display: flex;
-    flex-direction: column;
-    /* 화면 높이를 초과하지 않도록 제한하여 스크롤 유도 */
-    max-height: 100vh; 
-    position: sticky;
-    overflow: hidden;
-}
-
-
-.header_box {
-    width: 100%;
-    height: 880px;
-    margin-top: 30px;
-    background-color: violet;
-    border-radius: 8px;
-}
-
-.tv {
-    width: 100%;
-    height: 680px;
-    position: relative;
-    display: block;
-    overflow: hidden;
-    background-color: skyblue;
-}
-
-/* 이미지 박스 및 이미지 설정 */
-.tv-thumbnail, .tv-thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover;   /* 이미지가 찌그러지지 않게 꽉 채움 */
-    transition: transform 0.4s ease; /* 호버 시 이미지 확대 효과 */
+    cursor: pointer;
+    overflow: hidden;
 }
-
-/* 검정색 반투명 오버레이 레이어 */
-.tv-overlay {
+#thumbnailLayer:hover img {
+    filter: brightness(0.8);
+    transform: scale(1.02);
+    transition: 0.3s ease;
+}
+#thumbnailLayer:hover .video-overlay {
+    opacity: 1;
+}
+/* 중앙 재생버튼 오버레이 레이어 */
+.play-button-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 마우스 올렸을 때 어두워지는 정도 */
+    display: flex;
+    justify-content: center; /* 가로 중앙 */
+    align-items: center;     /* 세로 중앙 */
+    background: rgba(0, 0, 0, 0.2); /* 배경을 아주 살짝 어둡게 */
+    transition: background 0.3s ease;
+}
+
+/* 원형 재생 버튼 배경 */
+.play-icon-circle {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2); /* 반투명 흰색 */
+    border: 3px solid #fff;              /* 흰색 테두리 */
+    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    
-    /* 처음에는 안 보이게 설정 */
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    backdrop-filter: blur(5px);          /* 배경 흐림 효과 (고급스러움) */
+    transition: all 0.3s ease;
 }
 
-/* 재생 버튼 디자인 */
-.tv-button {
-    background: none;    
-    border: none;       
-    color: white;        
-    font-size: 40px;    
+/* 재생 삼각형 아이콘 */
+.play-triangle {
+    color: #fff;
+    font-size: 35px;
+    margin-left: 8px; /* 💡 삼각형 특성상 살짝 오른쪽으로 밀어야 정중앙처럼 보입니다 */
+}
+
+#thumbnailLayer:hover .play-icon-circle {
+    transform: scale(1.15);              /* 버튼 크기 확대 */
+    background: rgba(255, 255, 255, 0.4); /* 배경 조금 더 진하게 */
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+#thumbnailLayer:hover .play-button-overlay {
+    background: rgba(0, 0, 0, 0.4);      /* 배경 전체가 조금 더 어두워짐 */
+}
+.recommend-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 🔥 한 줄에 2개씩 배치 */
+    gap: 15px; /* 아이템 사이 여백 */
+    padding: 20px 5px;
+}
+.rec-item {
+    width: 100%;
     cursor: pointer;
-    transition: color 0.3s ease, transform 0.3s ease; 
+    transition: transform 0.2s ease;
 }
 
-
-.tv-button:hover {
-    color: #0084FF;
-    text-shadow: 0 0 15px rgba(248, 210, 16, 0.8);
+/* 이미지 (포스터) 스타일 */
+.rec-item img {
+    width: 100%;
+    aspect-ratio: 2 / 3; /* 세로형 포스터 비율 유지 */
+    object-fit: cover;
+    border-radius: 8px; /* 둥근 모서리 */
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.tv:hover .tv-overlay {
-    opacity: 1; 
+.rec-item:hover {
+    transform: translateY(-5px); /* 살짝 위로 뜨는 효과 */
 }
 
-/* 우측 상단 음소거 버튼 위치 */
-.mute-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.5); /* 버튼 배경 원형 */
-    border: none;
+/* 텍스트 스타일 */
+.rec-item p {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    text-align: center; /* 제목 중앙 정렬 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 제목 길면 ... 처리 */
+}
+.episode-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 🔥 한 줄에 2개씩 */
+    gap: 15px;
+    padding: 20px 5px;
+}
+
+/* 개별 에피소드 아이템 박스 */
+.ep-item {
+    width: 100%;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* 에피소드 썸네일 스타일 */
+.ep-item img {
+    width: 100%;
+    aspect-ratio: 2 / 3; /* 🔥 추천 콘텐츠와 동일한 세로 비율 */
+    object-fit: cover;   /* 비율 유지하며 꽉 채움 */
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.ep-item:hover {
+    transform: translateY(-3px);
+}
+
+/* 에피소드 제목 스타일 */
+.ep-item p {
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    text-align: center; /* 세로 포스터는 중앙 정렬이 깔끔함 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* 목록이 비었을 때 메시지 스타일 */
+.empty-list-msg {
+    grid-column: span 2; /* 2열 전체를 차지하도록 설정 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+    color: #666;
+}
+
+.empty-list-msg img {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px; /* 이미지 크기 조절용 */
-    transition: background 0.2s;
+    margin-bottom: 15px;
+    opacity: 0.3;
+    filter: grayscale(1);
 }
 
-.mute-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-/* 버튼 내 이미지 스타일 */
-.mute-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: invert(1); /* 검정 아이콘일 경우 흰색으로 반전 (선택) */
-}
-
-.tv2 {
-    width: 100%;
-    height: 200px;
-    background-color: #1c2024;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-}
-
-.tv2 .text_box {
-    width: 95%;
-    height: 70%;
-    display: flex;
-
-}
-
-.tv2 h2 {
-    margin-top: 10px;
-    font-size: 38px;
-}
-
-.tv2 .text_mini_box {
-    width: 60%;
-    height: 30%;
-}
-
-.tv2 .text_mini_box2 {
-    display: flex;
-}
-
-.tv2 p img {
-    width: 16px;
-    height: 16px;
-}
-
-.tv2 .age_box {
-    width: 35px;
-    height: 24px;
-    font-size: 14px;
-    font-family: "Gabarito", sans-serif;
-    font-weight: 700;
-    font-style: normal;
-    background-color: #3b4048;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 9px;
-}
-
-.tv2 .display_box {
-    width: 30px;
-    height: 24px;
-    font-size: 14px;
-    font-family: "Gabarito", sans-serif;
-    font-weight: 600;
-    background-color: #656b78;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 9px;
-}
-
-.tv2 .mini_box {
-    position: relative;
-    width: 50%;
-    height: 100%;
-    display: flex;
-    align-items: flex-end;
-    flex-direction: column;
-}
-
-.tv2 .button_box {
-    height: 70%;
-}
-
-.tv2 .button_box button {
-    width: 58px;
-    height: 58px;
-    border-radius: 100%;
-    border: none;
-    background-color: #3b4048;
-}
-
-#toast,
-#toast1 {
-    visibility: hidden;
-    width: 13%;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 8px;
-    padding: 12px;
-    position: fixed;
-    left: 50%;
-    bottom: 30px;
-    transform: translateX(-50%);
-    /* 정확한 중앙 정렬 */
-    z-index: 1000;
-    font-size: 14px;
-    font-weight: 500;
-    opacity: 0.9;
-}
-
-
-#toast img {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-}
-
-#toast1 img {
-    width: 24px;
-    margin: 0 5px 2px 0;
-}
-
-.wish-btn img {
-    width: 24px;
-    transition: transform 0.2s;
-}
-
-.wish-btn:active img {
-    transform: scale(0.8);
-}
-
-#toast.show,
-#toast1.show {
-    visibility: visible;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-#toast1.show {
-    visibility: visible;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-
-
-@keyframes fadein {
-    from {
-        bottom: 0;
-        opacity: 0;
-    }
-
-    to {
-        bottom: 30px;
-        opacity: 1;
-    }
-}
-
-@keyframes fadeout {
-    from {
-        bottom: 30px;
-        opacity: 1;
-    }
-
-    to {
-        bottom: 0;
-        opacity: 0;
-    }
-}
-
-
-.tv2 button:hover {
-    transition: 0.3s;
-    filter: brightness(0.8);
-}
-
-.tv2 .button_box2 button {
-    width: 220px;
-    height: 58px;
-    border: none;
-    border-radius: 10px;
-    background-color: #0084FF;
-    color: #fff;
-    font-weight: 500;
-}
-
-.info {
-    width: 80%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.info .info_box {
-    width: 95%;
-    height: 1000px;
-    background-color: olive;
-}
-
-/* 리뷰, 콘텐츠, 에피소드 */
-
-.tab {
-    width: 95%;
-    height: 100%; /* 부모 .col-4의 높이를 다 씀 */
-    margin-top: 30px;
-    margin-left: 30px;
-    display: flex;
-    flex-direction: column; /* 메뉴와 콘텐츠를 세로로 배치 */
-    overflow: hidden;
-}
-
-.tab-menu {
-    display: flex;
-    position: sticky;
-    top: 0;
-    flex-shrink: 0; /* 높이가 줄어들지 않도록 고정 */
-    width: 100%;
-    z-index: 10;
-    background-color: #000;
-    border-bottom: 1px solid hsla(0, 0%, 100%, .1);
-}
-
-.tab-content {
-    flex: 1;
-    overflow-y: auto; 
-    overflow-x: hidden;
-    box-sizing: border-box; 
-    display: none;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.tab-content::-webkit-scrollbar {
-    display: none;
-}
-
-.tab-content.active {
-    display: block ;
-    flex-grow: 1;      
-    height: 100%;      
-}
-
-.tab-menu button:hover {
-    background-color: #202022;
-}
-
-.tab-menu button.active {
-    background-color: none;
-    border-bottom: 2px solid #fff;
-    /* 포인트 컬러 */
-    font-weight: bold;
-
-}
-
-/* 탭 콘텐츠 기본 스타일: 숨김 처리 */
-#tab1 .tab-content {
-    width: 100%;
-    display: none;
-    border-top: none;
-
-}
-
-#tab1 .head_box {
-    width: 100%;
-    height: 100px;
-    display: flex;
-    align-items: center;
-}
-
-
-.tab-menu button {
-    width: 33.33%;
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-    color: #fff;
-    font-size: 17px;
-}
-
-/* ---------------------------에피소드 탭------------------------- */
-/* 시즌, 순서 탭 */
-
-.container {
-    display: flex;
-    gap: 10px;
-}
-
-.dropdown {
-    position: relative;
-    width: 55%;
-}
-
-.tab-content .dropbtn {
-    width: 100%;
-    height: 52px;
-    padding: 0 10px 0 18px;
-    color: #ffffffcc;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid hsla(0, 0%, 100%, .1);
-    border-radius: 10px;
-    background-color: #1c2024;
-}
-
-.tab-content .dropbtn img {
-    width: 35px;
-    height: 35px;
-    filter: brightness(0) invert(0.8);
-    pointer-events: none;
-}
-
-/* 드롭다운 내용 (초기에는 숨김) */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    width: 100%;
-    top: 100%;
-    margin-top: 3px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 10px;
-    border: 1px solid hsla(0, 0%, 100%, .1);
-    background-color: #1c2024;
-}
-
-.droptab-content {
-    display: none !important;
-}
-
-.droptab-content.active {
-    display: block !important;
-}
-
-.dropdown-content button {
-    color: #ffffffcc;
-    border: none;
-    padding: 12px 16px;
-    text-decoration: none;
+.empty-list-msg p {
     font-size: 15px;
-    border-radius: 10px;
-    display: block;
-    background-color: #1c2024;
+    letter-spacing: -0.5px;
+}
+/* 1. 에피소드 & 추천 리스트 공통 그리드 (2열 세로 포스터) */
+.grid-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 🔥 한 줄에 2개씩 */
+    gap: 20px 15px; /* 상하 20px, 좌우 15px 간격 */
+    padding: 20px 5px;
 }
 
-/* 링크에 마우스 올렸을 때 배경색 */
-.dropdown-content button:hover {
-    color: #fff;
-    transition: color 0.2s;
-    background-color: none;
-}
-
-.item {
-    display: flex; /* 기본적으로 플렉스 레이아웃 적용 */
-    gap: 10px;    /* 박스 사이 간격 */
-    align-items: center;
-}
-
-/* 필터링되어 숨겨질 때 사용할 클래스 */
-.item.hidden {
-    display: none !important;
-}
-
-/* 제목(시즌1, 시즌2)은 플렉스가 필요 없을 수 있으니 별도 처리 가능 */
-.season-title {
-    display: block; 
-    font-weight: bold;
-    margin-top: 20px;
-}
-
-.item-box1 {
-    position: relative;
-    width: 35%;
-    height: 112px;
-    border-radius: 12px;
-    overflow: hidden;  
-    cursor: pointer;
-}
-
-.item-box1 img {
+/* 2. 개별 아이템 박스 */
+.grid-list .item {
     width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    object-position: center;
+    cursor: pointer;
     transition: transform 0.3s ease;
-}
-
-.play-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* 어두운 반투명 배경 */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0; /* 평소엔 숨김 */
-    transition: opacity 0.3s ease;
-}
-
-.play-button a {
-    color: white;
-    font-size: 30px;
-    width: 50px; height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* ⭐ 핵심: .item-box1에 마우스 올렸을 때만 작동 */
-.item-box1:hover .play-overlay {
-    opacity: 1; /* 재생 버튼 나타남 */
-}
-
-.item-box1:hover img {
-    transform: scale(1.08); /* 이미지 살짝 확대 */
-}
-
-.item-box2 {
-    width: 65%;
-    height: 112px;
-    background-color: wheat;
-}
-
-.item-box2 h5 {
-    font-size: 18px;
-    margin-bottom: 1px;
-}
-
-.item-box2 span {
-    font-size: 14px;
-}
-
-.item-box2 h6 {
-    margin-top: 5px;
-    font-size: 16px;
-    font-weight: 400;
-}
-
-.show {
-    display: block;
-}
-
-/* -----------------리뷰 탭----------------*/
-
-
-/* 평점 */
-.review-box {
-    height: 130px;
-    border-bottom: 2px solid hsla(0, 0%, 100%, .1);
-}
-
-.review-box .star {
-    display: inline-block;
-    width: 36px;
-    height: 36px;
-    background-color: #555;
-    -webkit-mask-image: url('../img/main_img/icon-star-full.svg');
-    mask-image: url('../img/main_img/icon-star-full.svg');
-    -webkit-mask-size: contain;
-    mask-size: contain;
-}
-
-.review-box .star.fill {
-    background-color: #dab600;
-}
-
-.review-box .star.half {
-    background: linear-gradient(90deg, #dab600 50%, #555 50%);
-}
-
-.rating2 {
-    font-size: 36px;
-    font-family: "Archivo Black", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-/* 리뷰 작성 */
-.comments {
-    margin-top: 20px;
-}
-
-.comments .star {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    background-color: #555;
-    cursor: pointer;
-    -webkit-mask-image: url('../img/main_img/icon-star-full.svg');
-    mask-image: url('../img/main_img/icon-star-full.svg');
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    transition: none;
-    pointer-events: auto;
-}
-
-.comments .star.fill {
-    background-color: #dab600;
-}
-
-.comments .star.half {
-    background: linear-gradient(90deg, #dab600 50%, #555 50%);
-}
-
-.comments .star.hover-fill {
-    background-color: #dab600;
-}
-
-.comments .star.hover-half {
-    background: linear-gradient(90deg, #dab600 50%, #555 50%);
-}
-
-/* 댓글들 */
-
-.review-box2 {
-    margin-top: 20px;
-    height: 25px;
-}
-
-.review-box2 img {
-    transform: translate(0, 8px); /* 원래 자리에서 오른쪽 20px, 위로 50px 이동 */
-    width: 40px;
-    filter: brightness(0) invert(0.8);
-}
-
-.comment-input-wrap {
-    margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    height: 200px;
-    margin-inline: auto;
-    border-bottom: 2px solid hsla(0, 0%, 100%, .1);
-}
-
-#comment-text {
-    height: 120px;
-    padding: 10px;
-    resize: none;
-    color: #ffffffcc;
-    border: 1px solid hsla(0, 0%, 100%, .1);
-    border-radius: 10px;
-    background-color: #1c2024;
-}
-
-#submit-btn {
-    padding: 10px;
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#submit-btn:hover {
-    transition: 0.3s;
-    filter: brightness(0.8);
- }
-
-.comment-list {
-    width: 100%;
-    text-align: left;
-    margin-inline: auto;
-}
-
-/* 리뷰 아이템 전체 박스 */
-.comment-item {
-    border: 1px solid hsla(0, 0%, 100%, .1);
-    border-radius: 10px;
-    background-color: #1c2024;
-    padding: 15px;
-    margin-top: 10px;
-    text-align: left;
-}
-
-/* 닉네임과 날짜를 양옆으로 배치 */
-.comment-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #777;
-}
-
-.comment-nickname {
-    font-weight: bold;
-    color: #fff;
-}
-
-/* 별점 표시 */
-.comment-rating {
-    margin: 5px 0;
-}
-
-/* 댓글 내 별점 컨테이너 (별들이 가로로 나열되게 함) */
-.comment-star-wrap {
-    display: flex !important;
     align-items: center;
-    gap: 2px;
-    margin: 8px 0;
 }
 
-/* 개별 별 스타일 */
-.comment-star {
-    display: inline-block !important; /* 반드시 있어야 함 */
-    width: 20px; 
-    height: 20px;
-    background-color: #555; /* 기본 회색 (빈 별) */
-    -webkit-mask-image: url('../img/main_img/icon-star-full.svg');
-    mask-image: url('../img/main_img/icon-star-full.svg');
-    -webkit-mask-size: contain;
-    mask-size: contain;
-    -webkit-mask-repeat: no-repeat;
+.grid-list .item:hover {
+    transform: translateY(-5px); /* 호버 시 살짝 위로 */
 }
 
-/* 색상 강제 적용 */
-.comment-star.fill {
-    background-color: #dab600 !important;
-}
-
-.comment-star.half {
-    background: linear-gradient(90deg, #dab600 50%, #555 50%) !important;
-}
-
-.rating-num {
-    color: #dab600;
-    transform: translate(5px, 1px);
-}
-
-/* 리뷰 텍스트 내용 */
-.comment-content {
-    margin: 10px 0;
-    line-height: 1.4;
-    word-break: break-all; /* 긴 문장 방지 */
-}
-
-/* 좋아요/싫어요 버튼 컨테이너 */
-.comment-actions {
-    display: flex;
-    gap: 15px;
-}
-
-/* 공통 버튼 스타일 */
-.btn-action1 {
-    min-width: 50px;
-    font-family: "Gabarito", sans-serif;
-    cursor: pointer;
-    background: none;
-    border: none;
-    border-radius: 10px;
-    background-color: #333b42;
-    padding: 4px 8px;
-    color: #fff;
-}
-
-.btn-action2 {
-    cursor: pointer;
-    background: none;
-    border: none;
-    border-radius: 10px;
-    background-color: #333b42;
-    padding: 4px 8px;
-    color: #fff;
-}
-
-#tab3 .title-container {
-    height: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-#tab3 .title-box {
-    width: 47%;
-    height: 275px;
-    margin-top: 24px;
-    background-color: yellowgreen;
-}
-
-#tab3 a {
-    color: #fff;
-}
-
-#tab3 .title-box:hover {
-    background-color: #202022;
-}
-
-#tab3 .title-thumbnail {
+/* 3. 세로 포스터 박스 (비율 유지의 핵심) */
+.grid-list .poster-box {
     width: 100%;
-    height: 55%;
-    background-color: purple;
-    border-radius: 12px;
+    aspect-ratio: 2 / 3; /* 🔥 세로 포스터 비율 2:3 고정 */
+    border-radius: 10px;
     overflow: hidden;
+    background-color: #222;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
 }
 
-#tab3 .title-thumbnail img {
+.grid-list .poster-box img {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
-    object-position: center;
+    object-fit: cover; /* 이미지가 박스를 꽉 채우도록 */
 }
 
-#tab3 h5 {
-    margin-top: 10px;
-    font-weight: 600;
-    font-size: 18px;
-}
-
-#tab3 .inf {
-    margin-bottom: 5px;
-    display: flex;
-    font-size: 15px;
-}
-
-#tab3 .display_box {
-    width: 30px;
-    height: 24px;
+/* 4. 제목 텍스트 스타일 */
+.grid-list p {
+    width: 100%;
     font-size: 14px;
-    font-family: "Gabarito", sans-serif;
-    font-weight: 600;
-    background-color: #656b78;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: 9px;
-    margin-top: -2px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;      /* 한 줄 유지 */
+    overflow: hidden;         /* 넘치는 글자 숨김 */
+    text-overflow: ellipsis;  /* 길면 ... 처리 */
 }
 
-#tab3 .inf img {
-    margin: 3px 3px 0 0;
-    width: 16px;
-    height: 16px;
+/* 5. 데이터가 없을 때 메시지 (중앙 정렬) */
+.empty-list-msg {
+    grid-column: span 2; /* 2칸을 통째로 차지 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 0;
+    opacity: 0.5;
+}
 
+.empty-list-msg img {
+    width: 40px;
+    margin-bottom: 10px;
 }

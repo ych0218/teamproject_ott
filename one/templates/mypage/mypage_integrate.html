@@ -34,6 +34,14 @@
             <div class="input-group">
                 <label>새 비밀번호 설정</label>
                 <input type="password" name="user_password" id="pw1" placeholder="사용할 비밀번호를 입력하세요" required>
+
+                <!-- 🔥 강도 바 및 에러 메시지 추가 -->
+                <div class="pw-wrap">
+                        <div class="pw-bar">
+                            <div id="pw-strength-bar"></div>
+                        </div>
+                    <small id="pw-error"></small>
+                </div>
             </div>
 
             <!-- 비밀번호 확인 (2차) -->
