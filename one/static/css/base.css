@@ -106,8 +106,8 @@ footer{
     font-size: 24px;
 }
 a {
-    text-decoration: none!important;
-    color: gray!important;
+    text-decoration: none;
+    color: gray;
 }
 .term_title_list{
     border: none;
