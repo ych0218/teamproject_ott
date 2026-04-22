@@ -39,6 +39,8 @@
     {% set sections = [
         ('지금 뜨는 콘텐츠', (video_list | default([]))[0:12]),
         ('정주행 추천 명작', (video_list | default([]))[12:24]),
+        ('정주행 추천 명작', (video_list | default([]))[24:36]),
+
     ] %}
 
     {% for title, section_video_list in sections %}

@@ -36,6 +36,7 @@ h3 {
     height: 610px;
     margin: 0 auto;
     border-radius: 40px;
+    overflow: hidden;
 }
 
 .swiper {
@@ -47,7 +48,8 @@ h3 {
   transition: all 0.3s ease; /* 부드러운 변화 */
 }
 
-.swiper-slide:hover {
+.box1 .swiper-slide:hover,
+.box2 .swiper-slide:hover{
   /* 마우스 올리면 색상 반전 또는 명도 조절 */
   filter: brightness(1.05);
   transform: translateY(-5%) scale(1); /* 중앙 정렬 유지하며 살짝 커짐 */
