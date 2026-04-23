@@ -2,12 +2,12 @@ from flask import Flask, redirect, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_mail import Mail
+# from flask_mail import Mail
 
 import os
 import config
 
-mail = Mail()
+# mail = Mail()
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager() # 추가됨: 이 줄이 있어야 빨간 줄이 사라집니다.
@@ -16,14 +16,14 @@ def create_app():
     app=Flask(__name__)
     app.config.from_object(config)
 
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] =  'carrotkang@gmail.com'
-    app.config['MAIL_PASSWORD'] =  'advr zqpq bexk zesv'
-    app.config['MAIL_DEFAULT_SENDER'] ='carrotkang@gmail.com'
-
-    mail.init_app(app)
+    # app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    # app.config['MAIL_PORT'] = 587
+    # app.config['MAIL_USE_TLS'] = True
+    # app.config['MAIL_USERNAME'] =
+    # app.config['MAIL_PASSWORD'] =
+    # app.config['MAIL_DEFAULT_SENDER'] =
+    #
+    # mail.init_app(app)
 
     # 콘텐츠 파일 업로드 설정
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
