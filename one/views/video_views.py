@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, jsonify, request
-from ..models import Video, User, WatchHistory, VideoLike, VideoWish, db, Review
+from ..models import Video, User, WatchHistory, VideoLike, VideoWish, db, Review, Subscription
 from datetime import datetime, timezone
 from sqlalchemy import or_
 bp = Blueprint('video', __name__, url_prefix='/video')
@@ -25,6 +25,19 @@ def list():
 def detail(video_id):
     user_id = session.get('user')
     video = Video.query.get_or_404(video_id)
+    # [구독 체크 로직 추가]
+    can_watch = False
+    if user_id:
+        now = datetime.now(timezone.utc)
+        # 해당 유저의 구독 중 'active' 상태이고 종료일이 남은 기록이 있는지 확인
+        active_sub = Subscription.query.filter_by(user_unique_id=user_id, status='active') \
+            .filter(Subscription.end_date > now) \
+            .first()
+
+        if active_sub:
+            can_watch = True
+
+
 
     # [1] 유저 데이터 및 리뷰 로직 (기존 동일)
     user_data = User.query.get(user_id) if user_id else None
@@ -80,6 +93,7 @@ def detail(video_id):
                            recommended_videos=recommended_videos, # 💡 추천 리스트
                            avg_rating=avg_rating,
                            reviews=sorted_reviews,
+                           can_watch=can_watch,
                            review_count=len(sorted_reviews))
 # 찜(Wish) 토글 API
 @bp.route('/wish/<int:video_id>', methods=['POST'])
@@ -166,6 +180,15 @@ def submit_review(video_id):
     data = request.get_json()
     comment = data.get('comment')
     rating = data.get('rating')
+    # 💡 [핵심 추가] 시청 기록이 있는지 확인
+    # 영상 재생 시 자동으로 생성되는 WatchHistory 테이블을 조회합니다.
+    history = WatchHistory.query.filter_by(user_unique_id=user_id, video_unique_id=video_id).first()
+
+    if not history:
+        return jsonify({
+            'result': 'fail',
+            'message': '영상을 시청하신 분들만 리뷰를 작성할 수 있습니다.'
+        }), 403  # Forbidden
 
     if not comment:
         return jsonify({'result': 'fail', 'message': '내용을 입력해주세요.'}), 400

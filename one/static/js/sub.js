@@ -61,7 +61,9 @@ window.submitReview = function (videoId) {
     const commentInput = document.getElementById('comment-text');
     const text = commentInput.value.trim();
 
-    // 💡 [수정 포인트] '수정 완료' 모드가 아닐 때만 중복 체크를 합니다.
+    // 💡 [추가] 시청 여부 체크 (HTML에서 window.VIDEO_DATA에 시청 여부를 담았을 경우)
+    // 혹은 단순히 서버의 에러 메시지에 의존해도 충분합니다.
+
     if (submitBtn.innerText !== "수정 완료") {
         const alreadyExists = document.querySelector('.comment-card.is-me');
         if (alreadyExists) {
@@ -73,7 +75,6 @@ window.submitReview = function (videoId) {
     if (fixedRating === 0) return alert("별점을 선택해주세요!");
     if (!text) return alert("후기 내용을 입력해주세요.");
 
-    // 서버로 전송
     fetch(`/video/review/${videoId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -84,6 +85,7 @@ window.submitReview = function (videoId) {
         if (data.result === 'success') {
             location.href = window.location.pathname + '?tab=tab1';
         } else {
+            // 💡 여기서 서버가 보낸 "영상을 시청한 분들만..." 메시지가 출력됩니다.
             alert(data.message);
         }
     });
@@ -125,7 +127,12 @@ window.playVideo = function(videoId) {
     const videoElement = document.getElementById('mainVideo');
     const thumbLayer = document.getElementById('thumbnailLayer');
     const resumeModal = document.getElementById('resumeModal');
-
+    // 💡 HTML에서 넘겨준 can_watch 변수를 전역에서 확인 (또는 간단하게 처리)
+    // 현재는 HTML 레벨에서 onclick 자체를 막았으므로 실행되지 않겠지만, 추가 안전장치입니다.
+    if (typeof can_watch !== 'undefined' && !can_watch) {
+        alert("구독권이 필요합니다.");
+        return;
+    }
     // 1. UI 전환
     if (thumbLayer) thumbLayer.style.display = 'none';
     if (videoElement) videoElement.style.display = 'block';
