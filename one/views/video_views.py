@@ -102,39 +102,60 @@ def toggle_wish(video_id):
 # 시청 기록 저장 API
 @bp.route('/save_watch', methods=['POST'])
 def save_watch():
-    user_id = session.get('user')
-    if not user_id:
-        return jsonify({'msg': 'skip'}), 200
+    # 1. 세션 값 확인 및 숫자 변환
+    user_id_raw = session.get('user')
+    if not user_id_raw:
+        return jsonify({'msg': 'user session missing'}), 401
 
-    data = request.json
-    # JS에서 보낸 키값 'video_id'와 'current_time'을 확인
-    video_id = data.get('video_id')
-
-    # 💡 데이터가 '{{...}}' 같은 문자열로 올 경우를 대비한 안전장치
     try:
-        video_id = int(video_id)
-    except (ValueError, TypeError):
-        return jsonify({'msg': 'invalid video_id'}), 400
+        user_id = int(user_id_raw)  # 세션값이 문자열일 경우 대비
+        data = request.json
 
-    # 소수점 시간을 정수로 변환 (예: 12.7초 -> 12초)
-    current_time = int(float(data.get('current_time', 0)))
-    is_finished = data.get('is_finished', False)
+        # 2. 필수 데이터 추출 및 숫자 변환
+        video_id = int(data.get('video_id'))
+        current_time = int(float(data.get('current_time', 0)))
+        is_finished = data.get('is_finished', False)
 
-    # 기존 기록 찾기
-    history = WatchHistory.query.filter_by(user_unique_id=user_id, video_unique_id=video_id).first()
+        # 3. DB 객체 조회 및 생성
+        history = WatchHistory.query.filter_by(user_unique_id=user_id, video_unique_id=video_id).first()
 
-    if not history:
-        # 기록이 없으면 새로 생성
-        history = WatchHistory(user_unique_id=user_id, video_unique_id=video_id)
-        db.session.add(history)
+        if not history:
+            # 💡 새로 입력할 때 명시적으로 값 할당
+            history = WatchHistory(
+                user_unique_id=user_id,
+                video_unique_id=video_id,
+                last_played_time=current_time,
+                is_finished=is_finished
+            )
+            db.session.add(history)
+        else:
+            # 💡 기존 기록 업데이트
+            history.last_played_time = current_time
+            history.is_finished = is_finished
+            history.updated_at = datetime.now(timezone.utc)
 
-    # 💡 값 업데이트
-    history.last_played_time = current_time
-    history.is_finished = is_finished
-    history.updated_at = datetime.now(timezone.utc)  # 시청 시간 갱신
+        db.session.commit()  # 👈 최종 반영
+        return jsonify({'msg': 'success', 'id': video_id})
 
-    db.session.commit()
-    return jsonify({'msg': 'ok', 'saved_time': current_time})
+    except Exception as e:
+        db.session.rollback()
+        print(f"❌ DB 입력 에러 발생: {str(e)}")  # 서버 터미널 로그를 확인하세요
+        return jsonify({'msg': 'error', 'reason': str(e)}), 500
+
+
+# 검색
+@bp.route('/search')
+def search():
+    keyword = request.args.get('keyword', '').strip()
+
+    query = Video.query
+
+    if keyword:
+        query = query.filter(Video.video_title.contains(keyword))
+
+    video_list = query.order_by(Video.video_unique_id.desc()).all()
+
+    return render_template('sub/search_result.html', video_list=video_list, keyword=keyword)
 
 @bp.route('/review/<int:video_id>', methods=['POST'])
 def submit_review(video_id):
@@ -150,30 +171,49 @@ def submit_review(video_id):
         return jsonify({'result': 'fail', 'message': '내용을 입력해주세요.'}), 400
 
     try:
-        new_review = Review(
-            user_unique_id=user_id,
-            video_unique_id=video_id,
-            comment=comment,
-            rating=rating,
-            create_at=datetime.now(timezone.utc)
-        )
-        db.session.add(new_review)
+        # 💡 기존 리뷰가 있는지 먼저 확인
+        existing_review = Review.query.filter_by(user_unique_id=user_id, video_unique_id=video_id).first()
+
+        if existing_review:
+            # 기존 리뷰가 있다면 내용과 별점 업데이트
+            existing_review.comment = comment
+            existing_review.rating = rating
+            existing_review.create_at = datetime.now(timezone.utc)
+        else:
+            # 없다면 새로 생성
+            new_review = Review(
+                user_unique_id=user_id,
+                video_unique_id=video_id,
+                comment=comment,
+                rating=rating,
+                create_at=datetime.now(timezone.utc)
+            )
+            db.session.add(new_review)
+
         db.session.commit()
         return jsonify({'result': 'success'})
     except Exception as e:
         db.session.rollback()
         return jsonify({'result': 'fail', 'message': str(e)}), 500
 
-# 검색
-@bp.route('/search')
-def search():
-    keyword = request.args.get('keyword', '').strip()
 
-    query = Video.query
+@bp.route('/review_delete/<int:video_id>', methods=['POST'])
+def delete_review(video_id):
+    user_id = session.get('user')
+    if not user_id:
+        return jsonify({'result': 'fail', 'message': '로그인이 필요합니다.'}), 401
 
-    if keyword:
-        query = query.filter(Video.video_title.contains(keyword))
+    try:
+        # 내 아이디와 비디오 아이디가 일치하는 리뷰 찾기
+        review = Review.query.filter_by(user_unique_id=user_id, video_unique_id=video_id).first()
 
-    video_list = query.order_by(Video.video_unique_id.desc()).all()
+        if review:
+            db.session.delete(review)
+            db.session.commit()
+            return jsonify({'result': 'success'})
+        else:
+            return jsonify({'result': 'fail', 'message': '삭제할 리뷰를 찾을 수 없습니다.'}), 404
 
-    return render_template('sub/search_result.html', video_list=video_list, keyword=keyword)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'result': 'fail', 'message': str(e)}), 500

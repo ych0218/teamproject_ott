@@ -18,9 +18,21 @@
                         </div>
                     </div>
                 </div>
+
                 <video id="mainVideo" style="display:none;" controls controlsList="nodownload">
                     <source src="{{ video.video_url }}" type="video/mp4">
                 </video>
+
+                <!-- 💡 [추가] 이어서 보기 모달 레이어 -->
+                <div id="resumeModal" class="resume-overlay" style="display: none;">
+                    <div class="resume-box">
+                        <p>이전에 시청하던 지점이 있습니다.<br><strong>이어서 보시겠습니까?</strong></p>
+                        <div class="resume-btns">
+                            <button id="btnResume" class="btn-resume-play">이어서 보기</button>
+                            <button id="btnStartOver" class="btn-resume-start">처음부터 보기</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 2. 제목 및 버튼 그룹 -->
@@ -93,40 +105,60 @@
 
                 <!-- [탭2] 리뷰 영역 -->
                 <div id="tab1" class="tab-content {{ 'active' if video.video_is_movie else '' }}">
-                    <div class="review-input-wrap">
-                        <div class="comments">
-                            <span class="star" data-value="1">★</span>
-                            <span class="star" data-value="2">★</span>
-                            <span class="star" data-value="3">★</span>
-                            <span class="star" data-value="4">★</span>
-                            <span class="star" data-value="5">★</span>
+
+    <!-- 💡 [변경] 이미 리뷰를 썼다면 입력창 대신 안내 메시지 표시 -->
+    {% set my_review = reviews | selectattr("user_unique_id", "equalto", user_id) | first %}
+
+    <div class="review-input-wrap" id="reviewInputArea" style="{{ 'display:none;' if my_review else '' }}">
+        <div class="comments">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+        </div>
+        <textarea id="comment-text" placeholder="이 작품에 대한 후기를 남겨주세요."></textarea>
+        <button type="button" id="submit-btn" onclick="submitReview('{{ video.video_unique_id }}')">등록</button>
+    </div>
+
+    {% if my_review %}
+    <div class="already-reviewed-msg">
+        <p>이미 리뷰를 작성하셨습니다. 수정이나 삭제를 원하시면 아래 본인 리뷰의 버튼을 이용해주세요.</p>
+    </div>
+    {% endif %}
+
+    <div class="comment-list">
+            {% for review in reviews %}
+            <div class="comment-card {{ 'is-me' if review.user_unique_id == user_id else '' }}">
+                <div class="comment-header">
+                    <div class="user-info-group">
+                        <span class="user-name">
+                            {{ review.user.user_name }}
+                            {% if review.user_unique_id == user_id %}
+                                <span class="my-tag">MY</span>
+                            {% endif %}
+                        </span>
+                        <div class="user-stars">
+                            {% for i in range(1, 6) %}
+                                <span class="star {{ 'fill' if i <= review.rating else '' }}">★</span>
+                            {% endfor %}
                         </div>
-                        <textarea id="comment-text" placeholder="이 작품에 대한 후기를 남겨주세요."></textarea>
-                        <button type="button" id="submit-btn" onclick="submitReview('{{ video.video_unique_id }}')">등록</button>
+                        <span class="comment-date">{{ review.create_at.strftime('%Y.%m.%d') }}</span>
                     </div>
 
-                    <div class="comment-list">
-                        {% for review in reviews %}
-                        <div class="comment-card {{ 'is-me' if review.user_unique_id == user_id else '' }}">
-                            <div class="comment-header">
-                                <span class="user-name">
-                                    {{ review.user.user_name }}
-                                    {% if review.user_unique_id == user_id %}
-                                        <span class="my-tag">MY</span>
-                                    {% endif %}
-                                </span>
-                                <div class="user-stars">
-                                    {% for i in range(1, 6) %}
-                                        <span class="star {{ 'fill' if i <= review.rating else '' }}">★</span>
-                                    {% endfor %}
-                                </div>
-                                <span class="comment-date">{{ review.create_at.strftime('%Y.%m.%d') }}</span>
-                            </div>
-                            <div class="comment-body">{{ review.comment }}</div>
-                        </div>
-                        {% endfor %}
+                    <!-- 💡 [추가] 본인 리뷰일 때만 버튼 표시 -->
+                    {% if review.user_unique_id == user_id %}
+                    <div class="review-edit-btns">
+                        <button class="btn-edit" onclick="prepareEdit('{{ review.comment | replace("'", "\\'") }}', '{{ review.rating }}')">수정</button>
+                        <button class="btn-delete" onclick="deleteReview('{{ video.video_unique_id }}')">삭제</button>
                     </div>
+                    {% endif %}
                 </div>
+                <div class="comment-body">{{ review.comment }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
                 <!-- [탭3] 추천 콘텐츠 (수정됨 🔥) -->
                 <div id="tab2" class="tab-content">
@@ -152,12 +184,14 @@
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/sub.js') }}"></script>
-  <script>
+<script>
     // 💡 HTML 안에서 파이썬 변수를 JS 전역 변수로 변환합니다.
     window.VIDEO_DATA = {
-        id: parseInt("{{ video.video_unique_id }}"),
-        lastTime: parseInt("{{ history.last_played_time if history else 0 }}")
+        // 숫자가 아닐 경우를 대비해 0으로 기본값 설정
+        id: parseInt("{{ video.video_unique_id }}") || 0,
+        lastTime: parseInt("{{ history.last_played_time if history else 0 }}") || 0
     };
+    console.log("비디오 데이터 로드 완료:", window.VIDEO_DATA);
 </script>
+<script src="{{ url_for('static', filename='js/sub.js') }}"></script>
 {% endblock %}
