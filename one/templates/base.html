@@ -46,16 +46,16 @@
                 <div class="d-flex align-items-center">
 
                     <form class="d-flex" role="search" method="GET" action="{{ url_for('video.search') }}">
-    <div class="input-group search-box">
-        <input
-            class="form-control search-input"
-            type="search"
-            name="keyword"
-            placeholder="어떤 콘텐츠를 찾고 계신가요?"
-        >
-        <button class="btn search-btn" type="submit">Search</button>
-    </div>
-</form>
+                        <div class="input-group search-box">
+                            <input
+                                    class="form-control search-input"
+                                    type="search"
+                                    name="keyword"
+                                    placeholder="어떤 콘텐츠를 찾고 계신가요?"
+                            >
+                            <button class="btn search-btn" type="submit">Search</button>
+                        </div>
+                    </form>
 
                     <a href="{{ url_for('mypage.mypage') }}"
                        class="action-btn ms-3">

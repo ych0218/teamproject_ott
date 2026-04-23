@@ -4,8 +4,8 @@ from datetime import datetime
 from functools import wraps
 from one.models import User, db, Admin
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_mail import Mail, Message
-from one import mail
+# from flask_mail import Mail, Message
+# from one import mail
 import requests
 import urllib.parse
 import time
@@ -407,14 +407,14 @@ def send_code():
         "expire": time.time() + 300
     }
 
-    # 🔥 메일 발송
-    msg = Message(
-        subject="[인증코드] 비밀번호 재설정",
-        recipients=[email],
-        body=f"인증코드: {code}\n5분 내에 입력해주세요."
-    )
-
-    mail.send(msg)
+    # # 🔥 메일 발송
+    # msg = Message(
+    #     subject="[인증코드] 비밀번호 재설정",
+    #     recipients=[email],
+    #     body=f"인증코드: {code}\n5분 내에 입력해주세요."
+    # )
+    #
+    # mail.send(msg)
 
     print("🔥 send-code 들어옴")
 
