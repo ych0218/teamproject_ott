@@ -5,7 +5,7 @@
 <div class="head_slider">
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
-            {% for video in (video_list | default([]))[34:40] %}
+            {% for video in video_list if video.video_unique_id in [134, 106] | default([]) %}
             <div class="swiper-slide">
                 <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
                     {# 💡 캐시 방지를 위해 랜덤값 추가 #}
