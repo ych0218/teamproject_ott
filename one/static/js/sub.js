@@ -57,12 +57,23 @@ window.openTab = function (evt, tabName) {
 
 /* [기능] 리뷰 제출 */
 window.submitReview = function (videoId) {
+    const submitBtn = document.getElementById('submit-btn');
     const commentInput = document.getElementById('comment-text');
     const text = commentInput.value.trim();
+
+    // 💡 [수정 포인트] '수정 완료' 모드가 아닐 때만 중복 체크를 합니다.
+    if (submitBtn.innerText !== "수정 완료") {
+        const alreadyExists = document.querySelector('.comment-card.is-me');
+        if (alreadyExists) {
+            alert("이미 리뷰를 작성하셨습니다. 수정 기능을 이용해주세요!");
+            return;
+        }
+    }
 
     if (fixedRating === 0) return alert("별점을 선택해주세요!");
     if (!text) return alert("후기 내용을 입력해주세요.");
 
+    // 서버로 전송
     fetch(`/video/review/${videoId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -71,7 +82,6 @@ window.submitReview = function (videoId) {
     .then(res => res.json())
     .then(data => {
         if (data.result === 'success') {
-            // 🔥 핵심: 그냥 reload가 아니라 탭 정보를 주소에 붙여서 이동
             location.href = window.location.pathname + '?tab=tab1';
         } else {
             alert(data.message);
@@ -107,52 +117,69 @@ window.copyLink = function () {
 
 let watchTimer;
 
+/* [기능] 비디오 재생 및 이벤트 바인딩 */
 window.playVideo = function(videoId) {
+
+
+
     const videoElement = document.getElementById('mainVideo');
     const thumbLayer = document.getElementById('thumbnailLayer');
+    const resumeModal = document.getElementById('resumeModal');
 
-    // 1. DB에서 가져온 마지막 시청 시간 (이미 전역변수에 담겨 있음)
-    const lastTime = window.VIDEO_DATA ? window.VIDEO_DATA.lastTime : 0;
-
-    // 2. UI 화면 전환
+    // 1. UI 전환
     if (thumbLayer) thumbLayer.style.display = 'none';
     if (videoElement) videoElement.style.display = 'block';
 
-    // 3. 💡 핵심 로직: 영상 로드 후 시간 이동 함수
-    const seekAndPlay = () => {
-        // 이벤트를 한 번만 실행하기 위해 제거
-        videoElement.onloadedmetadata = null;
+    const lastTime = window.VIDEO_DATA ? window.VIDEO_DATA.lastTime : 0;
+    console.log("현재 체크 중인 시간:", lastTime); // 👈 이거 추가
+    // 2. 10초 이상 시청 기록이 있을 경우 모달 표시
+    if (lastTime > 0) {
+    console.log("모달을 띄워야 함!");
+        resumeModal.style.display = 'flex'; // 모달 띄우기
 
-        if (lastTime > 0) {
-            console.log(`DB 기록 확인: ${lastTime}초 지점으로 이동합니다.`);
-            videoElement.currentTime = lastTime; // 👈 보던 시간으로 타임라인 이동
-        }
+        // [이어서 보기 클릭]
+        document.getElementById('btnResume').onclick = function() {
+            resumeModal.style.display = 'none';
+            videoElement.currentTime = lastTime;
+            videoElement.play();
+            startWatchTimer(videoId, videoElement);
+        };
 
-        videoElement.play(); // 이동 후 재생 시작
-    };
-
-    // 4. 영상 정보 로드 상태 체크
-    if (videoElement.readyState >= 1) {
-        // 이미 메타데이터(길이 등)가 로드된 경우 즉시 실행
-        seekAndPlay();
+        // [처음부터 보기 클릭]
+        document.getElementById('btnStartOver').onclick = function() {
+            resumeModal.style.display = 'none';
+            videoElement.currentTime = 0;
+            videoElement.play();
+            startWatchTimer(videoId, videoElement);
+            // 0초부터 보는 것이니 DB도 즉시 갱신해주는 것이 좋습니다.
+            saveWatchProgress(videoId, 0, false);
+        };
     } else {
-        // 아직 로드 전이라면 로드 완료 신호(onloadedmetadata)를 기다림
-        videoElement.onloadedmetadata = seekAndPlay;
+        // 기록 없으면 즉시 재생
+        videoElement.play();
+        startWatchTimer(videoId, videoElement);
     }
 
-    // 5. 시청 기록 저장 타이머 시작 (기존 로직)
-    startWatchTimer(videoId, videoElement);
+    // 시간 이동 및 일시정지 이벤트 바인딩
+    videoElement.onseeked = () => saveWatchProgress(videoId, videoElement.currentTime, false);
+    videoElement.onpause = () => saveWatchProgress(videoId, videoElement.currentTime, false);
 };
 
-// [유틸] 타이머 관리 함수 (깔끔하게 분리)
+/* [기능] 타이머 관리 */
 function startWatchTimer(videoId, videoElement) {
     if (window.watchTimer) clearInterval(window.watchTimer);
+
+    // 💡 즉시 저장
+    saveWatchProgress(videoId, videoElement.currentTime, false);
+
     window.watchTimer = setInterval(() => {
-        if (!videoElement.paused) {
+        // 재생 중일 때만 주기적으로 저장
+        if (videoElement && !videoElement.paused) {
             saveWatchProgress(videoId, videoElement.currentTime, false);
         }
     }, 10000);
 }
+
 // 페이지를 떠날 때 최종 저장
 window.addEventListener('beforeunload', () => {
     const videoElement = document.getElementById('mainVideo');
@@ -166,23 +193,29 @@ window.addEventListener('beforeunload', () => {
 
 
 function saveWatchProgress(videoId, currentTime, isFinished) {
-    // 💡 매개변수로 넘어온 videoId가 없으면 전역 변수에서 가져옴
-    const finalId = videoId || (window.VIDEO_DATA ? window.VIDEO_DATA.id : null);
+    // 1. 전달받은 ID가 없으면 전역 객체에서 보충
+    const rawId = videoId || (window.VIDEO_DATA ? window.VIDEO_DATA.id : null);
 
-    if (!finalId || isNaN(finalId)) {
-        console.error("정상적인 비디오 ID가 아닙니다:", finalId);
+    // 2. 숫자로 명확히 변환 (비어있거나 숫자가 아니면 중단)
+    const finalId = parseInt(rawId);
+    if (isNaN(finalId)) {
+        console.error("비디오 ID가 유효하지 않습니다:", rawId);
         return;
     }
 
+    // 3. 서버 전송
     fetch('/video/save_watch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            video_id: finalId,
+            video_id: finalId, // 명확한 숫자형 전송
             current_time: Math.floor(currentTime),
             is_finished: isFinished
         })
-    });
+    })
+    .then(res => res.json())
+    .then(data => console.log("저장 결과:", data)) // 결과 로그 확인용
+    .catch(err => console.error("전송 에러:", err));
 }
 
 window.toggleAudio = function() {
@@ -198,4 +231,47 @@ window.toggleAudio = function() {
     } else {
         icon.src = "/static/img/main_img/volume_up.svg";
     }
+};
+
+window.prepareEdit = function(content, rating) {
+    const inputArea = document.getElementById('reviewInputArea');
+    const msgArea = document.querySelector('.already-reviewed-msg');
+
+    // 1. 여기서 변수를 'commentInput'이라는 이름으로 선언합니다.
+    const commentInput = document.getElementById('comment-text');
+
+    // 2. 입력창 영역 보이기 처리
+    if(inputArea) inputArea.style.display = 'block';
+    if(msgArea) msgArea.style.display = 'none';
+
+    // 3. 선언한 commentInput 변수를 사용하여 값을 채웁니다.
+    if (commentInput) {
+        commentInput.value = content;
+        commentInput.focus();
+    }
+
+    // 4. 별점 세팅
+    fixedRating = parseInt(rating);
+    renderStars(fixedRating);
+
+    // 5. 버튼 텍스트 변경
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) submitBtn.innerText = "수정 완료";
+};
+
+/* [기능] 리뷰 삭제 */
+window.deleteReview = function(videoId) {
+    if (!confirm("작성하신 리뷰를 정말 삭제하시겠습니까?")) return;
+
+    fetch(`/video/review_delete/${videoId}`, {
+        method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.result === 'success') {
+            location.href = window.location.pathname + '?tab=tab1';
+        } else {
+            alert(data.message);
+        }
+    });
 };
