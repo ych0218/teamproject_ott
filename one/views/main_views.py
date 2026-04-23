@@ -23,16 +23,36 @@ def home():
 
 @bp.route('/main')
 def main():
-    # 1. 세션에서 유저 ID 가져오기
     user_id = session.get('user')
-
-    # 2. 유저 정보 조회 (로그인 안되어있으면 None)
     user_data = User.query.get(user_id) if user_id else None
-    video_list = Video.query.order_by(Video.video_unique_id.desc()).all()
+    
+    # 모든 비디오 가져오기
+    all_videos = Video.query.order_by(Video.video_unique_id.desc()).all()
 
-    # 2. 템플릿에 video_list 데이터를 전달합니다.
-    # 기존에 'main.html'을 사용 중이라면 아래와 같이 작성합니다.
-    return render_template('main/main.html', video_list=video_list, user=user_data)
+    # 속성 이름을 video_genres로 수정
+    video_sections = [
+        {
+            'title': '자기전 보기좋은 드라마', 
+            'list': [v for v in all_videos if v.video_genres and '드라마' in v.video_genres][17:29]
+        },
+        {
+            'title': '지금 방영중인 예능', 
+            'list': [v for v in all_videos if v.video_genres and '예능' in v.video_genres][:12]
+        },
+        {
+            'title': '인기 영화', 
+            'list': [v for v in all_videos if v.video_genres and '영화' in v.video_genres][:12]
+        },
+        {
+            'title': '박진감 넘치는 액션', 
+            'list': [v for v in all_videos if v.video_genres and '액션' in v.video_genres][:12]
+        }
+    ]
+
+    return render_template('main/main.html', 
+                           video_sections=video_sections, 
+                           video_list=all_videos, 
+                           user=user_data)
 
 @bp.route('/movie')
 def movie():

@@ -11,42 +11,49 @@
 {% block content %}
 <section>
     {% block head_slider %}
-    <div class="head_slider">
-            {% for video in video_list[41:42] | default([]) %}
+<div class="head_slider">
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            {% for video in video_list[41:47] | default([]) %}
             <div class="swiper-slide">
                 {# 클릭 시 상세 페이지로 이동 (id 전달) #}
                 <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
-                    {# 썸네일 이미지만 출력 #}
-                    <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
+                    {# 썸네일 이미지만 출력 (캐시 방지 파라미터 추가) #}
+                    <img src="{{ video.video_thumbnail }}?t={{ range(1, 9999) | random }}" alt="{{ video.video_title }}">
                 </a>
             </div>
+            {% endfor %}
+        </div>
+        
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
     </div>
-    {% endfor %}
-    {% endblock %}
-
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-pagination"></div>
+</div>
+{% endblock %}
     <br>
     {% block nav_slider %}
     <div class="nav_slider">
         <div class="swiper mySwiper2">
             <div class="swiper-wrapper">
-                <div class="swiper-slide"><a href="{{ url_for('sub.index') }}"><img
-                        src="{{ url_for('static', filename='img/main_img/main_nav.gif') }}" alt="유미의세포들3"></a>
-                </div>
-                <div class="swiper-slide"><a href="{{ url_for('sub.index') }}"></a></div>
-                <div class="swiper-slide"><a href="{{ url_for('sub.index') }}"></a></div>
-                <div class="swiper-slide"><a href="{{ url_for('sub.index') }}"></a></div>
-                <div class="swiper-slide"><a href="{{ url_for('sub.index') }}"></a></div>
-                <div class="swiper-slide"><a href="{{ url_for('sub.index') }}"></a></div>
+            {% for video in video_list if video.video_unique_id in [43, 44, 29, 75, 15, 100, 102, 109, 113, 115, 119] | default([]) %}
+            <div class="swiper-slide">
+                {# 클릭 시 상세 페이지로 이동 #}
+                <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
+                    {# 썸네일 이미지 및 캐시 방지 처리 #}
+                    <img src="{{ video.video_thumbnail }}?t={{ range(1, 9999) | random }}" alt="{{ video.video_title }}">
+                </a>
             </div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-pagination"></div>
+            {% endfor %}
         </div>
+
+        {# 네비게이션 및 페이지네이션 구성 #}
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-pagination"></div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}
     <br>
     <div class="box1">
        {% block top15_section %}
@@ -56,7 +63,7 @@
         <div class="section_slider">
             <div class="swiper mySwiper3">
                 <div class="swiper-wrapper">
-                    {% for video in video_list[:15] | default([]) %}
+                    {% for video in video_list[15:30] | default([]) %}
                     <div class="swiper-slide">
                         <div class="rank_num">{{ loop.index }}</div>
                         <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
@@ -73,36 +80,31 @@
         {% endblock %}
     </div>
     {% block sections_area %}
-    {% set sections = [
-        ('새로 공개된 드라마', video_list[0:12]),
-        ('지금 방영중인 컨텐츠', video_list[12:24]),
-        ('인기 영화', video_list[24:36]),
-        ('요즘 인기 예능', video_list[36:48])
-    ] %}
-
-    {% for title, section_video_list in sections %}
-    <div class="box2">
-        <div class="h3"><h3>{{ title }}</h3></div>
-        <div class="section_slider">
-            <div class="swiper mySwiper4">
-                <div class="swiper-wrapper">
-                    {% for video in section_video_list %}
-                    <div class="swiper-slide">
-                        <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
-                        {# 썸네일 이미지만 출력 #}
-                        <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
-                        </a>
+    {% for section in video_sections %}
+        {# 해당 장르에 비디오가 있을 때만 섹션 렌더링 #}
+        {% if section.list %}
+        <div class="box2">
+            <div class="h3"><h3>{{ section.title }}</h3></div>
+            <div class="section_slider">
+                <div class="swiper mySwiper4">
+                    <div class="swiper-wrapper">
+                        {% for video in section.list %}
+                        <div class="swiper-slide">
+                            <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
+                                <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
+                            </a>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
                 </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-pagination"></div>
             </div>
         </div>
-    </div>
+        {% endif %}
     {% endfor %}
-    {% endblock %}
+{% endblock %}
     <a href="#">
         <div class="box7">
             <div class="p_txt1">
@@ -162,6 +164,8 @@
             prevEl: ".nav_slider .swiper-button-prev",
         },
         slidesPerView: 'auto',
+        observer: true,
+        observeParents: true,
         freeMode: true,
         slidesOffsetAfter: 47,
         slidesOffsetBefore: 47,

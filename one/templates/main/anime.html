@@ -3,19 +3,26 @@
 
 {# 1. 헤드 슬라이더 (상단 큰 배너 3개) #}
 {% block head_slider %}
-    {% for video in (video_list | default([]))[34:35] %}
-    <div class="swiper-slide">
-        <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
-            <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
-        </a>
+<div class="head_slider">
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            {% for video in (video_list | default([]))[34:40] %}
+            <div class="swiper-slide">
+                <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
+                    {# 💡 캐시 방지를 위해 랜덤값 추가 #}
+                    <img src="{{ video.video_thumbnail }}?t={{ range(1, 9999) | random }}" alt="{{ video.video_title }}">
+                </a>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    {% endfor %}
+</div>
 {% endblock %}
 
 {% block nav_slider %}{% endblock %}
 
 {# 2. TOP 10 섹션 (순위가 표시되는 인기 리스트) #}
-{% block top10_section %}
+{% block top15_section %}
     <div class="h3"><h3>실시간 인기 TOP 10</h3></div>
     <div class="section_slider">
         <div class="swiper mySwiper3">
@@ -39,9 +46,9 @@
     {% set sections = [
         ('지금 뜨는 콘텐츠', (video_list | default([]))[0:12]),
         ('정주행 추천 명작', (video_list | default([]))[12:24]),
-        ('요즘 뜨는 애니', (video_list | default([]))[24:36]),
+        ('요즘 뜨는 애니', (video_list | default([]))[24:34]),
     ] %}
-
+ 
     {% for title, section_video_list in sections %}
     {% if section_video_list %} {# 해당 구간에 데이터가 있을 때만 화면에 표시 #}
     <div class="box2">
