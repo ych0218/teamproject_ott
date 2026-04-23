@@ -13,15 +13,15 @@ migrate = Migrate()
 login_manager = LoginManager() # 추가됨: 이 줄이 있어야 빨간 줄이 사라집니다.
 
 def create_app():
-    app=Flask(__name__)
+    app=Flask(__name__)     
     app.config.from_object(config)
 
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = 
-    app.config['MAIL_PASSWORD'] = 
-    app.config['MAIL_DEFAULT_SENDER'] = 
+    app.config['MAIL_USERNAME'] = 'asdasd@gmail.com'
+    app.config['MAIL_PASSWORD'] = 'msiwdvncsrwhnpwp'
+    app.config['MAIL_DEFAULT_SENDER'] = 'asdasd@gmail.com'
 
     mail.init_app(app)
 

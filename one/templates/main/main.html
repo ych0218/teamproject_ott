@@ -105,15 +105,17 @@
         {% endif %}
     {% endfor %}
 {% endblock %}
-    <a href="#">
+    <section>
+    <a href="{{ url_for('mypage.support_center')}}">
         <div class="box7">
             <div class="p_txt1">
                 <p>공지</p>
             </div>
             <div class="p_txt2">
-                <p></p>
+                <p>새로운 서비스가 오픈되었습니다! 이용에 참고 부탁드립니다. [점검 안내] 이번 주 일요일 새벽 2시부터 4시까지 서버 점검이 예정되어 있습니다.</p>
             </div>
-            <div class="right"><img src="{{ url_for('static', filename='img/main_img/right.png') }}" alt="오른쪽화살표">
+            <div class="right">
+                <img src="{{ url_for('static', filename='img/main_img/right.png') }}" alt="오른쪽화살표">
             </div>
         </div>
     </a>
