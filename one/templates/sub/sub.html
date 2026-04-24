@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}{{ video.video_title }}{% endblock %}
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/sub.css') }}">
 {% endblock %}
@@ -93,6 +94,30 @@
                     </button>
                     <button class="tab-link" onclick="openTab(event, 'tab2')">추천 콘텐츠</button>
                 </div>
+
+                <!-- 👇 여기에 에피소드 탭 내용을 추가하세요! -->
+                {% if not video.video_is_movie %}
+                    <div id="tab_episodes" class="tab-content active">
+                        <div class="episode-grid">
+                            {% if episodes %}
+                                {% for ep in episodes %}
+                                <a href="{{ url_for('video.detail', video_id=ep.video_unique_id) }}" class="episode-item">
+                                    <div class="ep-thumb-box">
+                                        <img src="{{ ep.video_thumbnail }}" alt="{{ ep.video_title }}">
+                                        <div class="ep-overlay">▶</div>
+                                    </div>
+                                    <div class="ep-meta">
+                                        <p class="ep-title">{{ ep.video_title }}</p>
+                                        <p class="ep-date">{{ ep.video_date.strftime('%Y-%m-%d') if ep.video_date else '' }}</p>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            {% else %}
+                                <p class="no-data">다른 에피소드가 없습니다.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
 
                <!-- [탭2] 리뷰 영역 -->
                 <div id="tab1" class="tab-content {{ 'active' if video.video_is_movie else '' }}">

@@ -406,3 +406,6 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
+.swal2-container {
+    z-index: 999999 !important;
+}

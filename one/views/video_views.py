@@ -56,15 +56,31 @@ def detail(video_id):
 
     # 🔥 [2] 에피소드 로직 (시리즈물 전용)
     episodes = []
-    if not video.video_is_movie:
-        # 제목의 첫 단어로 같은 시리즈의 다른 회차들을 검색
-        series_keyword = video.video_title.split(' ')[0]
-        episodes = Video.query.filter(
-            Video.video_is_movie == False,
-            Video.video_title.like(f"%{series_keyword}%"),
-            Video.video_unique_id != video_id
-        ).order_by(Video.video_title.asc()).all()
+    series_keyword = video.video_title  # 1. 기본값으로 현재 제목 전체를 넣어둡니다 (에러 방지)
 
+
+    if ' ' in video.video_title:
+        series_keyword = video.video_title.split(' ')[0]
+    episodes = Video.query.filter(
+        Video.video_is_movie == False,
+        Video.video_title.like(f"%{series_keyword}%"),
+        Video.video_unique_id != video_id  # 현재 보고 있는 영상 제외
+    ).order_by(Video.video_title.asc()).all()
+    # --- 테스트 코드 시작 ---
+    print("\n" + "=" * 50)
+    print(f"📍 현재 영상 제목: {video.video_title} (ID: {video_id})")
+    print(f"🔍 검색 키워드: {series_keyword}")
+
+    # 전체 영상 중 제목에 키워드가 포함된 것들을 다 가져와서 비교해봅니다.
+    all_related = Video.query.filter(Video.video_title.like(f"%{series_keyword}%")).all()
+
+    print(f"📑 검색된 전체 관련 영상 ({len(all_related)}개):")
+    for v in all_related:
+        print(f"   - 제목: {v.video_title} / ID: {v.video_unique_id} / 시리즈여부(is_movie): {v.video_is_movie}")
+
+    print(f"🎬 최종 필터링된 episodes 결과: {episodes}")
+    print("=" * 50 + "\n")
+    # --- 테스트 코드 끝 ---
     # 🔥 [3] 추천 콘텐츠 로직 (영화/시리즈 공통)
     # 현재 영상의 첫 번째 장르를 기준으로 검색
     primary_genre = video.video_genres.split(',')[0].strip() if video.video_genres else ""

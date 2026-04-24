@@ -525,3 +525,74 @@
     cursor: pointer;
 }
 .btn-subscribe:hover { background-color: #ff0a16; }
+/* 에피소드 그리드 설정 (한 줄에 2개) */
+.episode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 1:1 비율로 두 칸 */
+    gap: 20px 15px; /* 상하 20px, 좌우 15px 간격 */
+    padding: 15px;
+}
+
+.episode-item {
+    text-decoration: none;
+    color: white;
+    display: block;
+}
+
+/* 세로형 썸네일 박스 */
+.ep-thumb-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3; /* 세로형 포스터 비율 고정 */
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #222;
+}
+
+.ep-thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.episode-item:hover img {
+    transform: scale(1.05);
+}
+
+/* 재생 아이콘 오버레이 */
+.ep-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.episode-item:hover .ep-overlay {
+    opacity: 1;
+}
+
+/* 텍스트 정보 */
+.ep-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 제목 길면 2줄까지만 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ep-date {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+}
