@@ -9,14 +9,16 @@ bp=Blueprint('home',__name__,url_prefix='/')
 def index():
     if session.get('user'):
         return redirect(url_for('home.main'))
-    video_list = Video.query.order_by(Video.video_unique_id.desc()).all()
+    video_list = Video.query.filter(Video.video_unique_id < 129) \
+        .order_by(Video.video_unique_id.desc()).all()
     plan_list = Plan.query.order_by(Plan.price.asc()).all()
     return render_template('main/home.html', video_list=video_list,
                            plans=plan_list)
 
 @bp.route('/home')
 def home():
-    video_list = Video.query.order_by(Video.video_unique_id.desc()).all()
+    video_list = Video.query.filter(Video.video_unique_id < 129) \
+        .order_by(Video.video_unique_id.desc()).all()
     plan_list = Plan.query.order_by(Plan.price.asc()).all()
     return render_template('main/home.html', video_list=video_list,
                            plans=plan_list)
