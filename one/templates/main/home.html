@@ -23,7 +23,7 @@
 
     <div class="overlay"></div>
 
-     <div class="banner_content container position-relative">
+    <div class="banner_content container position-relative">
         <h1>
             <span class="main">4FLEX</span><br>
             특별한 경험을 시작하세요
@@ -39,14 +39,12 @@
     <h2 class="mb-4">새 콘텐츠</h2>
 
     {% if video_list %}
-    <ul class="row g-4 list-unstyled">
+    <ul class="row g-4 list-unstyled row-cols-2 row-cols-md-3 row-cols-lg-5">
         {% for video in video_list[:5] %}
-        <li class="col-6 col-md-4 col-lg">
-            <!--            <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}" class="text-decoration-none">-->
+        <li>
             <div class="content_card1">
                 <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
             </div>
-            <!--            </a>-->
         </li>
         {% endfor %}
     </ul>
@@ -61,19 +59,50 @@
 
     <ul class="row g-4 list-unstyled">
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason1.png') }}" alt="reason1">
+            <div class="content_card2 reason_card">
+                <span class="reason_icon">4K</span>
+                <h3>선명한 화질</h3>
+                <p>고화질 콘텐츠를 더 몰입감 있게 감상할 수 있습니다.</p>
+                <ul class="reason_features">
+                    <li>UHD 콘텐츠 지원</li>
+                    <li>큰 화면에서도 선명하게</li>
+                </ul>
             </div>
         </li>
+
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason2.png') }}" alt="reason2">
+            <div class="content_card2 reason_card">
+                <span class="reason_icon">AD</span>
+                <h3>광고 없는 시청</h3>
+                <p>중간 광고 없이 원하는 콘텐츠에만 집중하세요.</p>
+                <ul class="reason_features">
+                    <li>끊김 없는 몰입감</li>
+                    <li>광고 대기 시간 없음</li>
+                </ul>
             </div>
         </li>
+
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason3.png') }}" alt="reason3">
+            <div class="content_card2 reason_card">
+                <span class="reason_icon">∞</span>
+                <h3>다양한 콘텐츠</h3>
+                <p>영화와 시리즈를 한 곳에서 편하게 즐길 수 있습니다.</p>
+                <ul class="reason_features">
+                    <li>신규 콘텐츠 업데이트</li>
+                    <li>다양한 장르 제공</li>
+                </ul>
             </div>
         </li>
+
         <li class="col-12 col-md-6 col-lg-3">
-            <div class="content_card2"><img src="{{ url_for('static', filename='img/reason4.png') }}" alt="reason4">
+            <div class="content_card2 reason_card">
+                <span class="reason_icon">▶</span>
+                <h3>편리한 재생</h3>
+                <p>언제든지 원하는 콘텐츠를 빠르게 이어서 시청하세요.</p>
+                <ul class="reason_features">
+                    <li>이어보기 지원</li>
+                    <li>간편한 콘텐츠 탐색</li>
+                </ul>
             </div>
         </li>
     </ul>

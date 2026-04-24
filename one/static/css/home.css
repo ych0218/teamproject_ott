@@ -85,14 +85,16 @@ body {
 }
 
 /* 어둡게 덮는 레이어 */
+/* 영상 사방 그라데이션 + 어둡게 덮는 레이어 */
 .overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4); /* 어둡기 조절 */
+    inset: 0;
     z-index: 1;
+    pointer-events: none;
+
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.25) 25%, rgba(0,0,0,0.25) 65%, rgba(0,0,0,1) 100%),
+        linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 18%, rgba(0,0,0,0.15) 82%, rgba(0,0,0,0.85) 100%);
 }
 
 /* 텍스트 위로 */
@@ -194,17 +196,65 @@ body {
     transform: scale(1.05);
 }
 
-.content_card2 {
+.content_card2.reason_card {
     width: 100%;
     height: 420px;
-    background: #222;
-    border-radius: 10px;
+    min-height: 300px;
+    background: linear-gradient(145deg, #181818, #242424);
+    border: 1px solid #333;
+    padding: 40px 30px 60px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.content_card2 img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
+.reason_icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    background: rgba(229, 9, 20, 0.15);
+    border: 1px solid rgba(229, 9, 20, 0.45);
+    color: #e50914;
+    font-size: 22px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+}
+
+.reason_card h3 {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    color: #fff;
+}
+
+.reason_card p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #bdbdbd;
+    margin: 0;
+}
+
+.reason_features {
+    list-style: none;
+    padding: 18px 0 0 0;
+    margin: 24px 0 0 0;
+    border-top: 1px solid #333;
+    margin-bottom: 100px;
+}
+
+.reason_features li {
+    font-size: 14px;
+    color: #cfcfcf;
+    margin-bottom: 10px;
+}
+
+.reason_features li::before {
+    content: "✓";
+    margin-right: 8px;
 }
 
 /* ------------------------------반응형----------------------------- */
@@ -267,6 +317,7 @@ body {
 
 .content_card1 {
     opacity: 0;
+    height: 340px;
     transform: translateY(20px);
     transition: all 0.5s ease-in-out;
 }
