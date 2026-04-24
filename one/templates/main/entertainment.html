@@ -1,5 +1,5 @@
 {% extends "main/main.html" %}
-{% block title %} 메인페이지(드라마) {% endblock %}
+{% block title %} 메인페이지(예능) {% endblock %}
 
 {% block head_slider %}
 <div class="head_slider">
@@ -8,7 +8,6 @@
             {% for video in video_list if video.video_unique_id in [132, 133] | default([]) %}
             <div class="swiper-slide">
                 <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
-                    {# 💡 캐시 방지를 위해 랜덤값 추가 #}
                     <img src="{{ video.video_thumbnail }}?t={{ range(1, 9999) | random }}" alt="{{ video.video_title }}">
                 </a>
             </div>
@@ -24,35 +23,37 @@
 
 {% block nav_slider %}{% endblock %}
 
-{# 2. TOP 10 섹션 (순위가 표시되는 인기 리스트) #}
+{# 2. TOP 10 섹션 (파이썬에서 최신순으로 고정됨) #}
 {% block top15_section %}
-    <div class="h3"><h3>실시간 인기 TOP 10 (테스트 중)</h3></div>
+    <div class="h3"><h3>인기 예능 TOP 10</h3></div>
     <div class="section_slider">
         <div class="swiper mySwiper3">
             <div class="swiper-wrapper">
-                {% for video in (video_list | default([]))[:10] %}
+                {% for video in (top10_list | default([])) %}
                 <div class="swiper-slide">
                     <div class="rank_num">{{ loop.index }}</div>
                     <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">
                         <img src="{{ video.video_thumbnail }}" alt="{{ video.video_title }}">
                     </a>
                 </div>
+                
                 {% endfor %}
             </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
         </div>
     </div>
 {% endblock %}
 
-{# 3. 나머지 장르/테마별 섹션 구역 #}
+{# 3. 나머지 섹션 구역 (파이썬에서 랜덤하게 섞어온 리스트 사용) #}
 {% block sections_area %}
-    {# 페이지 성격에 맞춰 제목만 수정하세요 #}
     {% set sections = [
-        ('지금 뜨는 콘텐츠', (video_list | default([]))[0:12]),
-        ('정주행 추천 명작', (video_list | default([]))[12:24]),
+        ('예능 시리즈', (random_list | default([]))[0:12]),
+        ('지금 방영중인 예능', (random_list | default([]))[12:24]),
     ] %}
 
     {% for title, section_video_list in sections %}
-    {% if section_video_list %} {# 해당 구간에 데이터가 있을 때만 화면에 표시 #}
+    {% if section_video_list %}
     <div class="box2">
         <div class="h3"><h3>{{ title }}</h3></div>
         <div class="section_slider">    

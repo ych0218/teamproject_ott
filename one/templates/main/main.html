@@ -14,7 +14,7 @@
 <div class="head_slider">
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
-            {% for video in video_list[41:47] | default([]) %}
+            {% for video in video_list[:6] | default([]) %}
             <div class="swiper-slide">
                 {# 클릭 시 상세 페이지로 이동 (id 전달) #}
                 <a href="{{ url_for('video.detail', video_id=video.video_unique_id) }}">

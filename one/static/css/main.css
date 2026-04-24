@@ -290,8 +290,7 @@ h3 {
     font-size: 0.8vw;
     display: inline-block;
     padding-left: 100%; /* 오른쪽 끝에서 시작 */
-    transform: translateX(-100%);
-    animation: marquee-right 15s linear infinite; /* 15초 동안 무한 반복 */
+    animation: marquee 15s linear infinite; /* 15초 동안 무한 반복 */
 }
 
 .box7 .p_txt2 p:hover{
@@ -300,16 +299,11 @@ h3 {
     cursor: pointer;
 }
 
-@keyframes marquee-right {
-    0% { 
-        /* 왼쪽 끝(완전히 숨겨진 상태)에서 시작 */
-        transform: translateX(-100%); 
+/* 흐르는 애니메이션 정의 */
+    @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
     }
-    100% { 
-        /* 오른쪽 끝(부모 박스 너비만큼 이동)까지 밀어내기 */
-        transform: translateX(550px); /* .p_txt2의 너비만큼 이동 */
-    }
-}
 
 .box7 .right {
     width: 50px;
